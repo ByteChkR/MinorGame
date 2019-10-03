@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using GameEngine.engine.core;
 using MinorGame.scenes;
 using OpenTK;
@@ -25,8 +26,8 @@ namespace MinorGame
 #if LOG_NETWORK
                 DebugNetwork = true,
                 NetworkMask = -1,
-                ProgramID = 1,
-                ProgramVersion = null, //We Want the debug system to take the engine assembly
+                ProgramID = 2,
+                ProgramVersion = Assembly.GetExecutingAssembly().GetName().Version, //We Want the debug system to take the game version
 #endif
             };
 
