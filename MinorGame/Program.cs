@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
-using GameEngine.engine.core;
+using MinorEngine.engine;
+using MinorEngine.engine.core;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics;
@@ -31,7 +32,7 @@ namespace MinorGame
 #endif
             };
 
-            GameEngine.engine.core.SceneRunner engine = new GameEngine.engine.core.SceneRunner(es);
+            GameEngine engine = new GameEngine(es);
             engine.Initialize();
             engine.InitializeScene<GameTestScene>();
             engine.Run();
