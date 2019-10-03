@@ -1,5 +1,6 @@
 ﻿
 using GameEngine.engine.core;
+using GameEngine.engine.ui.utils;
 using OpenTK;
 
 namespace MinorGame.scenes
@@ -9,7 +10,8 @@ namespace MinorGame.scenes
 
         protected override void InitializeScene()
         {
-
+            GameObject dbgConsole = DebugConsoleComponent.CreateConsole();
+            SceneRunner.Instance.World.Add(dbgConsole);
         }
 
         public override void OnDestroy()
