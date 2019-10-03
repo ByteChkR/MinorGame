@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MinorGame": {
+      "commandName": "Project",
+      "workingDirectory": "assets"
+    }
+  }
+}
