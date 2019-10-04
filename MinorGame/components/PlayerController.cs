@@ -1,36 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MinorEngine.BEPUphysics.Entities.Prefabs;
 using MinorEngine.BEPUphysics.Materials;
+using MinorEngine.BEPUutilities;
 using MinorEngine.components;
 using MinorEngine.debug;
 using MinorEngine.engine.components;
 using MinorEngine.engine.core;
+using MinorEngine.engine.physics;
+using MinorEngine.engine.rendering;
 using MinorEngine.engine.ui.utils;
-using OpenTK;
 using OpenTK.Input;
+using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace MinorGame.components
 {
     public class PlayerController : AbstractComponent
     {
-
+        private Layer raycastLayer;
         private float MoveSpeed = 100;
         private Key Forward = Key.W;
         private Key Left = Key.A;
         private Key Back = Key.S;
         private Key Right = Key.D;
         private bool UseGlobalForward = true;
-        private bool ApplyVelocity = false;
-        private Vector3 velocity;
         private Collider Collider;
+        
 
         private bool left, right, fwd, back;
 
-        public PlayerController(float speed, bool useGlobalForward)
+
+        public static GameObject[] CreatePlayer(GameModel model, GameModel headModel, Camera cam, GameObject mouseTarget, Layer gamePhysicsLayer, Layer raycastLayer, ShaderProgram shader)
+        {
+
+
+
+            GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
+            GameObject playerH = new GameObject(new Vector3(0, 10, 0), "PlayerHead");
+
+            //Movement for camera
+            OffsetConstraint cameraController = new OffsetConstraint();
+            cameraController.Attach(player, new Vector3(0, 50, 10));
+            cam.AddComponent(cameraController);
+
+            //Rotation for Player Head depending on mouse position
+            cam.AddComponent(new CameraRaycaster(mouseTarget, playerH, raycastLayer));
+
+            //Movement for Player Head
+            OffsetConstraint connection = new OffsetConstraint()
+            {
+                Damping = 0, //Directly over the moving collider, no inertia
+                MoveSpeed = 20, //Even less inertia by moving faster in general
+            };
+            connection.Attach(player, Vector3.UnitY * 30);
+            playerH.AddComponent(connection);
+            playerH.AddComponent(new MeshRendererComponent(shader, headModel, 1));
+
+
+            //Player Setup
+            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), gamePhysicsLayer);
+            collider.PhysicsCollider.Material = new Material(10, 10, 0);
+            collider.PhysicsCollider.LinearDamping = 0.99f;
+            RigidBodyConstraints constraints = collider.ColliderConstraints;
+            //constraints.RotationConstraints = FreezeConstraints.X | FreezeConstraints.Z;
+            collider.ColliderConstraints = constraints;
+
+            player.AddComponent(collider);
+
+            player.AddComponent(new MeshRendererComponent(shader, model, 1));
+            player.AddComponent(new PlayerController(100, false, raycastLayer));
+            return new[] { player, playerH };
+
+        }
+
+
+        public PlayerController(float speed, bool useGlobalForward, Layer rayCastLayer)
         {
             MoveSpeed = speed;
             UseGlobalForward = useGlobalForward;
+            raycastLayer = rayCastLayer;
         }
 
         private string cmdChangeForce(string[] args)
@@ -96,7 +146,6 @@ namespace MinorGame.components
 
         protected override void Update(float deltaTime)
         {
-            this.Log("Velocity: " + Collider.PhysicsCollider.LinearVelocity, DebugChannel.Log);
             Vector3 vel = inputDir();
             if (vel != Vector3.Zero)
             {
@@ -113,6 +162,7 @@ namespace MinorGame.components
 
 
         }
+
 
 
         protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)
