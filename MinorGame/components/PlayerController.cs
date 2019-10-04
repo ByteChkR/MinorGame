@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MinorEngine.BEPUphysics.Materials;
 using MinorEngine.components;
 using MinorEngine.debug;
 using MinorEngine.engine.components;
+using MinorEngine.engine.core;
+using MinorEngine.engine.ui.utils;
 using OpenTK;
 using OpenTK.Input;
 
@@ -12,7 +15,7 @@ namespace MinorGame.components
     public class PlayerController : AbstractComponent
     {
 
-        private float MoveSpeed = 1;
+        private float MoveSpeed = 100;
         private Key Forward = Key.W;
         private Key Left = Key.A;
         private Key Back = Key.S;
@@ -20,7 +23,9 @@ namespace MinorGame.components
         private bool UseGlobalForward = true;
         private bool ApplyVelocity = false;
         private Vector3 velocity;
-        private RigidBodyComponent Rigidbody;
+        private Collider Collider;
+
+        private bool left, right, fwd, back;
 
         public PlayerController(float speed, bool useGlobalForward)
         {
@@ -28,55 +33,105 @@ namespace MinorGame.components
             UseGlobalForward = useGlobalForward;
         }
 
+        private string cmdChangeForce(string[] args)
+        {
+            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            {
+                MoveSpeed = res;
+                return "MoveSpeed Changed to: " + res;
+            }
+
+            return "Argument 1 was not a number";
+        }
+
+        private string cmdChangeDamp(string[] args)
+        {
+            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            {
+                Collider.PhysicsCollider.LinearDamping = res;
+                return "Damp Changed to: " + res;
+            }
+
+            return "Argument 1 was not a number";
+        }
+
+        private string cmdResetPlayer(string[] args)
+        {
+            Owner.SetLocalPosition(Vector3.Zero);
+            return "Player Reset";
+        }
 
         protected override void Awake()
         {
-            Rigidbody = Owner.GetComponent<RigidBodyComponent>();
-            if (Rigidbody == null)
+            Collider = Owner.GetComponent<Collider>();
+            if (Collider == null)
             {
                 this.Log("No Rigid body attached", DebugChannel.Warning);
 
             }
 
+            GameObject dbg = Owner.World.GetChildWithName("Console");
+            if (dbg != null)
+            {
+                DebugConsoleComponent console = dbg.GetComponent<DebugConsoleComponent>();
+                if (console != null)
+                {
+                    console.AddCommand("preset", cmdResetPlayer);
+                    console.AddCommand("pcdamp", cmdChangeDamp);
+                    console.AddCommand("pcmove", cmdChangeForce);
+                }
+            }
+
+        }
+
+        private Vector3 inputDir()
+        {
+            Vector3 ret = Vector3.Zero;
+            if (left) ret -= Vector3.UnitX;
+            if (right) ret += Vector3.UnitX;
+            if (fwd) ret -= Vector3.UnitZ;
+            if (back) ret += Vector3.UnitZ;
+            return ret;
         }
 
         protected override void Update(float deltaTime)
         {
-            if (ApplyVelocity)
+            this.Log("Velocity: " + Collider.PhysicsCollider.LinearVelocity, DebugChannel.Log);
+            Vector3 vel = inputDir();
+            if (vel != Vector3.Zero)
             {
-                ApplyVelocity = false;
-                Vector3 vel = velocity;
+                vel.Normalize();
                 if (UseGlobalForward)
                 {
                     vel = new Vector3(new Vector4(vel, 0) * Owner.GetWorldTransform());
                 }
-                Rigidbody.SetVelocityLinear(vel * deltaTime);
 
+                Vector3 vec = vel * deltaTime * MoveSpeed;
+                MinorEngine.BEPUutilities.Vector3 v = new MinorEngine.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
+                Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 
+
         }
+
 
         protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)
         {
             if (e.Key == Forward)
             {
-                velocity += Vector3.UnitZ;
-                ApplyVelocity = true;
+                fwd = true;
             }
             else if (e.Key == Back)
             {
-                velocity -= Vector3.UnitZ;
-                ApplyVelocity = true;
+                back = true;
             }
             else if (e.Key == Left)
             {
-                velocity -= Vector3.UnitX;
-                ApplyVelocity = true;
+                left = true;
             }
             else if (e.Key == Right)
             {
-                velocity += Vector3.UnitX;
-                ApplyVelocity = true;
+                right = true;
             }
 
         }
@@ -85,23 +140,19 @@ namespace MinorGame.components
         {
             if (e.Key == Forward)
             {
-                velocity -= Vector3.UnitZ;
-                ApplyVelocity = true;
+                fwd = false;
             }
             else if (e.Key == Back)
             {
-                velocity += Vector3.UnitZ;
-                ApplyVelocity = true;
+                back = false;
             }
             else if (e.Key == Left)
             {
-                velocity += Vector3.UnitX;
-                ApplyVelocity = true;
+                left = false;
             }
             else if (e.Key == Right)
             {
-                velocity -= Vector3.UnitX;
-                ApplyVelocity = true;
+                right = false;
             }
         }
     }

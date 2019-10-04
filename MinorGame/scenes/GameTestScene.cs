@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using MinorEngine.BEPUphysics.Entities.Prefabs;
+using MinorEngine.BEPUphysics.Materials;
 using MinorEngine.components;
 using MinorEngine.engine.core;
 using MinorEngine.engine.physics;
@@ -15,7 +17,7 @@ namespace MinorGame.scenes
 
         protected override void InitializeScene()
         {
-
+            
             GameModel bgBox = new GameModel("models/cube_flat.obj");
 
             bgBox.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/ground4k.png") });
@@ -33,11 +35,14 @@ namespace MinorGame.scenes
 
             //Ground
             GameModel groundModel = new GameModel("models/cube_flat.obj");
-            Physics.AddBoxStatic(System.Numerics.Vector3.UnitY * -4, new System.Numerics.Vector3(50, 10, 50), 1, 1);
+
             GameObject ground = new GameObject("Ground");
             groundModel.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/ground4k.png") });
 
             ground.AddComponent(new MeshRendererComponent(shader, groundModel, 1));
+            Collider groundColl = new Collider(new Box(MinorEngine.BEPUutilities.Vector3.Zero, 100, 2, 100));
+            groundColl.PhysicsCollider.Material = new Material(0, 0, 0);
+            ground.AddComponent(groundColl);
 
             ground.Scale(new Vector3(50, 1, 50));
             GameEngine.Instance.World.Add(ground);
@@ -47,30 +52,36 @@ namespace MinorGame.scenes
             GameModel playerModel = new GameModel("models/sphere_smooth.obj");
             playerModel.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/TEST.png") });
 
-            GameObject player = new GameObject(new Vector3(0, 100, 0), "Player");
-            PhysicsMaterial pm = new PhysicsMaterial(1);
-            AbstractDynamicCollider collider = new SphereCollider(pm, 1, 1, 1);
-            player.AddComponent(collider);
+            GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
+
+
             RigidBodyConstraints playerConstraints = new RigidBodyConstraints
             {
-                FixRotation = true
+                //RotationConstraints = FreezeConstraints.X | FreezeConstraints.Z,
             };
-            RigidBodyComponent rb = new RigidBodyComponent(collider, playerConstraints);
 
-            player.AddComponent(rb);
+            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1));
+            //collider.PhysicsCollider.Gravity = MinorEngine.BEPUutilities.Vector3.Down;
+            
+            collider.PhysicsCollider.Material = new Material(0, 0, 0);
+            collider.ColliderConstraints = playerConstraints;
+            collider.PhysicsCollider.LinearDamping = 0.99f;
+            
+            player.AddComponent(collider);
+
             player.AddComponent(new MeshRendererComponent(shader, playerModel, 1));
-            player.AddComponent(new PlayerController(1, false));
+            player.AddComponent(new PlayerController(100, true));
 
             GameEngine.Instance.World.Add(player);
 
             Camera c = new Camera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
                     GameEngine.Instance.Width / (float)GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
-            c.Rotate(new Vector3(1, 0, 0), MathHelper.DegreesToRadians(-25));
-            c.Translate(new Vector3(0, 15, 15));
+            c.Rotate(new Vector3(1, 0, 0), MathHelper.DegreesToRadians(-75));
+            c.Translate(new Vector3(0, 75, 15));
 
 
-            player.Add(c);
+            GameEngine.Instance.World.Add(c);
             GameEngine.Instance.World.SetCamera(c);
         }
 
