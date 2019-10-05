@@ -1,5 +1,4 @@
 ﻿using System;
-using MinorEngine.debug;
 using MinorEngine.engine.components;
 using MinorEngine.engine.core;
 using OpenTK;
@@ -43,6 +42,12 @@ namespace MinorGame.components
         {
             if (_attachedObject != null)
             {
+                if (_attachedObject.Destroyed)
+                {
+                    Detach();
+                    Owner.Destroy();
+                    return;
+                }
                 Vector3 moveAmount = ComputePositionChange() * deltaTime * MoveSpeed;
                 Owner.Translate(moveAmount);
             }

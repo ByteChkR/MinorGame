@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using MinorEngine.BEPUphysics.CollisionTests;
 using MinorEngine.BEPUphysics.Entities.Prefabs;
 using MinorEngine.BEPUphysics.Materials;
@@ -20,31 +18,26 @@ using OpenTK.Input;
 
 namespace MinorGame.components
 {
-    public class PlayerController : AbstractComponent
+    public class EnemyComponent : AbstractComponent
     {
-        private int raycastLayer;
+        private GameObject target;
         private int bulletLayer;
-        private float MoveSpeed = 10;
-        private Key Forward = Key.W;
-        private Key Left = Key.A;
-        private Key Back = Key.S;
-        private Key Right = Key.D;
-        private Key Shoot = Key.Space;
+        private static float MoveSpeed = 5;
         private bool UseGlobalForward = true;
         private Collider Collider;
         private GameObject nozzle;
         private GameMesh bulletModel;
         private ShaderProgram bulletShader;
-        private float BulletLaunchForce = 100;
-        private float BulletsPerSecond = 5;
+        private static float BulletLaunchForce = 50;
+        private static float BulletsPerSecond = 1;
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
-        private int hp = 50;
+        public static bool active = false;
+        private int hp = 10;
         private float BulletThreshold => 1f / BulletsPerSecond;
-        private bool left, right, fwd, back, shoot;
 
 
-        public static GameObject[] CreatePlayer(Vector3 position, Camera cam)
+        public static GameObject[] CreateEnemy(Vector3 position)
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -52,32 +45,19 @@ namespace MinorGame.components
                 {ShaderType.VertexShader, "shader/texture.vs"}
             }, out ShaderProgram shader);
 
+            GameMesh enemyHeadModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
+            GameMesh enemyModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
 
-            GameMesh mouseTargetModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            mouseTargetModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            enemyModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
+            enemyHeadModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
 
-            GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
-            mouseTarget.Scale = new Vector3(1, 1, 1);
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel, 1));
+            GameObject enemyHead = new GameObject(new OpenTK.Vector3(0, 0.5f, 0), "Nozzle");
+            GameObject enemy = new GameObject(position, "Enemy");
+            Collider collider = new Collider(new Sphere(OpenTK.Vector3.Zero, 1, 1), "physics");
+            collider.PhysicsCollider.Material = new Material(10, 10, 0);
+            collider.PhysicsCollider.LinearDamping = 0.99f;
+            enemy.AddComponent(collider);
 
-            GameMesh playerModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            playerModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
-            GameMesh headModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            headModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
-            GameMesh bullet = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            bullet.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
-
-
-            GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
-            GameObject playerH = new GameObject(new Vector3(0, 10, 0), "PlayerHead");
-
-            //Movement for camera
-            OffsetConstraint cameraController = new OffsetConstraint();
-            cameraController.Attach(player, new Vector3(0, 20, 7));
-            cam.AddComponent(cameraController);
-
-            //Rotation for Player Head depending on mouse position
-            cam.AddComponent(new CameraRaycaster(mouseTarget, playerH));
 
             //Movement for Player Head
             OffsetConstraint connection = new OffsetConstraint()
@@ -85,30 +65,22 @@ namespace MinorGame.components
                 Damping = 0, //Directly over the moving collider, no inertia
                 MoveSpeed = 20, //Even less inertia by moving faster in general
             };
-            connection.Attach(player, Vector3.UnitY * 1);
-            playerH.AddComponent(connection);
-            playerH.Scale = new Vector3(0.5f);
-            playerH.AddComponent(new MeshRendererComponent(shader, headModel, 1));
+            connection.Attach(enemy, Vector3.UnitY * 1);
+
+            enemyHead.AddComponent(connection);
+            enemyHead.Scale = new Vector3(0.5f);
+
+            GameMesh bullet = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
+            bullet.SetTextureBuffer(new []{ ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
 
 
+            enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, 1));
+            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, 1));
+
+            enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 
 
-            //Player Setup
-            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), LayerManager.NameToLayer("physics"));
-            collider.PhysicsCollider.Material = new Material(10, 10, 0);
-            collider.PhysicsCollider.LinearDamping = 0.99f;
-            RigidBodyConstraints constraints = collider.ColliderConstraints;
-            collider.ColliderConstraints = constraints;
-
-            player.AddComponent(collider);
-
-            player.AddComponent(new MeshRendererComponent(shader, playerModel, 1));
-            player.AddComponent(new PlayerController(playerH, bullet, shader, 100, false));
-            player.LocalPosition = position;
-
-
-
-            return new[] { player, playerH };
+            return new[] { enemy, enemyHead };
 
         }
 
@@ -125,9 +97,12 @@ namespace MinorGame.components
             MinorEngine.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
-            GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletPlayer");
+            GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
-            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, 1, false));
+
+            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, 1, false));    //<- Passing false enables using the same mesh for multiple classes
+                                                                                                 //Otherwise it would dispose the data when one object is destroyed
+                                                                                                 //Downside is that we need to store a reference somewhere and dispose them manually
             obj.AddComponent(new DestroyTimer(5));
             obj.Scale = new Vector3(0.3f, 0.3f, 1);
 
@@ -140,17 +115,15 @@ namespace MinorGame.components
             coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
             Owner.World.Add(obj);
         }
-
-
         void GameLogic()
         {
             if (hp <= 0)
             {
-                GameEngine.Instance.InitializeScene<GameTestScene>();
+                Owner.Destroy();
             }
         }
 
-        public PlayerController(GameObject nozzle, GameMesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
+        public EnemyComponent(GameObject nozzle, GameMesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
         {
             this.bulletLayer = LayerManager.NameToLayer("physics");
             this.nozzle = nozzle;
@@ -158,7 +131,18 @@ namespace MinorGame.components
             this.bulletShader = bulletShader;
             MoveSpeed = speed;
             UseGlobalForward = useGlobalForward;
-            raycastLayer = LayerManager.NameToLayer("raycast"); ;
+        }
+
+        protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
+        {
+
+            if (other.Owner.Name == "BulletPlayer")
+            {
+                this.Log("Current Enemy HP: " + hp, DebugChannel.Log);
+                hp--;
+                other.Owner.Destroy();
+            }
+
         }
 
         private string cmdBulletMass(string[] args)
@@ -176,6 +160,12 @@ namespace MinorGame.components
         {
             physicalBullets = !physicalBullets;
             return "Physical: " + physicalBullets;
+        }
+
+        private string cmdActivate(string[] args)
+        {
+            active = !active;
+            return "Enemy Active: " + active;
         }
 
         private string cmdBulletForce(string[] args)
@@ -229,17 +219,13 @@ namespace MinorGame.components
             return "Player Reset";
         }
 
-        private void ActivateEnemies()
-        {
-            EnemyComponent.active = true;
-        }
-
         protected override void Awake()
         {
-
-
-            GameEngine.Instance.World.AddComponent(new GeneralTimer(5, ActivateEnemies));
-
+            target = Owner.World.GetChildWithName("Player");
+            if (target == null)
+            {
+                throw new Exception("handlethis");
+            }
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
@@ -253,43 +239,28 @@ namespace MinorGame.components
                 DebugConsoleComponent console = dbg.GetComponent<DebugConsoleComponent>();
                 if (console != null)
                 {
-                    console.AddCommand("preset", cmdResetPlayer);
-                    console.AddCommand("pcdamp", cmdChangeDamp);
-                    console.AddCommand("pcmove", cmdChangeForce);
-                    console.AddCommand("pcforce", cmdBulletForce);
-                    console.AddCommand("pcbrate", cmdBulletPerSecond);
+                    console.AddCommand("ereset", cmdResetPlayer);
+                    console.AddCommand("ecdamp", cmdChangeDamp);
+                    console.AddCommand("ecmove", cmdChangeForce);
+                    console.AddCommand("ecforce", cmdBulletForce);
+                    console.AddCommand("ecbrate", cmdBulletPerSecond);
+                    console.AddCommand("eactive", cmdActivate);
                     console.AddCommand("pcbmass", cmdBulletMass);
                     console.AddCommand("pcbphys", cmdToggleBulletPhysics);
+
 
                 }
             }
 
         }
 
-        protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
-        {
-
-            if (other.Owner.Name == "BulletEnemy")
-            {
-                hp--;
-                other.Owner.Destroy();
-            }
-        }
-
-        private Vector3 inputDir()
-        {
-            Vector3 ret = Vector3.Zero;
-            if (left) ret -= Vector3.UnitX;
-            if (right) ret += Vector3.UnitX;
-            if (fwd) ret -= Vector3.UnitZ;
-            if (back) ret += Vector3.UnitZ;
-            return ret;
-        }
 
         private float time;
         protected override void Update(float deltaTime)
         {
-            Vector3 vel = inputDir();
+            GameLogic();
+            if (!active) return;
+            Vector3 vel = GetWalkDirection();
             if (vel != Vector3.Zero)
             {
                 vel.Normalize();
@@ -303,7 +274,9 @@ namespace MinorGame.components
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 
-            if (shoot)
+            ApplyRotation();
+
+            if (WantsToShoot())
             {
                 time += deltaTime;
                 if (time >= BulletThreshold)
@@ -316,56 +289,20 @@ namespace MinorGame.components
 
         }
 
-
-
-
-        protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)
+        void ApplyRotation()
         {
-            if (e.Key == Forward)
-            {
-                fwd = true;
-            }
-            else if (e.Key == Back)
-            {
-                back = true;
-            }
-            else if (e.Key == Left)
-            {
-                left = true;
-            }
-            else if (e.Key == Right)
-            {
-                right = true;
-            }
-            else if (e.Key == Shoot)
-            {
-                shoot = true;
-            }
-
+            nozzle.LookAt(nozzle.LocalPosition + GetWalkDirection());
         }
 
-        protected override void OnKeyUp(object sender, KeyboardKeyEventArgs e)
+        bool WantsToShoot()
         {
-            if (e.Key == Forward)
-            {
-                fwd = false;
-            }
-            else if (e.Key == Back)
-            {
-                back = false;
-            }
-            else if (e.Key == Left)
-            {
-                left = false;
-            }
-            else if (e.Key == Right)
-            {
-                right = false;
-            }
-            else if (e.Key == Shoot)
-            {
-                shoot = false;
-            }
+            return Vector3.Distance(target.LocalPosition, Owner.LocalPosition) < 10f;
+        }
+
+
+        Vector3 GetWalkDirection()
+        {
+            return (target.LocalPosition - Owner.LocalPosition).Normalized();
         }
     }
 }

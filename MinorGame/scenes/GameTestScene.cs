@@ -18,16 +18,14 @@ namespace MinorGame.scenes
 
         protected override void InitializeScene()
         {
+            LayerManager.RegisterLayer("raycast", new Layer(1, 2));
+            int hybridLayer = LayerManager.RegisterLayer("hybrid", new Layer(1, 1 | 2));
+            LayerManager.RegisterLayer("physics", new Layer(1, 1));
 
-            Layer raycastLayer = new Layer(1, 2);
-            Layer hybridLayer = new Layer(1, 1 | 2);
-            Layer gamePhysicsLayer = new Layer(1, 1);
+            GameMesh bgBox = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
 
-            GameModel bgBox = new GameModel("models/cube_flat.obj");
-            GameModel sphere = new GameModel("models/sphere_smooth.obj");
+            bgBox.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
 
-            bgBox.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/ground4k.png") });
-            sphere.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/ground4k.png") });
 
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
@@ -41,31 +39,19 @@ namespace MinorGame.scenes
             GameEngine.Instance.World.Add(dbg.Owner);
 
             //Ground
-            GameModel groundModel = new GameModel("models/cube_flat.obj");
+            GameMesh groundModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
 
             GameObject ground = new GameObject("Ground");
-            groundModel.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/ground4k.png") });
+            groundModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
 
             ground.AddComponent(new MeshRendererComponent(shader, groundModel, 1));
             Collider groundColl = new Collider(new Box(MinorEngine.BEPUutilities.Vector3.Zero, 100, 2, 100), hybridLayer);
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
             ground.AddComponent(groundColl);
 
-            ground.Scale(new Vector3(50, 1, 50));
+            ground.Scale = new Vector3(50, 1, 50);
             GameEngine.Instance.World.Add(ground);
 
-            //Player
-            GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
-            mouseTarget.Scale(new Vector3(1, 1, 1));
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, sphere, 1));
-
-            GameEngine.Instance.World.Add(mouseTarget);
-
-
-            GameModel playerModel = new GameModel("models/sphere_smooth.obj");
-            GameModel headModel = new GameModel("models/cube_flat.obj");
-            playerModel.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/TEST.png") });
-            headModel.SetTextureBuffer(0, new[] { TextureProvider.Load("textures/TEST.png") });
 
             Camera c = new Camera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
@@ -73,12 +59,22 @@ namespace MinorGame.scenes
             c.Rotate(new Vector3(1, 0, 0), MathHelper.DegreesToRadians(-75));
             c.Translate(new Vector3(0, 75, 15));
 
-            GameObject[] objs = PlayerController.CreatePlayer(sphere, headModel, c, mouseTarget, gamePhysicsLayer, raycastLayer, shader);
+            GameObject[] objs = PlayerController.CreatePlayer(Vector3.UnitY * 2, c);
 
             for (int i = 0; i < objs.Length; i++)
             {
 
                 GameEngine.Instance.World.Add(objs[i]);
+            }
+
+
+            for (int j = 0; j < 5; j++)
+            {
+                objs = EnemyComponent.CreateEnemy(Vector3.UnitY * 2 + Vector3.UnitZ * -5 * (j + 1));
+                for (int i = 0; i < objs.Length; i++)
+                {
+                    GameEngine.Instance.World.Add(objs[i]);
+                }
             }
 
             GameEngine.Instance.World.Add(c);

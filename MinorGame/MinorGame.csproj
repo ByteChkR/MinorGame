@@ -18,13 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="MinorEngine">
-      <HintPath>..\Minor\MinorEngine\MinorEngine\bin\Release\netcoreapp2.1\MinorEngine.dll</HintPath>
-    </Reference>
+    <Folder Include="assets\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="assets\" />
+    <ProjectReference Include="..\Minor\MinorEngine\MinorEngine\MinorEngine.csproj" />
   </ItemGroup>
 
 </Project>
