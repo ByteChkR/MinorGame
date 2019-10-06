@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using MinorEngine.BEPUphysics.Entities.Prefabs;
+using MinorEngine.BEPUphysics.Materials;
+using MinorEngine.BEPUutilities;
 using MinorEngine.components;
+using MinorEngine.debug;
 using MinorEngine.engine.components;
 using MinorEngine.engine.core;
 using MinorEngine.engine.rendering;
-using MinorEngine.engine.ui.utils;
+using MinorEngine.exceptions;
 using MinorEngine.FilterLanguage.Generators;
+using OpenTK.Graphics.OpenGL;
 
 namespace MinorGame.mapgenerator
 {
@@ -148,17 +153,40 @@ namespace MinorGame.mapgenerator
 
         #endregion
 
+        public static GameObject CreateWFCPreview(Vector3 position, string folderName)
+        {
+            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
+            {
+                {ShaderType.FragmentShader, "shader/texture.fs"},
+                {ShaderType.VertexShader, "shader/texture.vs"}
+            }, out ShaderProgram shader);
+
+            //Ground
+            GameMesh mesh = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
+            GameObject obj = new GameObject("WFCPreview");
+            mesh.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+
+            obj.AddComponent(new MeshRendererComponent(shader, mesh, 1));
+
+            obj.AddComponent(new WFCMapGenerator(folderName));
+            obj.Scale = new OpenTK.Vector3(5, 5, 5);
+            return obj;
+        }
+
         public WFCMapGenerator(string folderName)
         {
-
-
+            if (!Directory.Exists(folderName))
+            {
+                Logger.Crash(new InvalidFolderPathException(folderName), true);
+                Logger.Log("Creating Directory: " + folderName, DebugChannel.Warning, 10);
+            }
             sampleTextures = Directory.GetFiles(folderName, "*.png").ToList();
 
         }
 
         protected override void Awake()
         {
-            DebugConsoleComponent console = Owner.World.GetChildWithName("DebugConsole").GetComponent<DebugConsoleComponent>();
+            DebugConsoleComponent console = Owner.World.GetChildWithName("Console").GetComponent<DebugConsoleComponent>();
             console.AddCommand("n", cmd_N);
             console.AddCommand("ground", cmd_Ground);
             console.AddCommand("height", cmd_Height);

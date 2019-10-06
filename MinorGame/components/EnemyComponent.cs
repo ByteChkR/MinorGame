@@ -10,7 +10,7 @@ using MinorEngine.engine.components;
 using MinorEngine.engine.core;
 using MinorEngine.engine.physics;
 using MinorEngine.engine.rendering;
-using MinorEngine.engine.ui.utils;
+using MinorGame.exceptions;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -138,8 +138,8 @@ namespace MinorGame.components
 
             if (other.Owner.Name == "BulletPlayer")
             {
-                this.Log("Current Enemy HP: " + hp, DebugChannel.Log);
                 hp--;
+                Logger.Log("Current Enemy HP: " + hp, DebugChannel.Log);
                 other.Owner.Destroy();
             }
 
@@ -224,12 +224,12 @@ namespace MinorGame.components
             target = Owner.World.GetChildWithName("Player");
             if (target == null)
             {
-                throw new Exception("handlethis");
+                Logger.Crash(new GameException("Target is Null"), false);
             }
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
-                this.Log("No Rigid body attached", DebugChannel.Warning);
+                Logger.Log("No Rigid body attached", DebugChannel.Warning);
 
             }
 

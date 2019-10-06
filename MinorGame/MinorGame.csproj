@@ -3,10 +3,23 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Configurations>Debug;Release;Release_CollectLogs;Release_TravisTest</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;LOG_NETWORK</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_TravisTest|AnyCPU'">
+    <DefineConstants>TRACE;TRAVIS_TEST</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_CollectLogs|AnyCPU'">
+    <DefineConstants>TRACE;COLLECT_LOGS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;TRAVIS_TEST</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

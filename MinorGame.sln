@@ -12,19 +12,33 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release_CollectLogs|Any CPU = Release_CollectLogs|Any CPU
+		Release_TravisTest|Any CPU = Release_TravisTest|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release_CollectLogs|Any CPU.ActiveCfg = Release_CollectLogs|Any CPU
+		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release_CollectLogs|Any CPU.Build.0 = Release_CollectLogs|Any CPU
+		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release_TravisTest|Any CPU.ActiveCfg = Release_TravisTest|Any CPU
+		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_CollectLogs|Any CPU.ActiveCfg = Release_CollectLogs|Any CPU
+		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_CollectLogs|Any CPU.Build.0 = Release_CollectLogs|Any CPU
+		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_TravisTest|Any CPU.ActiveCfg = Release_TravisTest|Any CPU
+		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
 		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release_CollectLogs|Any CPU.ActiveCfg = Release_CollectLogs|Any CPU
+		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release_CollectLogs|Any CPU.Build.0 = Release_CollectLogs|Any CPU
+		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release_TravisTest|Any CPU.ActiveCfg = Release_TravisTest|Any CPU
+		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

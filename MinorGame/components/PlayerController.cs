@@ -12,7 +12,6 @@ using MinorEngine.engine.components;
 using MinorEngine.engine.core;
 using MinorEngine.engine.physics;
 using MinorEngine.engine.rendering;
-using MinorEngine.engine.ui.utils;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -39,7 +38,7 @@ namespace MinorGame.components
         private float BulletsPerSecond = 5;
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
-        private int hp = 50;
+        private int hp = 15;
         private float BulletThreshold => 1f / BulletsPerSecond;
         private bool left, right, fwd, back, shoot;
 
@@ -243,7 +242,7 @@ namespace MinorGame.components
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
-                this.Log("No Rigid body attached", DebugChannel.Warning);
+                Logger.Log("No Rigid body attached", DebugChannel.Warning);
 
             }
 
@@ -265,6 +264,7 @@ namespace MinorGame.components
             }
 
         }
+        
 
         protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
         {
@@ -272,6 +272,7 @@ namespace MinorGame.components
             if (other.Owner.Name == "BulletEnemy")
             {
                 hp--;
+                Logger.Log("Current Player HP: " + hp, DebugChannel.Log);
                 other.Owner.Destroy();
             }
         }
@@ -289,6 +290,7 @@ namespace MinorGame.components
         private float time;
         protected override void Update(float deltaTime)
         {
+            GameLogic();
             Vector3 vel = inputDir();
             if (vel != Vector3.Zero)
             {
