@@ -33,29 +33,68 @@ namespace MinorGame.components
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
         public static bool active = false;
-        private int hp = 10;
+        private int hp = 3;
         private float BulletThreshold => 1f / BulletsPerSecond;
+        public static int enemyCount = 5;
 
 
+        private static Random rnd = new Random();
+
+        public static void CreateEnemies(Vector2 bounds, int count)
+        {
+            Vector2 hbounds = bounds / 2;
+            for (int j = 0; j < count; j++)
+            {
+                Vector2 pos = new Vector2((float)rnd.NextDouble() * bounds.X, (float)rnd.NextDouble() * bounds.Y);
+                pos -= hbounds;
+                Vector3 tilepos = new Vector3(pos.X, 2, pos.Y);
+                GameObject[] objs = CreateEnemy(tilepos);
+                for (int i = 0; i < objs.Length; i++)
+                {
+                    GameEngine.Instance.World.Add(objs[i]);
+                }
+            }
+        }
+
+        private static GameMesh enemyhead_prefab = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
+        private static GameMesh enemy_prefab = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
+        private static GameMesh bullet_prefab = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
+        private static GameTexture enemyTex, headTex, bulletTex;
+        private static bool init;
         public static GameObject[] CreateEnemy(Vector3 position)
         {
+            if (!init)
+            {
+                init = true;
+                enemyTex = ResourceManager.TextureIO.FileToTexture("textures/sphereTexture.png");
+                headTex = ResourceManager.TextureIO.FileToTexture("textures/enemyHead.jpg");
+                bulletTex = ResourceManager.TextureIO.FileToTexture("textures/bulletTexture.png");
+            }
+            GameMesh enemyHeadModel = new GameMesh(enemyhead_prefab);
+            GameMesh enemyModel = new GameMesh(enemy_prefab);
+            GameMesh bullet = new GameMesh(bullet_prefab);
+            enemyHeadModel.DisposeTexturesOnDestroy = false;
+            enemyModel.DisposeTexturesOnDestroy = false;
+            bullet.DisposeTexturesOnDestroy = false;
+            enemyModel.SetTextureBuffer(new[] { enemyTex });
+            enemyHeadModel.SetTextureBuffer(new[] { headTex });
+            bullet.SetTextureBuffer(new[] { bulletTex });
+
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
                 {ShaderType.FragmentShader, "shader/texture.fs"},
                 {ShaderType.VertexShader, "shader/texture.vs"}
             }, out ShaderProgram shader);
 
-            GameMesh enemyHeadModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            GameMesh enemyModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
 
-            enemyModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
-            enemyHeadModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/ground4k.png") });
 
-            GameObject enemyHead = new GameObject(new OpenTK.Vector3(0, 0.5f, 0), "Nozzle");
+
+            GameObject enemyHead = new GameObject(new Vector3(0, 0.5f, 0), "Nozzle");
             GameObject enemy = new GameObject(position, "Enemy");
-            Collider collider = new Collider(new Sphere(OpenTK.Vector3.Zero, 1, 1), "physics");
+            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), "physics");
             collider.PhysicsCollider.Material = new Material(10, 10, 0);
             collider.PhysicsCollider.LinearDamping = 0.99f;
+            //collider.PhysicsCollider.Gravity = MinorEngine.BEPUutilities.Vector3.Down * 50;
             enemy.AddComponent(collider);
 
 
@@ -68,10 +107,9 @@ namespace MinorGame.components
             connection.Attach(enemy, Vector3.UnitY * 1);
 
             enemyHead.AddComponent(connection);
-            enemyHead.Scale = new Vector3(0.5f);
+            enemyHead.Scale = new Vector3(0.6f);
 
-            GameMesh bullet = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            bullet.SetTextureBuffer(new []{ ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+
 
 
             enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, 1));
@@ -86,10 +124,15 @@ namespace MinorGame.components
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
         {
+            //if (other.Owner.Name == "Ground")
+            //{
 
-            RigidBodyConstraints constraints = Collider.ColliderConstraints;
-            constraints.PositionConstraints = FreezeConstraints.Y;
-            Collider.ColliderConstraints = constraints;
+            //    Collider.PhysicsCollider.Gravity = null;
+            //    RigidBodyConstraints constraints = Collider.ColliderConstraints;
+            //    constraints.PositionConstraints = FreezeConstraints.Y;
+            //    Collider.ColliderConstraints = constraints;
+            //}
+
         }
 
         private void SpawnProjectile()
@@ -123,6 +166,8 @@ namespace MinorGame.components
             }
         }
 
+        private static int enemiesAlive;
+
         public EnemyComponent(GameObject nozzle, GameMesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
         {
             this.bulletLayer = LayerManager.NameToLayer("physics");
@@ -147,7 +192,7 @@ namespace MinorGame.components
 
         private string cmdBulletMass(string[] args)
         {
-            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            if (args.Length != 0 && Single.TryParse(args[0], out float res))
             {
                 BulletMass = res;
                 return "BulletMass Changed to: " + res;
@@ -170,7 +215,7 @@ namespace MinorGame.components
 
         private string cmdBulletForce(string[] args)
         {
-            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            if (args.Length != 0 && Single.TryParse(args[0], out float res))
             {
                 BulletLaunchForce = res;
                 return "BulletLaunchForce Changed to: " + res;
@@ -181,7 +226,7 @@ namespace MinorGame.components
 
         private string cmdBulletPerSecond(string[] args)
         {
-            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            if (args.Length != 0 && Single.TryParse(args[0], out float res))
             {
                 BulletsPerSecond = res;
                 return "BulletsPerSecond Changed to: " + res;
@@ -193,7 +238,7 @@ namespace MinorGame.components
 
         private string cmdChangeForce(string[] args)
         {
-            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            if (args.Length != 0 && Single.TryParse(args[0], out float res))
             {
                 MoveSpeed = res;
                 return "MoveSpeed Changed to: " + res;
@@ -204,7 +249,7 @@ namespace MinorGame.components
 
         private string cmdChangeDamp(string[] args)
         {
-            if (args.Length != 0 && float.TryParse(args[0], out float res))
+            if (args.Length != 0 && Single.TryParse(args[0], out float res))
             {
                 Collider.PhysicsCollider.LinearDamping = res;
                 return "Damp Changed to: " + res;
@@ -221,6 +266,8 @@ namespace MinorGame.components
 
         protected override void Awake()
         {
+
+            enemiesAlive++;
             target = Owner.World.GetChildWithName("Player");
             if (target == null)
             {
@@ -303,6 +350,26 @@ namespace MinorGame.components
         Vector3 GetWalkDirection()
         {
             return (target.LocalPosition - Owner.LocalPosition).Normalized();
+        }
+
+        private void activateEnemies()
+        {
+            active = true;
+        }
+        protected override void OnDestroy()
+        {
+
+            enemiesAlive--;
+
+            if (enemiesAlive == 0)
+            {
+                active = false;
+                GameEngine.Instance.World.AddComponent(new GeneralTimer(5, activateEnemies));
+                PlayerController.wavesSurvived++;
+                enemyCount *= 2;
+                EnemyComponent.CreateEnemies(new Vector2(50, 50), enemyCount);
+            }
+
         }
     }
 }

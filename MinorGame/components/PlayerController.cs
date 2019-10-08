@@ -6,6 +6,7 @@ using MinorEngine.BEPUphysics.CollisionTests;
 using MinorEngine.BEPUphysics.Entities.Prefabs;
 using MinorEngine.BEPUphysics.Materials;
 using MinorEngine.BEPUphysics.NarrowPhaseSystems.Pairs;
+using MinorEngine.BEPUphysics.PositionUpdating;
 using MinorEngine.components;
 using MinorEngine.debug;
 using MinorEngine.engine.components;
@@ -35,12 +36,14 @@ namespace MinorGame.components
         private GameMesh bulletModel;
         private ShaderProgram bulletShader;
         private float BulletLaunchForce = 100;
-        private float BulletsPerSecond = 5;
+        private float BulletsPerSecond => wavesSurvived * baseBulletsPerSecond;
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
         private int hp = 15;
         private float BulletThreshold => 1f / BulletsPerSecond;
         private bool left, right, fwd, back, shoot;
+        private static float baseBulletsPerSecond = 5;
+        public static int wavesSurvived = 1;
 
 
         public static GameObject[] CreatePlayer(Vector3 position, Camera cam)
@@ -53,18 +56,18 @@ namespace MinorGame.components
 
 
             GameMesh mouseTargetModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            mouseTargetModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            mouseTargetModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
             mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel, 1));
 
             GameMesh playerModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            playerModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            playerModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/sphereTexture.png") });
             GameMesh headModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            headModel.SetTextureBuffer( new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            headModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/playerHead.png") });
             GameMesh bullet = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            bullet.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            bullet.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/bulletTexture.png") });
 
 
             GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
@@ -86,7 +89,7 @@ namespace MinorGame.components
             };
             connection.Attach(player, Vector3.UnitY * 1);
             playerH.AddComponent(connection);
-            playerH.Scale = new Vector3(0.5f);
+            playerH.Scale = new Vector3(0.6f);
             playerH.AddComponent(new MeshRendererComponent(shader, headModel, 1));
 
 
@@ -114,9 +117,12 @@ namespace MinorGame.components
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
         {
 
-            RigidBodyConstraints constraints = Collider.ColliderConstraints;
-            constraints.PositionConstraints = FreezeConstraints.Y;
-            Collider.ColliderConstraints = constraints;
+            if (other.Owner.Name == "Ground")
+            {
+                RigidBodyConstraints constraints = Collider.ColliderConstraints;
+                constraints.PositionConstraints = FreezeConstraints.Y;
+                Collider.ColliderConstraints = constraints;
+            }
         }
 
         private void SpawnProjectile()
@@ -131,6 +137,7 @@ namespace MinorGame.components
             obj.Scale = new Vector3(0.3f, 0.3f, 1);
 
             Collider coll = new Collider(new Box(Vector3.Zero, 0.3f, 0.3f, 1, BulletMass), bulletLayer);
+            coll.PhysicsCollider.PositionUpdateMode = PositionUpdateMode.Continuous;
             if (!physicalBullets)
             {
                 coll.isTrigger = true;
@@ -145,6 +152,8 @@ namespace MinorGame.components
         {
             if (hp <= 0)
             {
+                wavesSurvived = 1;
+                EnemyComponent.enemyCount = 5;
                 GameEngine.Instance.InitializeScene<GameTestScene>();
             }
         }
@@ -192,7 +201,7 @@ namespace MinorGame.components
         {
             if (args.Length != 0 && float.TryParse(args[0], out float res))
             {
-                BulletsPerSecond = res;
+                baseBulletsPerSecond = res;
                 return "BulletsPerSecond Changed to: " + res;
             }
 
@@ -224,7 +233,10 @@ namespace MinorGame.components
 
         private string cmdResetPlayer(string[] args)
         {
-            Owner.SetLocalPosition(Vector3.Zero);
+            Collider.PhysicsCollider.Position = MinorEngine.BEPUutilities.Vector3.UnitY * 4;
+            RigidBodyConstraints constraints = Collider.ColliderConstraints;
+            constraints.PositionConstraints = FreezeConstraints.NONE;
+            Collider.ColliderConstraints = constraints;
             return "Player Reset";
         }
 
@@ -264,7 +276,7 @@ namespace MinorGame.components
             }
 
         }
-        
+
 
         protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
         {

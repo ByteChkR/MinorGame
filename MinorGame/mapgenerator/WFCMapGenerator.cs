@@ -9,8 +9,10 @@ using MinorEngine.BEPUutilities;
 using MinorEngine.components;
 using MinorEngine.debug;
 using MinorEngine.engine.components;
+using MinorEngine.engine.components.ui;
 using MinorEngine.engine.core;
 using MinorEngine.engine.rendering;
+using MinorEngine.engine.rendering.contexts;
 using MinorEngine.exceptions;
 using MinorEngine.FilterLanguage.Generators;
 using OpenTK.Graphics.OpenGL;
@@ -35,7 +37,28 @@ namespace MinorGame.mapgenerator
         private bool _useSeed;
         private int _limit = 0;
 
+        private string _folderName;
+
         #region ConsoleCommands
+
+        private string cmd_Reload(string[] args)
+        {
+            sampleTextures.Clear();
+
+            sampleTextures = Directory.GetFiles(_folderName, "*.png").ToList();
+            return "Sample Count: " + sampleTextures.Count;
+        }
+
+        private string cmd_List(string[] args)
+        {
+            string s = "Loaded Files:\n";
+            for (int i = 0; i < sampleTextures.Count; i++)
+            {
+                s += "\t" + sampleTextures[i];
+            }
+
+            return s;
+        }
 
         private string cmd_Run(string[] args)
         {
@@ -153,7 +176,7 @@ namespace MinorGame.mapgenerator
 
         #endregion
 
-        public static GameObject CreateWFCPreview(Vector3 position, string folderName)
+        public static GameObject CreateWFCPreview(Vector3 position, string folderName, bool attachDebugRenderer = true, OutputCallback outputCallback = null)
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -166,22 +189,29 @@ namespace MinorGame.mapgenerator
             GameObject obj = new GameObject("WFCPreview");
             mesh.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
 
-            obj.AddComponent(new MeshRendererComponent(shader, mesh, 1));
+            obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
+            if (attachDebugRenderer)
+            {
+                obj.AddComponent(new MeshRendererComponent(shader, mesh, 1));
+            }
 
-            obj.AddComponent(new WFCMapGenerator(folderName));
             obj.Scale = new OpenTK.Vector3(5, 5, 5);
             return obj;
         }
 
-        public WFCMapGenerator(string folderName)
+        private OutputCallback _callback;
+        public delegate void OutputCallback(Bitmap result);
+        public WFCMapGenerator(string folderName, OutputCallback callback = null)
         {
             if (!Directory.Exists(folderName))
             {
                 Logger.Crash(new InvalidFolderPathException(folderName), true);
                 Logger.Log("Creating Directory: " + folderName, DebugChannel.Warning, 10);
             }
-            sampleTextures = Directory.GetFiles(folderName, "*.png").ToList();
 
+            _folderName = folderName;
+            sampleTextures = Directory.GetFiles(folderName, "*.png").ToList();
+            _callback = callback;
         }
 
         protected override void Awake()
@@ -192,11 +222,14 @@ namespace MinorGame.mapgenerator
             console.AddCommand("height", cmd_Height);
             console.AddCommand("limit", cmd_Limit);
             console.AddCommand("seed", cmd_Seed);
+            console.AddCommand("useseed", cmd_UseSeed);
             console.AddCommand("width", cmd_Width);
             console.AddCommand("symmetry", cmd_Symmetry);
             console.AddCommand("pin", cmd_PeriodicInput);
             console.AddCommand("pout", cmd_PeriodicOutput);
             console.AddCommand("run", cmd_Run);
+            console.AddCommand("reload", cmd_Reload);
+            console.AddCommand("list", cmd_List);
 
             renderer = Owner.GetComponent<MeshRendererComponent>();
         }
@@ -204,11 +237,14 @@ namespace MinorGame.mapgenerator
 
         private void ChangeTexture(GameTexture texture)
         {
-            GameTexture[] textures = renderer.Model.GetTextureBuffer();
-            foreach (var gameTexture in textures)
+            GameTexture[] oldTextures = renderer.Model.GetTextureBuffer();
+
+            for (int i = 0; i < oldTextures.Length; i++)
             {
-                gameTexture.Dispose();
+                oldTextures[i].Dispose();
             }
+
+
             renderer.Model.SetTextureBuffer(new[] { texture });
         }
 
@@ -225,8 +261,16 @@ namespace MinorGame.mapgenerator
                 ret = wfc.Run(_limit);
             }
 
-            GameTexture tex = ResourceManager.TextureIO.BitmapToTexture(wfc.Graphics());
-            ChangeTexture(tex);
+            Bitmap bmp = wfc.Graphics();
+
+            _callback?.Invoke(bmp);
+
+
+            if (renderer != null)
+            {
+                GameTexture tex = ResourceManager.TextureIO.BitmapToTexture(bmp);
+                ChangeTexture(tex);
+            }
             return ret;
         }
 
