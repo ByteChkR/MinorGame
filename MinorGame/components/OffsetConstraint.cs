@@ -1,6 +1,5 @@
 ﻿using System;
-using MinorEngine.engine.components;
-using MinorEngine.engine.core;
+using Engine.Core;
 using OpenTK;
 
 namespace MinorGame.components

@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Common;
-using MinorEngine.debug;
-using MinorEngine.engine;
-using MinorEngine.engine.core;
+using Engine.Core;
+using Engine.Debug;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics;

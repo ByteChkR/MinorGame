@@ -1,19 +1,22 @@
 ﻿using System.Collections.Generic;
+using System.Resources;
 using System.Runtime.ExceptionServices;
-using MinorEngine.BEPUphysics.Entities.Prefabs;
-using MinorEngine.BEPUutilities;
-using MinorEngine.components;
-using MinorEngine.debug;
-using MinorEngine.engine.core;
-using MinorEngine.engine.rendering;
+using Engine.Core;
+using Engine.DataTypes;
+using Engine.Debug;
+using Engine.IO;
+using Engine.Physics;
+using Engine.Physics.BEPUphysics.Entities.Prefabs;
+using Engine.Rendering;
 using MinorGame.exceptions;
+using OpenTK;
 using Vector2 = OpenTK.Vector2;
 
 namespace MinorGame.mapgenerator
 {
     public class TileCreator
     {
-        private static GameTexture tex = ResourceManager.TextureIO.FileToTexture("textures/TEST.png");
+        private static Texture tex = TextureLoader.FileToTexture("textures/TEST.png");
         public delegate GameObject CreateObject(byte input, Vector3 pos, Vector3 scale, ShaderProgram program);
 
         public static GameObject CreateObject_Box(byte input, Vector3 pos, Vector3 scale, ShaderProgram program)
@@ -65,15 +68,14 @@ namespace MinorGame.mapgenerator
             return ret.ToArray();
         }
 
-        public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, GameTexture texture,
+        public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
             ShaderProgram program, int mass = -1)
         {
             GameObject box = new GameObject(position, "Box");
             box.Scale = scale;
             box.Rotation = rotation;
-            GameMesh cube = ResourceManager.Prefabs.Cube;
-            cube.SetTextureBuffer(new[] { texture });
-            box.AddComponent(new MeshRendererComponent(program, cube, 1, false));
+            Mesh cube = MeshLoader.Prefabs.Cube;
+            box.AddComponent(new MeshRendererComponent(program, cube, texture, 1, false));
             Vector3 bounds = scale * 2;
             Collider coll;
             if (mass == -1)

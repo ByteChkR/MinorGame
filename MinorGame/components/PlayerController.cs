@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using MinorEngine.BEPUphysics.CollisionTests;
-using MinorEngine.BEPUphysics.Entities.Prefabs;
-using MinorEngine.BEPUphysics.Materials;
-using MinorEngine.BEPUphysics.NarrowPhaseSystems.Pairs;
-using MinorEngine.BEPUphysics.PositionUpdating;
-using MinorEngine.components;
-using MinorEngine.debug;
-using MinorEngine.engine.components;
-using MinorEngine.engine.core;
-using MinorEngine.engine.physics;
-using MinorEngine.engine.rendering;
+﻿using System.Collections.Generic;
+using Engine.Core;
+using Engine.DataTypes;
+using Engine.Debug;
+using Engine.IO;
+using Engine.Physics;
+using Engine.Physics.BEPUphysics.CollisionTests;
+using Engine.Physics.BEPUphysics.Entities.Prefabs;
+using Engine.Physics.BEPUphysics.Materials;
+using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
+using Engine.Physics.BEPUphysics.PositionUpdating;
+using Engine.Rendering;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -33,7 +30,8 @@ namespace MinorGame.components
         private bool UseGlobalForward = true;
         private Collider Collider;
         private GameObject nozzle;
-        private GameMesh bulletModel;
+        private Mesh bulletModel;
+        private Texture bulletTexture;
         private ShaderProgram bulletShader;
         private float BulletLaunchForce = 100;
         private float BulletsPerSecond => wavesSurvived * baseBulletsPerSecond;
@@ -46,7 +44,7 @@ namespace MinorGame.components
         public static int wavesSurvived = 1;
 
 
-        public static GameObject[] CreatePlayer(Vector3 position, Camera cam)
+        public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -55,19 +53,15 @@ namespace MinorGame.components
             }, out ShaderProgram shader);
 
 
-            GameMesh mouseTargetModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            mouseTargetModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            Mesh mouseTargetModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel, 1));
+            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel,  TextureLoader.FileToTexture("textures/TEST.png") , 1));
 
-            GameMesh playerModel = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-            playerModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/sphereTexture.png") });
-            GameMesh headModel = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            headModel.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/playerHead.png") });
-            GameMesh bullet = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            bullet.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/bulletTexture.png") });
+            Mesh playerModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
+            Mesh headModel = MeshLoader.FileToMesh("models/cube_flat.obj");
+            Mesh bullet = MeshLoader.FileToMesh("models/cube_flat.obj");
 
 
             GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
@@ -90,7 +84,7 @@ namespace MinorGame.components
             connection.Attach(player, Vector3.UnitY * 1);
             playerH.AddComponent(connection);
             playerH.Scale = new Vector3(0.6f);
-            playerH.AddComponent(new MeshRendererComponent(shader, headModel, 1));
+            playerH.AddComponent(new MeshRendererComponent(shader, headModel, TextureLoader.FileToTexture("textures/playerHead.png"), 1));
 
 
 
@@ -99,13 +93,13 @@ namespace MinorGame.components
             Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), LayerManager.NameToLayer("physics"));
             collider.PhysicsCollider.Material = new Material(10, 10, 0);
             collider.PhysicsCollider.LinearDamping = 0.99f;
-            RigidBodyConstraints constraints = collider.ColliderConstraints;
+            ColliderConstraints constraints = collider.ColliderConstraints;
             collider.ColliderConstraints = constraints;
 
             player.AddComponent(collider);
 
-            player.AddComponent(new MeshRendererComponent(shader, playerModel, 1));
-            player.AddComponent(new PlayerController(playerH, bullet, shader, 100, false));
+            player.AddComponent(new MeshRendererComponent(shader, playerModel, TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
+            player.AddComponent(new PlayerController(playerH, bullet, TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 100, false));
             player.LocalPosition = position;
 
 
@@ -119,7 +113,7 @@ namespace MinorGame.components
 
             if (other.Owner.Name == "Ground")
             {
-                RigidBodyConstraints constraints = Collider.ColliderConstraints;
+                ColliderConstraints constraints = Collider.ColliderConstraints;
                 constraints.PositionConstraints = FreezeConstraints.Y;
                 Collider.ColliderConstraints = constraints;
             }
@@ -127,12 +121,12 @@ namespace MinorGame.components
 
         private void SpawnProjectile()
         {
-            MinorEngine.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
+            Engine.Physics.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
             GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
-            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, 1, false));
+            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
             obj.Scale = new Vector3(0.3f, 0.3f, 1);
 
@@ -144,7 +138,7 @@ namespace MinorGame.components
             }
             obj.AddComponent(coll);
             coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
-            Owner.World.Add(obj);
+            Owner.Scene.Add(obj);
         }
 
 
@@ -158,8 +152,9 @@ namespace MinorGame.components
             }
         }
 
-        public PlayerController(GameObject nozzle, GameMesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
+        public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader, float speed, bool useGlobalForward)
         {
+            this.bulletTexture = bulletTexture;
             this.bulletLayer = LayerManager.NameToLayer("physics");
             this.nozzle = nozzle;
             this.bulletModel = bulletModel;
@@ -233,8 +228,8 @@ namespace MinorGame.components
 
         private string cmdResetPlayer(string[] args)
         {
-            Collider.PhysicsCollider.Position = MinorEngine.BEPUutilities.Vector3.UnitY * 4;
-            RigidBodyConstraints constraints = Collider.ColliderConstraints;
+            Collider.PhysicsCollider.Position = Engine.Physics.BEPUutilities.Vector3.UnitY * 4;
+            ColliderConstraints constraints = Collider.ColliderConstraints;
             constraints.PositionConstraints = FreezeConstraints.NONE;
             Collider.ColliderConstraints = constraints;
             return "Player Reset";
@@ -249,7 +244,7 @@ namespace MinorGame.components
         {
 
 
-            GameEngine.Instance.World.AddComponent(new GeneralTimer(5, ActivateEnemies));
+            GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, ActivateEnemies));
 
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
@@ -258,7 +253,7 @@ namespace MinorGame.components
 
             }
 
-            GameObject dbg = Owner.World.GetChildWithName("Console");
+            GameObject dbg = Owner.Scene.GetChildWithName("Console");
             if (dbg != null)
             {
                 DebugConsoleComponent console = dbg.GetComponent<DebugConsoleComponent>();
@@ -313,7 +308,7 @@ namespace MinorGame.components
                 }
 
                 Vector3 vec = vel * deltaTime * MoveSpeed;
-                MinorEngine.BEPUutilities.Vector3 v = new MinorEngine.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
+                Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 

@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using MinorEngine.BEPUphysics.Entities.Prefabs;
-using MinorEngine.BEPUphysics.Materials;
-using MinorEngine.BEPUutilities;
-using MinorEngine.components;
-using MinorEngine.debug;
-using MinorEngine.engine.components;
-using MinorEngine.engine.components.ui;
-using MinorEngine.engine.core;
-using MinorEngine.engine.rendering;
-using MinorEngine.engine.rendering.contexts;
-using MinorEngine.exceptions;
-using MinorEngine.FilterLanguage.Generators;
+using System.Resources;
+using Engine.Core;
+using Engine.DataTypes;
+using Engine.Debug;
+using Engine.Exceptions;
+using Engine.IO;
+using Engine.Rendering;
+using Engine.WFC;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Bitmap = System.Drawing.Bitmap;
 
 namespace MinorGame.mapgenerator
 {
@@ -185,14 +182,13 @@ namespace MinorGame.mapgenerator
             }, out ShaderProgram shader);
 
             //Ground
-            GameMesh mesh = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-            GameObject obj = new GameObject("WFCPreview");
-            mesh.SetTextureBuffer(new[] { ResourceManager.TextureIO.FileToTexture("textures/TEST.png") });
+            Mesh mesh = MeshLoader.FileToMesh("models/cube_flat.obj");
+            GameObject obj = new GameObject(position, "WFCPreview");
 
             obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
             if (attachDebugRenderer)
             {
-                obj.AddComponent(new MeshRendererComponent(shader, mesh, 1));
+                obj.AddComponent(new MeshRendererComponent(shader, mesh, TextureLoader.FileToTexture("textures/TEST.png"), 1));
             }
 
             obj.Scale = new OpenTK.Vector3(5, 5, 5);
@@ -216,7 +212,7 @@ namespace MinorGame.mapgenerator
 
         protected override void Awake()
         {
-            DebugConsoleComponent console = Owner.World.GetChildWithName("Console").GetComponent<DebugConsoleComponent>();
+            DebugConsoleComponent console = Owner.Scene.GetChildWithName("Console").GetComponent<DebugConsoleComponent>();
             console.AddCommand("n", cmd_N);
             console.AddCommand("ground", cmd_Ground);
             console.AddCommand("height", cmd_Height);
@@ -235,17 +231,14 @@ namespace MinorGame.mapgenerator
         }
 
 
-        private void ChangeTexture(GameTexture texture)
+        private void ChangeTexture(Texture texture)
         {
-            GameTexture[] oldTextures = renderer.Model.GetTextureBuffer();
-
-            for (int i = 0; i < oldTextures.Length; i++)
-            {
-                oldTextures[i].Dispose();
-            }
+            if (renderer == null) return;
+            renderer.Texture?.Dispose();
 
 
-            renderer.Model.SetTextureBuffer(new[] { texture });
+
+            renderer.Texture = texture;
         }
 
         public bool Generate(int sampleID)
@@ -268,7 +261,7 @@ namespace MinorGame.mapgenerator
 
             if (renderer != null)
             {
-                GameTexture tex = ResourceManager.TextureIO.BitmapToTexture(bmp);
+                Texture tex = TextureLoader.BitmapToTexture(bmp);
                 ChangeTexture(tex);
             }
             return ret;

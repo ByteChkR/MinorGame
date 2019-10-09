@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using MinorEngine.BEPUphysics.CollisionTests;
-using MinorEngine.BEPUphysics.Entities.Prefabs;
-using MinorEngine.BEPUphysics.Materials;
-using MinorEngine.BEPUphysics.NarrowPhaseSystems.Pairs;
-using MinorEngine.components;
-using MinorEngine.debug;
-using MinorEngine.engine.components;
-using MinorEngine.engine.core;
-using MinorEngine.engine.physics;
-using MinorEngine.engine.rendering;
+using System.Resources;
+using Engine.Core;
+using Engine.DataTypes;
+using Engine.Debug;
+using Engine.IO;
+using Engine.Physics;
+using Engine.Physics.BEPUphysics;
+using Engine.Physics.BEPUphysics.CollisionTests;
+using Engine.Physics.BEPUphysics.Entities.Prefabs;
+using Engine.Physics.BEPUphysics.Materials;
+using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
+using Engine.Rendering;
 using MinorGame.exceptions;
 using MinorGame.scenes;
 using OpenTK;
@@ -26,7 +28,7 @@ namespace MinorGame.components
         private bool UseGlobalForward = true;
         private Collider Collider;
         private GameObject nozzle;
-        private GameMesh bulletModel;
+        private Mesh bulletModel;
         private ShaderProgram bulletShader;
         private static float BulletLaunchForce = 50;
         private static float BulletsPerSecond = 1;
@@ -51,34 +53,29 @@ namespace MinorGame.components
                 GameObject[] objs = CreateEnemy(tilepos);
                 for (int i = 0; i < objs.Length; i++)
                 {
-                    GameEngine.Instance.World.Add(objs[i]);
+                    GameEngine.Instance.CurrentScene.Add(objs[i]);
                 }
             }
         }
 
-        private static GameMesh enemyhead_prefab = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-        private static GameMesh enemy_prefab = ResourceManager.MeshIO.FileToMesh("models/sphere_smooth.obj");
-        private static GameMesh bullet_prefab = ResourceManager.MeshIO.FileToMesh("models/cube_flat.obj");
-        private static GameTexture enemyTex, headTex, bulletTex;
+        private static Mesh enemyhead_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
+        private static Mesh enemy_prefab = MeshLoader.FileToMesh("models/sphere_smooth.obj");
+        private static Mesh bullet_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
+        private static Texture enemyTex, headTex, bulletTex;
         private static bool init;
         public static GameObject[] CreateEnemy(Vector3 position)
         {
             if (!init)
             {
                 init = true;
-                enemyTex = ResourceManager.TextureIO.FileToTexture("textures/sphereTexture.png");
-                headTex = ResourceManager.TextureIO.FileToTexture("textures/enemyHead.jpg");
-                bulletTex = ResourceManager.TextureIO.FileToTexture("textures/bulletTexture.png");
+                enemyTex = TextureLoader.FileToTexture("textures/sphereTexture.png");
+                headTex = TextureLoader.FileToTexture("textures/enemyHead.jpg");
+                bulletTex = TextureLoader.FileToTexture("textures/bulletTexture.png");
             }
-            GameMesh enemyHeadModel = new GameMesh(enemyhead_prefab);
-            GameMesh enemyModel = new GameMesh(enemy_prefab);
-            GameMesh bullet = new GameMesh(bullet_prefab);
-            enemyHeadModel.DisposeTexturesOnDestroy = false;
-            enemyModel.DisposeTexturesOnDestroy = false;
-            bullet.DisposeTexturesOnDestroy = false;
-            enemyModel.SetTextureBuffer(new[] { enemyTex });
-            enemyHeadModel.SetTextureBuffer(new[] { headTex });
-            bullet.SetTextureBuffer(new[] { bulletTex });
+
+            Mesh enemyHeadModel = enemyhead_prefab.Copy();
+            Mesh enemyModel = enemy_prefab.Copy();
+            Mesh bullet = bullet_prefab.Copy();
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -112,8 +109,8 @@ namespace MinorGame.components
 
 
 
-            enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, 1));
-            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, 1));
+            enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, headTex, 1));
+            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, enemyTex, 1));
 
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 
@@ -137,13 +134,13 @@ namespace MinorGame.components
 
         private void SpawnProjectile()
         {
-            MinorEngine.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
+            Engine.Physics.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
             GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
 
-            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, 1, false));    //<- Passing false enables using the same mesh for multiple classes
+            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTex, 1, false));    //<- Passing false enables using the same mesh for multiple classes
                                                                                                  //Otherwise it would dispose the data when one object is destroyed
                                                                                                  //Downside is that we need to store a reference somewhere and dispose them manually
             obj.AddComponent(new DestroyTimer(5));
@@ -156,7 +153,7 @@ namespace MinorGame.components
             }
             obj.AddComponent(coll);
             coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
-            Owner.World.Add(obj);
+            Owner.Scene.Add(obj);
         }
         void GameLogic()
         {
@@ -168,7 +165,7 @@ namespace MinorGame.components
 
         private static int enemiesAlive;
 
-        public EnemyComponent(GameObject nozzle, GameMesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
+        public EnemyComponent(GameObject nozzle, Mesh bulletModel, ShaderProgram bulletShader, float speed, bool useGlobalForward)
         {
             this.bulletLayer = LayerManager.NameToLayer("physics");
             this.nozzle = nozzle;
@@ -268,7 +265,7 @@ namespace MinorGame.components
         {
 
             enemiesAlive++;
-            target = Owner.World.GetChildWithName("Player");
+            target = Owner.Scene.GetChildWithName("Player");
             if (target == null)
             {
                 Logger.Crash(new GameException("Target is Null"), false);
@@ -280,7 +277,7 @@ namespace MinorGame.components
 
             }
 
-            GameObject dbg = Owner.World.GetChildWithName("Console");
+            GameObject dbg = Owner.Scene.GetChildWithName("Console");
             if (dbg != null)
             {
                 DebugConsoleComponent console = dbg.GetComponent<DebugConsoleComponent>();
@@ -317,7 +314,7 @@ namespace MinorGame.components
                 }
 
                 Vector3 vec = vel * deltaTime * MoveSpeed;
-                MinorEngine.BEPUutilities.Vector3 v = new MinorEngine.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
+                Engine.Physics.BEPUutilities.Vector3 v = new Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 
@@ -364,7 +361,7 @@ namespace MinorGame.components
             if (enemiesAlive == 0)
             {
                 active = false;
-                GameEngine.Instance.World.AddComponent(new GeneralTimer(5, activateEnemies));
+                GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, activateEnemies));
                 PlayerController.wavesSurvived++;
                 enemyCount *= 2;
                 EnemyComponent.CreateEnemies(new Vector2(50, 50), enemyCount);

@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Minor\MinorEngine\MinorEngine\MinorEngine.csproj" />
+    <ProjectReference Include="..\Minor\MinorEngine\Engine\Engine.csproj" />
   </ItemGroup>
 
 </Project>

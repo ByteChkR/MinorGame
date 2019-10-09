@@ -1,5 +1,5 @@
-﻿using MinorEngine.engine.components;
-using MinorEngine.engine.core;
+﻿using Engine.Core;
+using Engine.Debug;
 
 namespace MinorGame.scenes
 {
@@ -7,7 +7,7 @@ namespace MinorGame.scenes
     {
         protected override void InitializeScene()
         {
-            GameEngine.Instance.World.Add(DebugConsoleComponent.CreateConsole());
+            GameEngine.Instance.CurrentScene.Add(DebugConsoleComponent.CreateConsole());
         }
     }
 }

@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinorGame", "MinorGame\MinorGame.csproj", "{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinorEngine", "Minor\MinorEngine\MinorEngine\MinorEngine.csproj", "{E64B5729-8324-4533-AA72-CD6CCE6C1B38}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Minor\MinorEngine\Common\Common.csproj", "{EE53E951-79AE-49F0-BF5F-14920A346FAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\MinorEngine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,18 +31,6 @@ Global
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug_Trace|Any CPU.ActiveCfg = Debug_Trace|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug_Trace|Any CPU.Build.0 = Debug_Trace|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_CollectLogs|Any CPU.ActiveCfg = Release_CollectLogs|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_CollectLogs|Any CPU.Build.0 = Release_CollectLogs|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_Trace|Any CPU.ActiveCfg = Release_Trace|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_Trace|Any CPU.Build.0 = Release_Trace|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_TravisTest|Any CPU.ActiveCfg = Release_TravisTest|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E64B5729-8324-4533-AA72-CD6CCE6C1B38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Debug_Trace|Any CPU.ActiveCfg = Debug_Trace|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Debug_Trace|Any CPU.Build.0 = Debug_Trace|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -55,6 +43,18 @@ Global
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release_TravisTest|Any CPU.Build.0 = Release_TravisTest|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE53E951-79AE-49F0-BF5F-14920A346FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Debug_Trace|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Debug_Trace|Any CPU.Build.0 = Debug|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_CollectLogs|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_CollectLogs|Any CPU.Build.0 = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_Trace|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_Trace|Any CPU.Build.0 = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_TravisTest|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_TravisTest|Any CPU.Build.0 = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

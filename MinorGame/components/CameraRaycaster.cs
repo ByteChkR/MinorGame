@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using MinorEngine.BEPUutilities;
-using MinorEngine.components;
-using MinorEngine.debug;
-using MinorEngine.engine.components;
-using MinorEngine.engine.core;
-using MinorEngine.engine.physics;
+using Engine.Core;
+using Engine.Physics;
+using Engine.Physics.BEPUutilities;
 using OpenTK.Input;
 using Vector3 = OpenTK.Vector3;
 
@@ -26,7 +23,7 @@ namespace MinorGame.components
         protected override void Update(float deltaTime)
         {
             Ray r = ConstructRayFromMousePosition();
-            bool ret = Physics.RayCastFirst(r, 1000, cast,
+            bool ret = PhysicsEngine.RayCastFirst(r, 1000, cast,
                 out KeyValuePair<Collider, RayHit> arr);
             if (ret)
             {
