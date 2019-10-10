@@ -3,11 +3,12 @@ using Engine.Core;
 
 namespace MinorGame.components
 {
-    public class GeneralTimer :AbstractComponent
+    public class GeneralTimer : AbstractComponent
     {
         private float _fireTime;
         private float _time;
         private Action _action;
+
         public GeneralTimer(float fireTime, Action action)
         {
             _action = action;
@@ -24,7 +25,5 @@ namespace MinorGame.components
                 Destroy();
             }
         }
-
-
     }
 }

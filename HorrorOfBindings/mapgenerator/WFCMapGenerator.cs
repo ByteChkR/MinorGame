@@ -77,6 +77,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _n = temp;
             return "Command Finished";
         }
@@ -87,6 +88,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _width = temp;
             return "Command Finished";
         }
@@ -97,6 +99,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _height = temp;
             return "Command Finished";
         }
@@ -107,6 +110,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a boolean";
             }
+
             _periodicInput = temp;
             return "Command Finished";
         }
@@ -117,6 +121,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a boolean";
             }
+
             _periodicOutput = temp;
             return "Command Finished";
         }
@@ -127,6 +132,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a boolean";
             }
+
             _useSeed = temp;
             return "Command Finished";
         }
@@ -137,6 +143,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _symmetry = temp;
             return "Command Finished";
         }
@@ -147,6 +154,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _ground = temp;
             return "Command Finished";
         }
@@ -157,6 +165,7 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _seed = temp;
             return "Command Finished";
         }
@@ -167,13 +176,15 @@ namespace MinorGame.mapgenerator
             {
                 return "Argument is not a number";
             }
+
             _limit = temp;
             return "Command Finished";
         }
 
         #endregion
 
-        public static GameObject CreateWFCPreview(Vector3 position, string folderName, bool attachDebugRenderer = true, OutputCallback outputCallback = null)
+        public static GameObject CreateWFCPreview(Vector3 position, string folderName, bool attachDebugRenderer = true,
+            OutputCallback outputCallback = null)
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -188,15 +199,18 @@ namespace MinorGame.mapgenerator
             obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
             if (attachDebugRenderer)
             {
-                obj.AddComponent(new MeshRendererComponent(shader, mesh, TextureLoader.FileToTexture("textures/TEST.png"), 1));
+                obj.AddComponent(new MeshRendererComponent(shader, mesh,
+                    TextureLoader.FileToTexture("textures/TEST.png"), 1));
             }
 
-            obj.Scale = new OpenTK.Vector3(5, 5, 5);
+            obj.Scale = new Vector3(5, 5, 5);
             return obj;
         }
 
         private OutputCallback _callback;
+
         public delegate void OutputCallback(Bitmap result);
+
         public WFCMapGenerator(string folderName, OutputCallback callback = null)
         {
             if (!Directory.Exists(folderName))
@@ -212,7 +226,8 @@ namespace MinorGame.mapgenerator
 
         protected override void Awake()
         {
-            DebugConsoleComponent console = Owner.Scene.GetChildWithName("Console").GetComponent<DebugConsoleComponent>();
+            DebugConsoleComponent console =
+                Owner.Scene.GetChildWithName("Console").GetComponent<DebugConsoleComponent>();
             console.AddCommand("n", cmd_N);
             console.AddCommand("ground", cmd_Ground);
             console.AddCommand("height", cmd_Height);
@@ -233,9 +248,12 @@ namespace MinorGame.mapgenerator
 
         private void ChangeTexture(Texture texture)
         {
-            if (renderer == null) return;
-            renderer.Texture?.Dispose();
+            if (renderer == null)
+            {
+                return;
+            }
 
+            renderer.Texture?.Dispose();
 
 
             renderer.Texture = texture;
@@ -243,7 +261,8 @@ namespace MinorGame.mapgenerator
 
         public bool Generate(int sampleID)
         {
-            wfc = new WFCOverlayMode(sampleTextures[sampleID], _n, _width, _height, _periodicInput, _periodicOutput, _symmetry, _ground);
+            wfc = new WFCOverlayMode(sampleTextures[sampleID], _n, _width, _height, _periodicInput, _periodicOutput,
+                _symmetry, _ground);
             bool ret = false;
             if (_useSeed)
             {
@@ -264,13 +283,22 @@ namespace MinorGame.mapgenerator
                 Texture tex = TextureLoader.BitmapToTexture(bmp);
                 ChangeTexture(tex);
             }
+
             return ret;
         }
 
         public bool Generate()
         {
-            if (sampleTextures.Count == 0) return false;
-            if (current >= sampleTextures.Count) current = 0;
+            if (sampleTextures.Count == 0)
+            {
+                return false;
+            }
+
+            if (current >= sampleTextures.Count)
+            {
+                current = 0;
+            }
+
             return Generate(current++);
         }
     }

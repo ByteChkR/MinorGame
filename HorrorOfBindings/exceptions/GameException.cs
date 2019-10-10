@@ -4,7 +4,7 @@ using Engine.Exceptions;
 
 namespace MinorGame.exceptions
 {
-    public class GameException :EngineException
+    public class GameException : EngineException
     {
         public GameException(string errorMessage, Exception inner) : base(errorMessage, inner)
         {

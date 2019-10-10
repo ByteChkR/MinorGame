@@ -2,10 +2,11 @@
 
 namespace MinorGame.components
 {
-    public class DestroyTimer:AbstractComponent
+    public class DestroyTimer : AbstractComponent
     {
         private float _destroyTime;
         private float _time;
+
         public DestroyTimer(float destroyTime)
         {
             _destroyTime = destroyTime;

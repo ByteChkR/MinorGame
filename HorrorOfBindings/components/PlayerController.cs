@@ -57,7 +57,8 @@ namespace MinorGame.components
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel,  TextureLoader.FileToTexture("textures/TEST.png") , 1));
+            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel,
+                TextureLoader.FileToTexture("textures/TEST.png"), 1));
 
             Mesh playerModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
             Mesh headModel = MeshLoader.FileToMesh("models/cube_flat.obj");
@@ -84,9 +85,8 @@ namespace MinorGame.components
             connection.Attach(player, Vector3.UnitY * 1);
             playerH.AddComponent(connection);
             playerH.Scale = new Vector3(0.6f);
-            playerH.AddComponent(new MeshRendererComponent(shader, headModel, TextureLoader.FileToTexture("textures/playerHead.png"), 1));
-
-
+            playerH.AddComponent(new MeshRendererComponent(shader, headModel,
+                TextureLoader.FileToTexture("textures/playerHead.png"), 1));
 
 
             //Player Setup
@@ -98,19 +98,18 @@ namespace MinorGame.components
 
             player.AddComponent(collider);
 
-            player.AddComponent(new MeshRendererComponent(shader, playerModel, TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
-            player.AddComponent(new PlayerController(playerH, bullet, TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 100, false));
+            player.AddComponent(new MeshRendererComponent(shader, playerModel,
+                TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
+            player.AddComponent(new PlayerController(playerH, bullet,
+                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 100, false));
             player.LocalPosition = position;
 
 
-
-            return new[] { player, playerH };
-
+            return new[] {player, playerH};
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
         {
-
             if (other.Owner.Name == "Ground")
             {
                 ColliderConstraints constraints = Collider.ColliderConstraints;
@@ -121,7 +120,8 @@ namespace MinorGame.components
 
         private void SpawnProjectile()
         {
-            Engine.Physics.BEPUutilities.Vector3 vel = new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
+            Engine.Physics.BEPUutilities.Vector3 vel =
+                new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
             GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletPlayer");
@@ -134,15 +134,16 @@ namespace MinorGame.components
             coll.PhysicsCollider.PositionUpdateMode = PositionUpdateMode.Continuous;
             if (!physicalBullets)
             {
-                coll.isTrigger = true;
+                coll.IsTrigger = true;
             }
+
             obj.AddComponent(coll);
             coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
             Owner.Scene.Add(obj);
         }
 
 
-        void GameLogic()
+        private void GameLogic()
         {
             if (hp <= 0)
             {
@@ -152,16 +153,18 @@ namespace MinorGame.components
             }
         }
 
-        public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader, float speed, bool useGlobalForward)
+        public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader,
+            float speed, bool useGlobalForward)
         {
             this.bulletTexture = bulletTexture;
-            this.bulletLayer = LayerManager.NameToLayer("physics");
+            bulletLayer = LayerManager.NameToLayer("physics");
             this.nozzle = nozzle;
             this.bulletModel = bulletModel;
             this.bulletShader = bulletShader;
             MoveSpeed = speed;
             UseGlobalForward = useGlobalForward;
-            raycastLayer = LayerManager.NameToLayer("raycast"); ;
+            raycastLayer = LayerManager.NameToLayer("raycast");
+            ;
         }
 
         private string cmdBulletMass(string[] args)
@@ -242,15 +245,12 @@ namespace MinorGame.components
 
         protected override void Awake()
         {
-
-
             GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, ActivateEnemies));
 
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
                 Logger.Log("No Rigid body attached", DebugChannel.Warning);
-
             }
 
             GameObject dbg = Owner.Scene.GetChildWithName("Console");
@@ -266,16 +266,13 @@ namespace MinorGame.components
                     console.AddCommand("pcbrate", cmdBulletPerSecond);
                     console.AddCommand("pcbmass", cmdBulletMass);
                     console.AddCommand("pcbphys", cmdToggleBulletPhysics);
-
                 }
             }
-
         }
 
 
         protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
         {
-
             if (other.Owner.Name == "BulletEnemy")
             {
                 hp--;
@@ -287,14 +284,31 @@ namespace MinorGame.components
         private Vector3 inputDir()
         {
             Vector3 ret = Vector3.Zero;
-            if (left) ret -= Vector3.UnitX;
-            if (right) ret += Vector3.UnitX;
-            if (fwd) ret -= Vector3.UnitZ;
-            if (back) ret += Vector3.UnitZ;
+            if (left)
+            {
+                ret -= Vector3.UnitX;
+            }
+
+            if (right)
+            {
+                ret += Vector3.UnitX;
+            }
+
+            if (fwd)
+            {
+                ret -= Vector3.UnitZ;
+            }
+
+            if (back)
+            {
+                ret += Vector3.UnitZ;
+            }
+
             return ret;
         }
 
         private float time;
+
         protected override void Update(float deltaTime)
         {
             GameLogic();
@@ -321,11 +335,7 @@ namespace MinorGame.components
                     SpawnProjectile();
                 }
             }
-
-
         }
-
-
 
 
         protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)
@@ -350,7 +360,6 @@ namespace MinorGame.components
             {
                 shoot = true;
             }
-
         }
 
         protected override void OnKeyUp(object sender, KeyboardKeyEventArgs e)

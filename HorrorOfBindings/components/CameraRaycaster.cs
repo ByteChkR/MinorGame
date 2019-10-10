@@ -9,15 +9,15 @@ namespace MinorGame.components
 {
     public class CameraRaycaster : AbstractComponent
     {
-        int cast;
+        private int cast;
         private GameObject sphereTargetMarker;
         private GameObject looker;
-        public CameraRaycaster(GameObject targetmarker,  GameObject looker)
+
+        public CameraRaycaster(GameObject targetmarker, GameObject looker)
         {
             cast = LayerManager.NameToLayer("raycast");
             sphereTargetMarker = targetmarker;
             this.looker = looker;
-            
         }
 
         protected override void Update(float deltaTime)
@@ -38,7 +38,7 @@ namespace MinorGame.components
         private Ray ConstructRayFromMousePosition()
         {
             Vector2 mpos = GameEngine.Instance.MousePosition;
-            Vector3 mousepos = GameEngine.Instance.ConvertScreenToWorldCoords((int)mpos.X, (int)mpos.Y);
+            Vector3 mousepos = GameEngine.Instance.ConvertScreenToWorldCoords((int) mpos.X, (int) mpos.Y);
             return new Ray(Owner.GetLocalPosition(), (mousepos - Owner.GetLocalPosition()).Normalized());
         }
     }

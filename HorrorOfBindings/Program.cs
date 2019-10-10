@@ -10,17 +10,20 @@ using OpenTK.Graphics;
 
 namespace MinorGame
 {
-    class Program
+    internal class Program
     {
-
         private static bool AskForDebugLogSending()
         {
             Console.WriteLine("Allow Sending Debug Logs? [y/N]:");
-            if (Console.ReadLine().ToLower() == "y") return true;
+            if (Console.ReadLine().ToLower() == "y")
+            {
+                return true;
+            }
+
             return false;
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
@@ -58,7 +61,6 @@ namespace MinorGame
                 PhysicsThreadCount = 4,
                 VSync = VSyncMode.Off,
                 DebugSettings = dbgSettings,
-
             };
 
 

@@ -7,9 +7,7 @@ namespace MinorGame.mapgenerator
     {
         public static void CreateGroundTexture(Bitmap input, Texture destTexture, int width, int height)
         {
-            Bitmap bmp = new Bitmap(input, (int)destTexture.Width, (int)destTexture.Height);
-            
-
+            Bitmap bmp = new Bitmap(input, (int) destTexture.Width, (int) destTexture.Height);
         }
     }
 }

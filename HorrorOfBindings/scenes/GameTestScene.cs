@@ -17,28 +17,22 @@ namespace MinorGame.scenes
         private BasicCamera camera;
         private GameObject groundObj;
         private ShaderProgram shader;
+
         private void LoadGameScene(BasicCamera c)
         {
             c.Rotate(new Vector3(1, 0, 0), MathHelper.DegreesToRadians(-75));
             c.Translate(new Vector3(0, 75, 15));
 
 
-
-
-
             GameObject[] objs = PlayerController.CreatePlayer(Vector3.UnitY * 2, c);
 
             for (int i = 0; i < objs.Length; i++)
             {
-
                 GameEngine.Instance.CurrentScene.Add(objs[i]);
             }
 
             EnemyComponent.CreateEnemies(new Vector2(50, 50), 5);
-
-
         }
-
 
 
         private static GameObject[] objects = new GameObject[0];
@@ -54,13 +48,14 @@ namespace MinorGame.scenes
                 }
             }
 
-            foreach (var gameObject in objects)
+            foreach (GameObject gameObject in objects)
             {
                 gameObject.Destroy();
             }
 
-            objects = TileCreator.CreateTileMap(TileCreator.CreateObject_Box, data, input.Width, input.Height, 3, 2, new Vector2(input.Width, input.Height), prog);
-            foreach (var gameObject in objects)
+            objects = TileCreator.CreateTileMap(TileCreator.CreateObject_Box, data, input.Width, input.Height, 3, 2,
+                new Vector2(input.Width, input.Height), prog);
+            foreach (GameObject gameObject in objects)
             {
                 GameEngine.Instance.CurrentScene.Add(gameObject);
             }
@@ -68,12 +63,11 @@ namespace MinorGame.scenes
             groundObj.Destroy();
             groundObj = CreateGround(new Vector3(input.Width, 2, input.Height) / 2);
             GameEngine.Instance.CurrentScene.Add(groundObj);
-
         }
 
         private GameObject CreateGround(Vector3 scale)
         {
-            GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, OpenTK.Quaternion.Identity,
+            GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
                 TextureLoader.FileToTexture("textures/ground4k.png"), shader);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
@@ -83,15 +77,21 @@ namespace MinorGame.scenes
 
         private string cmd_Move(string[] args)
         {
-            if (args.Length < 3) return "Not Enough arguments";
+            if (args.Length < 3)
+            {
+                return "Not Enough arguments";
+            }
+
             if (!int.TryParse(args[0], out int X))
             {
                 return "Could not parse X";
             }
+
             if (!int.TryParse(args[1], out int Y))
             {
                 return "Could not parse Y";
             }
+
             if (!int.TryParse(args[2], out int Z))
             {
                 return "Could not parse Z";
@@ -104,19 +104,26 @@ namespace MinorGame.scenes
 
         private string cmd_Rotate(string[] args)
         {
-            if (args.Length < 4) return "Not Enough arguments";
+            if (args.Length < 4)
+            {
+                return "Not Enough arguments";
+            }
+
             if (!int.TryParse(args[0], out int X))
             {
                 return "Could not parse X";
             }
+
             if (!int.TryParse(args[1], out int Y))
             {
                 return "Could not parse Y";
             }
+
             if (!int.TryParse(args[2], out int Z))
             {
                 return "Could not parse Z";
             }
+
             if (!int.TryParse(args[3], out int angle))
             {
                 return "Could not parse Z";
@@ -129,7 +136,7 @@ namespace MinorGame.scenes
 
         private void LoadTestScene(BasicCamera c)
         {
-            this.camera = c;
+            camera = c;
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
@@ -141,12 +148,12 @@ namespace MinorGame.scenes
             dbg.AddCommand("rot", cmd_Rotate);
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
 
-            WFCMapGenerator preview = WFCMapGenerator.CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, shader)).GetComponent<WFCMapGenerator>();
-
+            WFCMapGenerator preview = WFCMapGenerator
+                .CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, shader))
+                .GetComponent<WFCMapGenerator>();
 
 
             GameEngine.Instance.CurrentScene.Add(preview.Owner);
-
         }
 
         protected override void InitializeScene()
@@ -167,7 +174,7 @@ namespace MinorGame.scenes
 
             BasicCamera c = new BasicCamera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
-                    GameEngine.Instance.Width / (float)GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
+                    GameEngine.Instance.Width / (float) GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
 
             LoadTestScene(c);
             LoadGameScene(camera);
@@ -178,8 +185,6 @@ namespace MinorGame.scenes
 
         public override void OnDestroy()
         {
-
         }
-        
     }
 }

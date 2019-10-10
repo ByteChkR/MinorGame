@@ -17,6 +17,7 @@ namespace MinorGame.mapgenerator
     public class TileCreator
     {
         private static Texture tex = TextureLoader.FileToTexture("textures/TEST.png");
+
         public delegate GameObject CreateObject(byte input, Vector3 pos, Vector3 scale, ShaderProgram program);
 
         public static GameObject CreateObject_Box(byte input, Vector3 pos, Vector3 scale, ShaderProgram program)
@@ -29,7 +30,8 @@ namespace MinorGame.mapgenerator
             return null;
         }
 
-        public static GameObject[] CreateTileMap(CreateObject creator, byte[] data, int width, int height, float tileYOffset, float tileHeight, Vector2 fieldSize, ShaderProgram program)
+        public static GameObject[] CreateTileMap(CreateObject creator, byte[] data, int width, int height,
+            float tileYOffset, float tileHeight, Vector2 fieldSize, ShaderProgram program)
         {
             List<GameObject> ret = new List<GameObject>();
             if (width * height != data.Length)
@@ -56,7 +58,8 @@ namespace MinorGame.mapgenerator
                 for (int j = 0; j < height; j++)
                 {
                     int index = i * height + j;
-                    Vector3 tilePos = new Vector3(i * xDelta, tileYOffset, j * yDelta) - new Vector3(fieldHalfSize.X, 1, fieldHalfSize.Y);
+                    Vector3 tilePos = new Vector3(i * xDelta, tileYOffset, j * yDelta) -
+                                      new Vector3(fieldHalfSize.X, 1, fieldHalfSize.Y);
                     GameObject obj = creator(data[index], tilePos, new Vector3(xScale, yScale, zScale), program);
                     if (obj != null)
                     {
@@ -86,6 +89,7 @@ namespace MinorGame.mapgenerator
             {
                 coll = new Collider(new Box(Vector3.Zero, bounds.X, bounds.Y, bounds.Z, mass), "physics");
             }
+
             box.AddComponent(coll);
             return box;
         }
