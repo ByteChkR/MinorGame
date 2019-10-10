@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Minor\MinorEngine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\MinorEngine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPSGame", "FPSGame\FPSGame.csproj", "{923A3374-A185-4FD4-A0FB-5CAEAEE02498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Trace|Any CPU = Debug_Trace|Any CPU
@@ -55,6 +57,18 @@ Global
 		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release_TravisTest|Any CPU.Build.0 = Release|Any CPU
 		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Debug_Trace|Any CPU.ActiveCfg = Debug|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Debug_Trace|Any CPU.Build.0 = Debug|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_CollectLogs|Any CPU.ActiveCfg = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_CollectLogs|Any CPU.Build.0 = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_Trace|Any CPU.ActiveCfg = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_Trace|Any CPU.Build.0 = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_TravisTest|Any CPU.ActiveCfg = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release_TravisTest|Any CPU.Build.0 = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{923A3374-A185-4FD4-A0FB-5CAEAEE02498}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

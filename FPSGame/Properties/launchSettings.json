@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FPSGame": {
+      "commandName": "Project",
+      "workingDirectory": "assets"
+    }
+  }
+}

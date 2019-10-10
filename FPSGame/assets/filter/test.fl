@@ -1,0 +1,10 @@
+Main:
+	setvalf 1
+	setactive 0 1 2
+	random
+	perlin 0.8 6
+
+
+
+	
+	
