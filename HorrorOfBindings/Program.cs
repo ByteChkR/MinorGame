@@ -27,9 +27,6 @@ namespace MinorGame
         {
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
-
-            DebugSettings dbgSettings = DebugSettings.Default;
-
 #if COLLECT_LOGS
             if (AskForDebugLogSending())
             {
@@ -51,20 +48,11 @@ namespace MinorGame
             }
 #endif
 
-            EngineSettings es = new EngineSettings
-            {
-                WindowFlags = GameWindowFlags.Default,
-                Mode = gm,
-                InitWidth = 1280,
-                InitHeight = 720,
-                Title = "Test",
-                PhysicsThreadCount = 4,
-                VSync = VSyncMode.Off,
-                DebugSettings = dbgSettings,
-            };
+            EngineConfig.LoadConfig("configs/engine.settings.xml", Assembly.GetAssembly(typeof(GameEngine)), "Engine");
 
 
-            GameEngine engine = new GameEngine(es);
+
+            GameEngine engine = new GameEngine(EngineSettings.Settings);
             engine.Initialize();
             engine.InitializeScene<GameTestScene>();
             engine.Run();

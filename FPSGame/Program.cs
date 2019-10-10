@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Engine.Core;
 using Engine.Debug;
 using EndlessRunner.scenes;
@@ -24,8 +25,8 @@ namespace EndlessRunner
         {
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
-
-            DebugSettings dbgSettings = DebugSettings.Default;
+            EngineConfig.LoadConfig("configs/engine.settings.xml", Assembly.GetAssembly(typeof(GameEngine)), "Engine");
+            
 
 #if COLLECT_LOGS
             if (AskForDebugLogSending())
@@ -48,20 +49,10 @@ namespace EndlessRunner
             }
 #endif
 
-            EngineSettings es = new EngineSettings
-            {
-                WindowFlags = GameWindowFlags.Default,
-                Mode = gm,
-                InitWidth = 1280,
-                InitHeight = 720,
-                Title = "Test",
-                PhysicsThreadCount = 4,
-                VSync = VSyncMode.Off,
-                DebugSettings = dbgSettings,
-            };
 
 
-            GameEngine engine = new GameEngine(es);
+
+            GameEngine engine = new GameEngine(EngineSettings.Settings);
             engine.Initialize();
             engine.InitializeScene<GameScene>();
             engine.Run();
