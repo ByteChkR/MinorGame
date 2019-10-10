@@ -54,14 +54,14 @@ namespace MinorGame.scenes
             }
 
             objects = TileCreator.CreateTileMap(TileCreator.CreateObject_Box, data, input.Width, input.Height, 3, 2,
-                new Vector2(input.Width, input.Height), prog);
+                new Vector2(input.Width * 4, input.Height * 4), prog);
             foreach (GameObject gameObject in objects)
             {
                 GameEngine.Instance.CurrentScene.Add(gameObject);
             }
 
             groundObj.Destroy();
-            groundObj = CreateGround(new Vector3(input.Width, 2, input.Height) / 2);
+            groundObj = CreateGround(new Vector3(input.Width * 4, 2, input.Height * 4) / 2);
             GameEngine.Instance.CurrentScene.Add(groundObj);
         }
 
@@ -152,8 +152,17 @@ namespace MinorGame.scenes
                 .CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, shader))
                 .GetComponent<WFCMapGenerator>();
 
+            int tries = 1;
+            Add(preview.Owner);
+            preview.Generate(0);
 
-            GameEngine.Instance.CurrentScene.Add(preview.Owner);
+            while (!preview.Success)
+            {
+                Logger.Log("Generating map Try " + tries, DebugChannel.Log);
+                preview.Generate(0);
+                tries++;
+            }
+
         }
 
         protected override void InitializeScene()
@@ -170,11 +179,11 @@ namespace MinorGame.scenes
 
             groundObj = CreateGround(new Vector3(50, 1, 50));
 
-            GameEngine.Instance.CurrentScene.Add(groundObj);
+            //GameEngine.Instance.CurrentScene.Add(groundObj);
 
             BasicCamera c = new BasicCamera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
-                    GameEngine.Instance.Width / (float) GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
+                    GameEngine.Instance.Width / (float)GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
 
             LoadTestScene(c);
             LoadGameScene(camera);

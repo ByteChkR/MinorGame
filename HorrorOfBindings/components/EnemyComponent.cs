@@ -49,7 +49,7 @@ namespace MinorGame.components
             {
                 Vector2 pos = new Vector2((float) rnd.NextDouble() * bounds.X, (float) rnd.NextDouble() * bounds.Y);
                 pos -= hbounds;
-                Vector3 tilepos = new Vector3(pos.X, 2, pos.Y);
+                Vector3 tilepos = new Vector3(pos.X, 5, pos.Y);
                 GameObject[] objs = CreateEnemy(tilepos);
                 for (int i = 0; i < objs.Length; i++)
                 {

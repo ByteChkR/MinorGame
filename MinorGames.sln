@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Minor\MinorEngine
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\MinorEngine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPSGame", "FPSGame\FPSGame.csproj", "{923A3374-A185-4FD4-A0FB-5CAEAEE02498}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EndlessRunner", "FPSGame\EndlessRunner.csproj", "{923A3374-A185-4FD4-A0FB-5CAEAEE02498}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,11 +1,11 @@
 ﻿using System;
 using Engine.Core;
 using Engine.Debug;
-using FPSGame.scenes;
+using EndlessRunner.scenes;
 using OpenTK;
 using OpenTK.Graphics;
 
-namespace FPSGame
+namespace EndlessRunner
 {
     internal class Program
     {

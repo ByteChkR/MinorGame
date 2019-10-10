@@ -19,21 +19,21 @@ namespace MinorGame.mapgenerator
     public class WFCMapGenerator : AbstractComponent
     {
         private List<string> sampleTextures = new List<string>();
-        private WaveFunctionCollapse wfc;
+        private WFCOverlayMode wfc;
         private int current = 0;
         private MeshRendererComponent renderer;
 
-        private int _n = 3;
-        private int _width = 128;
-        private int _height = 128;
-        private bool _periodicInput = false;
-        private bool _periodicOutput = true;
-        private int _symmetry = 8;
-        private int _ground = 0;
-        private int _seed = 1337;
-        private bool _useSeed;
-        private int _limit = 0;
-
+        public int N { get; set; } = 3;
+        public int Width { get; set; } = 64;
+        public int Height { get; set; } = 64;
+        public bool PeriodicInput { get; set; }
+        public bool PeriodicOutput { get; set; } = true;
+        public int Symmetry { get; set; } = 8;
+        public int Ground { get; set; } = 0;
+        public int Seed { get; set; } = 1337;
+        public bool UseSeed { get; set; }
+        public int Limit { get; set; } = 0;
+        public bool Success => wfc.Success;
         private string _folderName;
 
         #region ConsoleCommands
@@ -78,7 +78,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _n = temp;
+            N = temp;
             return "Command Finished";
         }
 
@@ -89,7 +89,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _width = temp;
+            Width = temp;
             return "Command Finished";
         }
 
@@ -100,7 +100,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _height = temp;
+            Height = temp;
             return "Command Finished";
         }
 
@@ -111,7 +111,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a boolean";
             }
 
-            _periodicInput = temp;
+            PeriodicInput = temp;
             return "Command Finished";
         }
 
@@ -122,7 +122,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a boolean";
             }
 
-            _periodicOutput = temp;
+            PeriodicOutput = temp;
             return "Command Finished";
         }
 
@@ -133,7 +133,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a boolean";
             }
 
-            _useSeed = temp;
+            UseSeed = temp;
             return "Command Finished";
         }
 
@@ -144,7 +144,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _symmetry = temp;
+            Symmetry = temp;
             return "Command Finished";
         }
 
@@ -155,7 +155,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _ground = temp;
+            Ground = temp;
             return "Command Finished";
         }
 
@@ -166,7 +166,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _seed = temp;
+            Seed = temp;
             return "Command Finished";
         }
 
@@ -177,7 +177,7 @@ namespace MinorGame.mapgenerator
                 return "Argument is not a number";
             }
 
-            _limit = temp;
+            Limit = temp;
             return "Command Finished";
         }
 
@@ -261,16 +261,16 @@ namespace MinorGame.mapgenerator
 
         public bool Generate(int sampleID)
         {
-            wfc = new WFCOverlayMode(sampleTextures[sampleID], _n, _width, _height, _periodicInput, _periodicOutput,
-                _symmetry, _ground);
+            wfc = new WFCOverlayMode(sampleTextures[sampleID], N, Width, Height, PeriodicInput, PeriodicOutput,
+                Symmetry, Ground);
             bool ret = false;
-            if (_useSeed)
+            if (UseSeed)
             {
-                ret = wfc.Run(_seed, _limit);
+                ret = wfc.Run(Seed, Limit);
             }
             else
             {
-                ret = wfc.Run(_limit);
+                ret = wfc.Run(Limit);
             }
 
             Bitmap bmp = wfc.Graphics();
