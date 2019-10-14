@@ -47,7 +47,7 @@ namespace MinorGame.components
             Vector2 hbounds = bounds / 2;
             for (int j = 0; j < count; j++)
             {
-                Vector2 pos = new Vector2((float) rnd.NextDouble() * bounds.X, (float) rnd.NextDouble() * bounds.Y);
+                Vector2 pos = new Vector2((float)rnd.NextDouble() * bounds.X, (float)rnd.NextDouble() * bounds.Y);
                 pos -= hbounds;
                 Vector3 tilepos = new Vector3(pos.X, 5, pos.Y);
                 GameObject[] objs = CreateEnemy(tilepos);
@@ -112,7 +112,7 @@ namespace MinorGame.components
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 
 
-            return new[] {enemy, enemyHead};
+            return new[] { enemy, enemyHead };
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
@@ -133,7 +133,7 @@ namespace MinorGame.components
                 new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
-            GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletEnemy");
+            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
 
             obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTex, 1,
@@ -332,7 +332,7 @@ namespace MinorGame.components
 
         private void ApplyRotation()
         {
-            nozzle.LookAt(nozzle.LocalPosition + GetWalkDirection());
+            nozzle.LookAt((OpenTK.Vector3)nozzle.LocalPosition + GetWalkDirection());
         }
 
         private bool WantsToShoot()
@@ -343,7 +343,8 @@ namespace MinorGame.components
 
         private Vector3 GetWalkDirection()
         {
-            return (target.LocalPosition - Owner.LocalPosition).Normalized();
+            Vector3 ret = (target.LocalPosition - Owner.LocalPosition);
+            return ret.Normalized();
         }
 
         private void activateEnemies()

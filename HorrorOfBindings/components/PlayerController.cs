@@ -124,7 +124,7 @@ namespace MinorGame.components
                 new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
-            GameObject obj = new GameObject(nozzle.LocalPosition + v.Normalized(), "BulletPlayer");
+            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
             obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
