@@ -8,6 +8,7 @@ using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
 using EndlessRunner.components;
+using EndlessRunner.mapgenerator;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -17,6 +18,7 @@ namespace EndlessRunner.scenes
     {
 
         public static ShaderProgram TextureShader;
+        public static GameObject Container;
         protected override void InitializeScene()
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
@@ -25,18 +27,38 @@ namespace EndlessRunner.scenes
                 {ShaderType.VertexShader, "shader/texture.vs"}
             }, out TextureShader);
 
-
-            Add(DebugConsoleComponent.CreateConsole());
+            DebugConsoleComponent console = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
+            console.AddCommand("map", cmdGenerateMap);
+            Add(console.Owner);
             BasicCamera camera =
                 new BasicCamera(
                     Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f), 16f / 9f, 0.01f, 1000),
                     new Vector3(0, 6, 6));
             SetCamera(camera);
             Add(camera);
-            
+
             Add(PlayerController.CreatePlayer(Vector3.UnitY * 10, camera));
             Add(CreateGround(new Vector3(50, 1, 50), TextureShader));
+            Container = new GameObject("MapContainer");
+            Container.AddComponent(new Zmover());
+            Add(Container);
 
+        }
+
+        private static string cmdGenerateMap(string[] args)
+        {
+            List<GameObject> objects =
+                MapGenerator.Generate(args[0], 8, 128);
+            
+            Container.LocalPosition=Engine.Physics.BEPUutilities.Vector3.Zero;
+            Container.DestroyAllChildren();
+
+            foreach (GameObject gameObject in objects)
+            {
+                Container.Add(gameObject);
+            }
+
+            return "Map Generated";
         }
 
         public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,

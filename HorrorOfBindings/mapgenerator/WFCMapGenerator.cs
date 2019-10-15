@@ -275,7 +275,7 @@ namespace MinorGame.mapgenerator
 
             Bitmap bmp = wfc.Graphics();
 
-            _callback?.Invoke(bmp);
+            if (wfc.Success) _callback?.Invoke(bmp);
 
 
             if (renderer != null)

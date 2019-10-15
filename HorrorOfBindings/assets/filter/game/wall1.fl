@@ -1,0 +1,7 @@
+--define texture mask: "textures/pointinsquare_smooth.png"
+--define texture tex: "textures/wood1.jpg"
+--define texture result: "textures/stone1.jpg"
+
+Main:
+  setactive result 0 1 2
+  overlaytex tex mask

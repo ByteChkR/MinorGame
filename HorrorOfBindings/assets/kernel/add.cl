@@ -34,7 +34,7 @@ __kernel void addtexvalmask(__global uchar* image, int3 dimensions, int channelC
 	}
 
 	int val = (int)((float)image[idx] + (value[idx] * mask));
-	image[idx] = val / 2;
+	image[idx] = val / (1+mask);
 }
 
 __kernel void addtexvalmaskwrap(__global uchar* image, int3 dimensions, int channelCount, float maxValue, __global uchar* channelEnableState, float mask, __global uchar* value)

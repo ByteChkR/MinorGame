@@ -1,0 +1,7 @@
+--define texture tex: "textures/dirt1.png"
+--define texture result: "textures/dirt2.png"
+
+
+Main:
+  setactive result 0 1 2
+  overlaytex tex in

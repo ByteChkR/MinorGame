@@ -12,6 +12,7 @@ using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Physics.BEPUphysics.PositionUpdating;
 using Engine.Rendering;
 using MinorGame.scenes;
+using MinorGame.ui;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
@@ -45,11 +46,16 @@ namespace MinorGame.components
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
         private int hp = 15;
+        private int maxHP = 15;
         private float BulletThreshold => 1f / BulletsPerSecond;
         private bool left, right, fwd, back, shoot, jump;
         private static float baseBulletsPerSecond = 5;
         public static int wavesSurvived = 1;
         private bool Grounded = false;
+
+        public delegate void onHpChange(float ratio);
+        public static onHpChange OnHPChange;
+
 
         public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
@@ -110,7 +116,10 @@ namespace MinorGame.components
             player.LocalPosition = position;
 
 
-            return new[] { player, playerH };
+            GameObject playerUI = new GameObject("PlayerHUD");
+            playerUI.AddComponent(new PlayerHUD());
+
+            return new[] { player, playerH, playerUI };
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
@@ -287,6 +296,7 @@ namespace MinorGame.components
             if (other.Owner.Name == "BulletEnemy")
             {
                 hp--;
+                OnHPChange?.Invoke(hp / (float)maxHP);
                 Logger.Log("Current Player HP: " + hp, DebugChannel.Log);
                 other.Owner.Destroy();
             }
@@ -346,7 +356,7 @@ namespace MinorGame.components
 
                 Vector3 vec = new Vector3(vel.X * deltaTime * MoveSpeed, vel.Y * deltaTime * JumpForce, vel.Z * deltaTime * MoveSpeed);
 
-                
+
 
                 vec.Y -= CurrentGravity;
 
@@ -368,7 +378,7 @@ namespace MinorGame.components
             {
                 CurrentGravity += GravityIncUngrounded * deltaTime;
             }
-            Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0,-CurrentGravity, 0);
+            Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
             Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 
             if (shoot)

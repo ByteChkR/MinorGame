@@ -21,6 +21,18 @@ __kernel void overlay(__global uchar* image, int3 dimensions, int channelCount, 
 	image[idx]=Mix(image[idx], overlay[idx], weightOverlay);
 }
 
+__kernel void overlaytex(__global uchar* image, int3 dimensions, int channelCount, float maxValue, __global uchar* channelEnableState, __global uchar* overlay, __global uchar* weightOverlay)
+{
+	int idx = get_global_id(0);
+	int channel = (int)fmod((float)idx, (float)channelCount);
+	if(channelEnableState[channel]==0)
+	{
+		return;
+	}
+
+	image[idx]=Mix(image[idx], overlay[idx], weightOverlay[idx]/255.0);
+}
+
 
 __kernel void checkerboard(__global uchar4* image, int3 dimensions, int channelCount, float maxValue, __global uchar* channelEnableState, float length)
 {

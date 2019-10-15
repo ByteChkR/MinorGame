@@ -39,6 +39,9 @@ namespace MinorGame.components
         private float BulletThreshold => 1f / BulletsPerSecond;
         public static int enemyCount = 5;
 
+        public delegate void onEnemyKilled(int newEnemyCount, int maxCount);
+
+        public static onEnemyKilled OnEnemyKilled;
 
         private static Random rnd = new Random();
 
@@ -355,7 +358,7 @@ namespace MinorGame.components
         {
             enemiesAlive--;
             Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log);
-
+            
             if (enemiesAlive == 0)
             {
                 active = false;
@@ -364,6 +367,11 @@ namespace MinorGame.components
                 enemyCount *= 2;
                 enemyCount = Math.Clamp(enemyCount, 0, 50);
                 CreateEnemies(new Vector2(50, 50), enemyCount);
+                OnEnemyKilled?.Invoke(enemyCount, enemyCount);
+            }
+            else
+            {
+                OnEnemyKilled?.Invoke(enemiesAlive, enemyCount);
             }
         }
     }

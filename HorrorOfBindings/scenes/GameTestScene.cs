@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using Engine.Core;
+using Engine.DataTypes;
 using Engine.Debug;
 using Engine.IO;
+using Engine.OpenCL.DotNetCore.Memory;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
+using Engine.WFC;
 using MinorGame.components;
 using MinorGame.mapgenerator;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Bitmap = System.Drawing.Bitmap;
 
 namespace MinorGame.scenes
 {
@@ -16,7 +21,9 @@ namespace MinorGame.scenes
     {
         private BasicCamera camera;
         private GameObject groundObj;
-        private ShaderProgram shader;
+        public static ShaderProgram TextureShader;
+        public static ShaderProgram TextShader;
+        public static ShaderProgram UIImageShader;
 
         private void LoadGameScene(BasicCamera c)
         {
@@ -60,15 +67,21 @@ namespace MinorGame.scenes
                 Add(gameObject);
             }
 
-            groundObj.Destroy();
-            groundObj = CreateGround(new Vector3(input.Width * 4, 2, input.Height * 4) / 2);
+            groundObj?.Destroy();
+            groundObj = CreateGround(input, new Vector3(input.Width * 4, 2, input.Height * 4) / 2);
             Add(groundObj);
         }
 
-        private GameObject CreateGround(Vector3 scale)
+        private GameObject CreateGround(Bitmap mapLayout, Vector3 scale)
         {
+            Texture tex = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
+
+
+
+
+            TextureGenerator.CreateGroundTexture(new Bitmap(512, 512), tex);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
-                TextureLoader.FileToTexture("textures/ground4k.png"), shader);
+                tex, TextureShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
@@ -137,19 +150,14 @@ namespace MinorGame.scenes
         private void LoadTestScene(BasicCamera c)
         {
             camera = c;
-
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
-            }, out ShaderProgram shader);
+            
             DebugConsoleComponent dbg = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             dbg.AddCommand("mov", cmd_Move);
             dbg.AddCommand("rot", cmd_Rotate);
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
 
             WFCMapGenerator preview = WFCMapGenerator
-                .CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, shader))
+                .CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, TextureShader))
                 .GetComponent<WFCMapGenerator>();
 
             int tries = 1;
@@ -175,11 +183,17 @@ namespace MinorGame.scenes
             {
                 {ShaderType.FragmentShader, "shader/texture.fs"},
                 {ShaderType.VertexShader, "shader/texture.vs"}
-            }, out shader);
-
-            groundObj = CreateGround(new Vector3(50, 1, 50));
-
-            //GameEngine.Instance.CurrentScene.Add(groundObj);
+            }, out TextureShader);
+            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
+            {
+                {ShaderType.FragmentShader, "shader/UITextRender.fs"},
+                {ShaderType.VertexShader, "shader/UITextRender.vs"}
+            }, out TextShader);
+            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
+            {
+                {ShaderType.FragmentShader, "shader/UIRender.fs"},
+                {ShaderType.VertexShader, "shader/UIRender.vs"}
+            }, out UIImageShader);
 
             BasicCamera c = new BasicCamera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
