@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using Engine.Audio;
 using Engine.Core;
 using Engine.DataTypes;
 using Engine.Debug;
@@ -33,8 +34,7 @@ namespace MinorGame.components
         private Key Left = Key.A;
         private Key Back = Key.S;
         private Key Right = Key.D;
-        private Key Shoot = Key.Space;
-        private Key Jump = Key.ShiftLeft;
+        private Key Jump = Key.Space;
         private bool UseGlobalForward = true;
         private Collider Collider;
         private GameObject nozzle;
@@ -48,10 +48,12 @@ namespace MinorGame.components
         private int hp = 15;
         private int maxHP = 15;
         private float BulletThreshold => 1f / BulletsPerSecond;
-        private bool left, right, fwd, back, shoot, jump;
+        private bool left, right, fwd, back, jump;
         private static float baseBulletsPerSecond = 5;
         public static int wavesSurvived = 1;
         private bool Grounded = false;
+        private AudioSourceComponent AudioSource;
+        private static AudioFile JumpSound, SpawnSound, ShootSound, ShootSound2;
 
         public delegate void onHpChange(float ratio);
         public static onHpChange OnHPChange;
@@ -67,6 +69,7 @@ namespace MinorGame.components
 
 
             Mesh mouseTargetModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
+
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
@@ -111,13 +114,28 @@ namespace MinorGame.components
 
             player.AddComponent(new MeshRendererComponent(shader, playerModel,
                 TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
+
+            AudioSourceComponent source = new AudioSourceComponent();
+            AudioLoader.TryLoad("audio/ShootSound.wav", out ShootSound);
+            AudioLoader.TryLoad("audio/ShootSound2.wav", out ShootSound2);
+            AudioLoader.TryLoad("audio/SpawnSound.wav", out SpawnSound);
+            AudioLoader.TryLoad("audio/JumpSound.wav", out JumpSound);
+            source.Clip = SpawnSound;
+            source.Play();
+            source.UpdatePosition = false;
+            source.Gain = 0.5f;
+            player.AddComponent(source);
+
             player.AddComponent(new PlayerController(playerH, bullet,
-                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 650, false));
+                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 650, false, source));
             player.LocalPosition = position;
 
 
             GameObject playerUI = new GameObject("PlayerHUD");
             playerUI.AddComponent(new PlayerHUD());
+
+
+
 
             return new[] { player, playerH, playerUI };
         }
@@ -137,7 +155,7 @@ namespace MinorGame.components
                 Grounded = false;
             }
         }
-
+        
         private void SpawnProjectile()
         {
             Engine.Physics.BEPUutilities.Vector3 vel =
@@ -160,6 +178,10 @@ namespace MinorGame.components
             obj.AddComponent(coll);
             coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
             Owner.Scene.Add(obj);
+            //AudioSource.Clip = ShootSound;
+            //AudioSource.Play();
+            AudioSource.Clip = BulletsPerSecond < 20 ? ShootSound : ShootSound2;
+            AudioSource.Play();
         }
 
 
@@ -171,11 +193,13 @@ namespace MinorGame.components
                 EnemyComponent.enemyCount = 5;
                 GameEngine.Instance.InitializeScene<GameTestScene>();
             }
+            
         }
 
         public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader,
-            float speed, bool useGlobalForward)
+            float speed, bool useGlobalForward, AudioSourceComponent audioSource)
         {
+            AudioSource = audioSource;
             this.bulletTexture = bulletTexture;
             bulletLayer = LayerManager.NameToLayer("physics");
             this.nozzle = nozzle;
@@ -184,7 +208,6 @@ namespace MinorGame.components
             MoveSpeed = speed;
             UseGlobalForward = useGlobalForward;
             raycastLayer = LayerManager.NameToLayer("raycast");
-            ;
         }
 
         private string cmdBulletMass(string[] args)
@@ -364,10 +387,13 @@ namespace MinorGame.components
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 
-            if (jump)
+            if (jump && Grounded)
             {
                 Engine.Physics.BEPUutilities.Vector3 jumpAcc = computeJumpAcc();
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref jumpAcc);
+
+                AudioSource.Clip = JumpSound;
+                AudioSource.Play();
             }
 
             if (Grounded)
@@ -381,13 +407,19 @@ namespace MinorGame.components
             Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
             Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 
-            if (shoot)
+            if (Mouse.GetCursorState().LeftButton == ButtonState.Pressed)
             {
                 time += deltaTime;
                 if (time >= BulletThreshold)
                 {
                     time = 0;
                     SpawnProjectile();
+                }
+            }
+            else
+            {
+                {
+                    time = 0;
                 }
             }
         }
@@ -415,10 +447,6 @@ namespace MinorGame.components
             {
                 right = true;
             }
-            else if (e.Key == Shoot)
-            {
-                shoot = true;
-            }
             else if (e.Key == Jump)
             {
                 jump = true;
@@ -442,10 +470,6 @@ namespace MinorGame.components
             else if (e.Key == Right)
             {
                 right = false;
-            }
-            else if (e.Key == Shoot)
-            {
-                shoot = false;
             }
         }
     }

@@ -12,8 +12,7 @@ namespace MinorGame.mapgenerator
     public static class TextureGenerator
     {
         private static Interpreter intP;
-
-        private static MemoryBuffer perlin2k;
+        
         private static MemoryBuffer perlin512;
         private static bool _initPerlin = false;
         private static Texture[] wallTextures;

@@ -16,7 +16,6 @@ namespace MinorGame.ui
         private UITextRendererComponent EnemiesLeftText;
         private UIImageRendererComponent PlayerHPBarBGObj;
         private UIImageRendererComponent PlayerHPBarObj;
-        private PlayerController Controller;
 
         public PlayerHUD()
         {
