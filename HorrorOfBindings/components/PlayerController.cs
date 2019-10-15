@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using Engine.Core;
 using Engine.DataTypes;
 using Engine.Debug;
@@ -14,19 +15,25 @@ using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace MinorGame.components
 {
     public class PlayerController : AbstractComponent
     {
+        private float GravityIncUngrounded = 5;
+        private float CurrentGravity = 0;
         private int raycastLayer;
         private int bulletLayer;
         private float MoveSpeed = 10;
+        private float JumpForce = 400;
         private Key Forward = Key.W;
         private Key Left = Key.A;
         private Key Back = Key.S;
         private Key Right = Key.D;
         private Key Shoot = Key.Space;
+        private Key Jump = Key.ShiftLeft;
         private bool UseGlobalForward = true;
         private Collider Collider;
         private GameObject nozzle;
@@ -39,10 +46,10 @@ namespace MinorGame.components
         private static bool physicalBullets = true;
         private int hp = 15;
         private float BulletThreshold => 1f / BulletsPerSecond;
-        private bool left, right, fwd, back, shoot;
+        private bool left, right, fwd, back, shoot, jump;
         private static float baseBulletsPerSecond = 5;
         public static int wavesSurvived = 1;
-
+        private bool Grounded = false;
 
         public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
@@ -90,31 +97,35 @@ namespace MinorGame.components
 
 
             //Player Setup
-            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), LayerManager.NameToLayer("physics"));
-            collider.PhysicsCollider.Material = new Material(10, 10, 0);
+            Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 10), LayerManager.NameToLayer("physics"));
+            collider.PhysicsCollider.Material = new Material(1.5f, 1.5f, 0);
             collider.PhysicsCollider.LinearDamping = 0.99f;
-            ColliderConstraints constraints = collider.ColliderConstraints;
-            collider.ColliderConstraints = constraints;
 
             player.AddComponent(collider);
 
             player.AddComponent(new MeshRendererComponent(shader, playerModel,
                 TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
             player.AddComponent(new PlayerController(playerH, bullet,
-                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 100, false));
+                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 650, false));
             player.LocalPosition = position;
 
 
-            return new[] {player, playerH};
+            return new[] { player, playerH };
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
         {
             if (other.Owner.Name == "Ground")
             {
-                ColliderConstraints constraints = Collider.ColliderConstraints;
-                constraints.PositionConstraints = FreezeConstraints.Y;
-                Collider.ColliderConstraints = constraints;
+                Grounded = true;
+            }
+        }
+
+        protected override void OnCollisionEnded(Collider other, CollidablePairHandler handler)
+        {
+            if (other.Owner.Name == "Ground")
+            {
+                Grounded = false;
             }
         }
 
@@ -304,10 +315,21 @@ namespace MinorGame.components
                 ret += Vector3.UnitZ;
             }
 
+
             return ret;
         }
 
         private float time;
+
+        private Vector3 computeJumpAcc()
+        {
+            if (Grounded && jump)
+            {
+                jump = false;
+                return Vector3.UnitY * JumpForce;
+            }
+            return Vector3.Zero;
+        }
 
         protected override void Update(float deltaTime)
         {
@@ -315,16 +337,39 @@ namespace MinorGame.components
             Vector3 vel = inputDir();
             if (vel != Vector3.Zero)
             {
-                vel.Normalize();
+                if (vel != Vector3.Zero)
+                    vel.Normalize();
                 if (UseGlobalForward)
                 {
                     vel = new Vector3(new Vector4(vel, 0) * Owner.GetWorldTransform());
                 }
 
-                Vector3 vec = vel * deltaTime * MoveSpeed;
+                Vector3 vec = new Vector3(vel.X * deltaTime * MoveSpeed, vel.Y * deltaTime * JumpForce, vel.Z * deltaTime * MoveSpeed);
+
+                
+
+                vec.Y -= CurrentGravity;
+
                 Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
+
+            if (jump)
+            {
+                Engine.Physics.BEPUutilities.Vector3 jumpAcc = computeJumpAcc();
+                Collider.PhysicsCollider.ApplyLinearImpulse(ref jumpAcc);
+            }
+
+            if (Grounded)
+            {
+                CurrentGravity = 0;
+            }
+            else
+            {
+                CurrentGravity += GravityIncUngrounded * deltaTime;
+            }
+            Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0,-CurrentGravity, 0);
+            Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 
             if (shoot)
             {
@@ -337,6 +382,10 @@ namespace MinorGame.components
             }
         }
 
+        protected override void OnKeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
 
         protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)
         {
@@ -359,6 +408,10 @@ namespace MinorGame.components
             else if (e.Key == Shoot)
             {
                 shoot = true;
+            }
+            else if (e.Key == Jump)
+            {
+                jump = true;
             }
         }
 

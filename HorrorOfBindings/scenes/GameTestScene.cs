@@ -53,16 +53,16 @@ namespace MinorGame.scenes
                 gameObject.Destroy();
             }
 
-            objects = TileCreator.CreateTileMap(TileCreator.CreateObject_Box, data, input.Width, input.Height, 3, 2,
+            objects = TileCreator.CreateTileMap(TileCreator.CreateObject_Box, data, input.Width, input.Height, 3, 4,
                 new Vector2(input.Width * 4, input.Height * 4), prog);
             foreach (GameObject gameObject in objects)
             {
-                GameEngine.Instance.CurrentScene.Add(gameObject);
+                Add(gameObject);
             }
 
             groundObj.Destroy();
             groundObj = CreateGround(new Vector3(input.Width * 4, 2, input.Height * 4) / 2);
-            GameEngine.Instance.CurrentScene.Add(groundObj);
+            Add(groundObj);
         }
 
         private GameObject CreateGround(Vector3 scale)

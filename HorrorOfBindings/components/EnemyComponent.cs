@@ -30,7 +30,7 @@ namespace MinorGame.components
         private GameObject nozzle;
         private Mesh bulletModel;
         private ShaderProgram bulletShader;
-        private static float BulletLaunchForce = 50;
+        private static float BulletLaunchForce = 75;
         private static float BulletsPerSecond = 1;
         private static float BulletMass = 1;
         private static bool physicalBullets = true;
@@ -90,7 +90,6 @@ namespace MinorGame.components
             Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 1), "physics");
             collider.PhysicsCollider.Material = new Material(10, 10, 0);
             collider.PhysicsCollider.LinearDamping = 0.99f;
-            //collider.PhysicsCollider.Gravity = MinorEngine.BEPUutilities.Vector3.Down * 50;
             enemy.AddComponent(collider);
 
 
@@ -313,7 +312,7 @@ namespace MinorGame.components
                 }
 
                 Vector3 vec = vel * deltaTime * MoveSpeed;
-                Engine.Physics.BEPUutilities.Vector3 v = new Vector3(vec.X, vec.Y, vec.Z);
+                Engine.Physics.BEPUutilities.Vector3 v = new Vector3(vec.X, 0, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }
 
@@ -355,6 +354,7 @@ namespace MinorGame.components
         protected override void OnDestroy()
         {
             enemiesAlive--;
+            Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log);
 
             if (enemiesAlive == 0)
             {
@@ -362,6 +362,7 @@ namespace MinorGame.components
                 GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, activateEnemies));
                 PlayerController.wavesSurvived++;
                 enemyCount *= 2;
+                enemyCount = Math.Clamp(enemyCount, 0, 50);
                 CreateEnemies(new Vector2(50, 50), enemyCount);
             }
         }

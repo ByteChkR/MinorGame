@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Resources;
 using System.Runtime.ExceptionServices;
 using Engine.Core;
@@ -7,6 +8,7 @@ using Engine.Debug;
 using Engine.IO;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
+using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
 using MinorGame.exceptions;
 using OpenTK;
@@ -16,7 +18,8 @@ namespace MinorGame.mapgenerator
 {
     public class TileCreator
     {
-        private static Texture tex = TextureLoader.FileToTexture("textures/TEST.png");
+        private static Texture wallTex = TextureLoader.FileToTexture("textures/wallTexture.png");
+        private static Texture boundsTex = TextureLoader.FileToTexture("textures/boundsTexture.png");
 
         public delegate GameObject CreateObject(byte input, Vector3 pos, Vector3 scale, ShaderProgram program);
 
@@ -24,16 +27,67 @@ namespace MinorGame.mapgenerator
         {
             if (input < 128)
             {
-                return CreateCube(pos, scale, Quaternion.Identity, tex, program);
+                return CreateCube(pos, scale, Quaternion.Identity, wallTex, program);
             }
 
             return null;
         }
 
+        private static GameObject[] CreateBounds(int width, int height, ShaderProgram program)
+        {
+
+            GameObject[] ret = new GameObject[4];
+            GameObject obj;
+            for (int i = 0; i < 4; i++)
+            {
+                if (i == 0)
+                {
+                    obj = new GameObject("BoundsLeft");
+                    obj.LocalPosition = new Vector3(-width / 2f, 1, 0);
+                    Collider c = new Collider(new Box(Vector3.Zero, 1, 16, height), "physics");
+                    c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
+                    obj.AddComponent(c);
+                    obj.Scale = new Vector3(1, 8, height / 2f);
+                }
+                else if (i == 1)
+                {
+                    obj = new GameObject("BoundsRight");
+                    obj.LocalPosition = new Vector3(width / 2f, 1, 0);
+                    Collider c = new Collider(new Box(Vector3.Zero, 1, 16, height), "physics");
+                    c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
+                    obj.AddComponent(c);
+                    obj.Scale = new Vector3(1, 8, height / 2f);
+                }
+                else if (i == 2)
+                {
+                    obj = new GameObject("BoundsTop");
+                    obj.LocalPosition = new Vector3(0, 1, -height / 2f);
+                    Collider c = new Collider(new Box(Vector3.Zero, width, 16, 1), "physics");
+                    c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
+                    obj.AddComponent(c);
+                    obj.Scale = new Vector3(width / 2f, 8, 1);
+                }
+                else
+                {
+                    obj = new GameObject("BoundsBottom");
+                    obj.LocalPosition = new Vector3(0, 1, height / 2f);
+                    Collider c = new Collider(new Box(Vector3.Zero, width, 16, 1), "physics");
+                    c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
+                    obj.AddComponent(c);
+                    obj.Scale = new Vector3(width / 2f, 8, 1);
+                }
+                obj.AddComponent(new MeshRendererComponent(program, MeshLoader.Prefabs.Cube, boundsTex, 1));
+
+                ret[i] = obj;
+            }
+
+            return ret;
+        }
+
         public static GameObject[] CreateTileMap(CreateObject creator, byte[] data, int width, int height,
             float tileYOffset, float tileHeight, Vector2 fieldSize, ShaderProgram program)
         {
-            List<GameObject> ret = new List<GameObject>();
+            List<GameObject> ret = CreateBounds((int)fieldSize.X, (int)fieldSize.Y, program).ToList();
             if (width * height != data.Length)
             {
                 Logger.Crash(new GameException("Tilemap has the wrong format"), false);
@@ -90,6 +144,7 @@ namespace MinorGame.mapgenerator
                 coll = new Collider(new Box(Vector3.Zero, bounds.X, bounds.Y, bounds.Z, mass), "physics");
             }
 
+            coll.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
             box.AddComponent(coll);
             return box;
         }
