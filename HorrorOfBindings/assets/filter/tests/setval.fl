@@ -1,3 +1,3 @@
 Main:
 	setactive 0 1 2 3
-	setvalf 1
+  setv 1

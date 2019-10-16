@@ -1,5 +1,0 @@
---define texture tex: "textures/wall.jfif"
-
-Main:
-  setactive tex 1
-  addtextexmaskwrap in in

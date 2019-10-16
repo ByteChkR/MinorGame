@@ -4,4 +4,6 @@
 
 Main:
   setactive result 0 1 2
-  overlaytex tex mask
+  mixt tex mask
+  setactive 0 #only red
+  adjustlevel 0.5 1 #we only want values in the bounds

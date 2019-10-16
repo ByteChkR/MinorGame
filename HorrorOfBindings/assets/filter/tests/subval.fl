@@ -2,5 +2,5 @@ Main:
   setactive 3
   setv 1
   setactive 0 1 2
-  urnd
-  perlin 0.8 7
+  setv 1
+  subv 0.5

@@ -1,7 +1,7 @@
 Main:
-	setvalf 1
+	setv 1
 	setactive 0 1 2
-	random
+	rnd
 	perlin 0.8 6
 
 

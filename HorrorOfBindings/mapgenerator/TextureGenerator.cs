@@ -32,7 +32,7 @@ namespace MinorGame.mapgenerator
             MemoryBuffer buf = CLAPI.CreateEmpty<byte>(512 * 512 * 4, MemoryFlag.ReadWrite);
 
             intP?.ReleaseResources();
-            intP = new Interpreter("filter/game/perlin.fl", DataTypes.CHAR1, buf, 512, 512, 1, 4, "kernel");
+            intP = new Interpreter("filter/game/perlin.fl", DataTypes.CHAR1, buf, 512, 512, 1, 4, "kernel_");
 
 
             do
@@ -40,6 +40,7 @@ namespace MinorGame.mapgenerator
                 intP.Step();
             } while (!intP.Terminated);
 
+            byte[] b = intP.GetResult<byte>();
             perlin512 = intP.GetActiveBuffer();
             
 
@@ -56,7 +57,7 @@ namespace MinorGame.mapgenerator
         {
             if (!_initPerlin) InitPerlin();
             intP?.ReleaseResources();
-            intP = new Interpreter("filter/game/ground.fl", DataTypes.CHAR1, perlin512, (int)destTexture.Width, (int)destTexture.Height, 1, 4, "kernel");
+            intP = new Interpreter("filter/game/ground.fl", DataTypes.CHAR1, perlin512, (int)destTexture.Width, (int)destTexture.Height, 1, 4, "kernel_");
 
 
             do
@@ -72,7 +73,7 @@ namespace MinorGame.mapgenerator
         {
             if (!_initPerlin) InitPerlin();
             intP?.ReleaseResources();
-            intP = new Interpreter($"filter/game/wall{i}.fl", DataTypes.CHAR1, perlin512, width, height, 1, 4, "kernel");
+            intP = new Interpreter($"filter/game/wall{i}.fl", DataTypes.CHAR1, perlin512, width, height, 1, 4, "kernel_");
             
             do
             {

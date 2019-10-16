@@ -3,12 +3,12 @@
 
 PlainPerlin:
 	setactive 3
-	setvalf 1
+	setv 1
 	setactive 0 1 2
-	random
+	urnd
 	perlin 0.7 6 #There are "baked" functions like noises
 
 Main:
 	set maintexture
 	setactive 0 1 2
-	overlay PlainPerlin 0.5
+	mixv PlainPerlin 0.5

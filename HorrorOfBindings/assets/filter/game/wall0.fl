@@ -4,4 +4,4 @@
 
 Main:
   setactive result 0 1 2
-  overlaytex tex mask
+  mixt tex mask
