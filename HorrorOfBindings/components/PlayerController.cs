@@ -12,6 +12,7 @@ using Engine.Physics.BEPUphysics.Materials;
 using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Physics.BEPUphysics.PositionUpdating;
 using Engine.Rendering;
+using MinorGame.mapgenerator;
 using MinorGame.scenes;
 using MinorGame.ui;
 using OpenTK;
@@ -58,6 +59,7 @@ namespace MinorGame.components
         public delegate void onHpChange(float ratio);
         public static onHpChange OnHPChange;
 
+        
 
         public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
@@ -112,8 +114,9 @@ namespace MinorGame.components
 
             player.AddComponent(collider);
 
-            player.AddComponent(new MeshRendererComponent(shader, playerModel,
-                TextureLoader.FileToTexture("textures/sphereTexture.png"), 1));
+
+
+            player.AddComponent(new MeshRendererComponent(shader, playerModel, TextureGenerator.GetPlayerTexture(), 1));
 
             AudioSourceComponent source = new AudioSourceComponent();
             AudioLoader.TryLoad("audio/ShootSound.wav", out ShootSound);

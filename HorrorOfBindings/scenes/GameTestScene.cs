@@ -147,12 +147,18 @@ namespace MinorGame.scenes
 
             return "Done";
         }
-
+        private string cmd_ReLoadScene(string[] args)
+        {
+            GameEngine.Instance.InitializeScene<GameTestScene>();
+            TextureGenerator.Reset();
+            return "Reloaded";
+        }
         private void LoadTestScene(BasicCamera c)
         {
             camera = c;
             
             DebugConsoleComponent dbg = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
+            dbg.AddCommand("reload", cmd_ReLoadScene);
             dbg.AddCommand("mov", cmd_Move);
             dbg.AddCommand("rot", cmd_Rotate);
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
@@ -163,12 +169,12 @@ namespace MinorGame.scenes
 
             int tries = 1;
             Add(preview.Owner);
-            preview.Generate(0);
+            preview.Generate(1);
 
             while (!preview.Success)
             {
                 Logger.Log("Generating map Try " + tries, DebugChannel.Log);
-                preview.Generate(0);
+                preview.Generate(1);
                 tries++;
             }
 

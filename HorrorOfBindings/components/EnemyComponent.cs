@@ -13,6 +13,7 @@ using Engine.Physics.BEPUphysics.Materials;
 using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Rendering;
 using MinorGame.exceptions;
+using MinorGame.mapgenerator;
 using MinorGame.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -64,7 +65,7 @@ namespace MinorGame.components
         private static Mesh enemyhead_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
         private static Mesh enemy_prefab = MeshLoader.FileToMesh("models/sphere_smooth.obj");
         private static Mesh bullet_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
-        private static Texture enemyTex, headTex, bulletTex;
+        private static Texture headTex, bulletTex;
         private static bool init;
 
         public static GameObject[] CreateEnemy(Vector3 position)
@@ -72,7 +73,6 @@ namespace MinorGame.components
             if (!init)
             {
                 init = true;
-                enemyTex = TextureLoader.FileToTexture("textures/sphereTexture.png");
                 headTex = TextureLoader.FileToTexture("textures/enemyHead.jpg");
                 bulletTex = TextureLoader.FileToTexture("textures/bulletTexture.png");
             }
@@ -109,7 +109,7 @@ namespace MinorGame.components
 
 
             enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, headTex, 1));
-            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, enemyTex, 1));
+            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
 
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 

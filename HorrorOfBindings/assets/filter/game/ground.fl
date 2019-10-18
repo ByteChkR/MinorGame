@@ -2,11 +2,18 @@
 --define texture result: "textures/dirt2.png"
 --define texture helper: empty
 
+Perlin:
+  setactive 3
+  setv 1
+  setactive 0 1 2
+  urnd
+  perlin 0.98 7
+
 Main:
   setactive helper 3 #helper texture
   setv 1 # set alpha to one
   setactive 0 1 2 # select rgb channels
-  set in #copys stuff from in(in this case its perlin and we dont want to change the source array. so we copy it)
+  set Perlin #copys stuff from Perlin(in this case its perlin and we dont want to change the source array. so we copy it)
   add helper #we add it onto itself(we wrap automatically since this is a uchar array)
   setactive result 0 1 2 #select the result texture
   mixt tex helper # and mix the second texture (tex) in the result with sampling the helper texture for the weights

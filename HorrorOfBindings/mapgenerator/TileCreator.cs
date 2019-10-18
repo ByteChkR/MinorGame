@@ -28,7 +28,7 @@ namespace MinorGame.mapgenerator
         {
             if (input < 128)
             {
-                return CreateCube(pos, scale, Quaternion.Identity, TextureGenerator.GetTexture(rnd.Next(0, 3)), program);
+                return CreateCube(pos, scale, Quaternion.Identity, TextureGenerator.GetTexture(rnd.Next(0, 2)), program);
             }
 
             return null;
