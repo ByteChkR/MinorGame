@@ -75,7 +75,7 @@ namespace MinorGame.components
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, mouseTargetModel,
+            mouseTarget.AddComponent(new MeshRendererComponent(shader, true, mouseTargetModel,
                 TextureLoader.FileToTexture("textures/TEST.png"), 1));
 
             Mesh playerModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
@@ -103,7 +103,7 @@ namespace MinorGame.components
             connection.Attach(player, Vector3.UnitY * 1);
             playerH.AddComponent(connection);
             playerH.Scale = new Vector3(0.6f);
-            playerH.AddComponent(new MeshRendererComponent(shader, headModel,
+            playerH.AddComponent(new MeshRendererComponent(shader, true, headModel,
                 TextureLoader.FileToTexture("textures/playerHead.png"), 1));
 
 
@@ -116,7 +116,7 @@ namespace MinorGame.components
 
 
 
-            player.AddComponent(new MeshRendererComponent(shader, playerModel, TextureGenerator.GetPlayerTexture(), 1));
+            player.AddComponent(new MeshRendererComponent(shader, true, playerModel, TextureGenerator.GetPlayerTexture(), 1));
 
             AudioSourceComponent source = new AudioSourceComponent();
             AudioLoader.TryLoad("audio/ShootSound.wav", out ShootSound);
@@ -167,7 +167,7 @@ namespace MinorGame.components
 
             GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
-            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
+            obj.AddComponent(new MeshRendererComponent(bulletShader,true, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
             obj.Scale = new Vector3(0.3f, 0.3f, 1);
 
@@ -296,7 +296,7 @@ namespace MinorGame.components
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
-                Logger.Log("No Rigid body attached", DebugChannel.Warning);
+                Logger.Log("No Rigid body attached", DebugChannel.Warning, 10);
             }
 
             GameObject dbg = Owner.Scene.GetChildWithName("Console");
@@ -323,7 +323,7 @@ namespace MinorGame.components
             {
                 hp--;
                 OnHPChange?.Invoke(hp / (float)maxHP);
-                Logger.Log("Current Player HP: " + hp, DebugChannel.Log);
+                Logger.Log("Current Player HP: " + hp, DebugChannel.Log, 5);
                 other.Owner.Destroy();
             }
         }

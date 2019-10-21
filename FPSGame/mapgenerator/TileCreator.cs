@@ -89,8 +89,8 @@ namespace MinorGame.mapgenerator
             GameObject box = new GameObject(position, "Box");
             box.Scale = scale;
             box.Rotation = rotation;
-            Mesh cube = MeshLoader.Prefabs.Cube;
-            box.AddComponent(new MeshRendererComponent(GameScene.TextureShader, cube, texture, 1, false));
+            Mesh cube = Prefabs.Cube;
+            box.AddComponent(new MeshRendererComponent(GameScene.TextureShader, true, cube, texture, 1, false));
             Vector3 bounds = scale * 2;
             Collider coll;
             if (mass == -1)
@@ -111,8 +111,8 @@ namespace MinorGame.mapgenerator
             GameObject box = new GameObject(position, "Sphere");
             box.Scale = scale;
             box.Rotation = rotation;
-            Mesh sphere = MeshLoader.Prefabs.Sphere;
-            box.AddComponent(new MeshRendererComponent(GameScene.TextureShader, sphere, texture, 1, false));
+            Mesh sphere = Prefabs.Sphere;
+            box.AddComponent(new MeshRendererComponent(GameScene.TextureShader, true, sphere, texture, 1, false));
             Vector3 bounds = scale * 2;
             Collider coll;
             if (mass == -1)

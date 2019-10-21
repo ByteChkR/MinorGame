@@ -108,8 +108,8 @@ namespace MinorGame.components
             enemyHead.Scale = new Vector3(0.6f);
 
 
-            enemyHead.AddComponent(new MeshRendererComponent(shader, enemyHeadModel, headTex, 1));
-            enemy.AddComponent(new MeshRendererComponent(shader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
+            enemyHead.AddComponent(new MeshRendererComponent(shader, true, enemyHeadModel, headTex, 1));
+            enemy.AddComponent(new MeshRendererComponent(shader, true, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
 
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 
@@ -138,7 +138,7 @@ namespace MinorGame.components
             GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
 
-            obj.AddComponent(new MeshRendererComponent(bulletShader, bulletModel, bulletTex, 1,
+            obj.AddComponent(new MeshRendererComponent(bulletShader, true, bulletModel, bulletTex, 1,
                 false)); //<- Passing false enables using the same mesh for multiple classes
             //Otherwise it would dispose the data when one object is destroyed
             //Downside is that we need to store a reference somewhere and dispose them manually
@@ -182,7 +182,7 @@ namespace MinorGame.components
             if (other.Owner.Name == "BulletPlayer")
             {
                 hp--;
-                Logger.Log("Current Enemy HP: " + hp, DebugChannel.Log);
+                Logger.Log("Current Enemy HP: " + hp, DebugChannel.Log, 5);
                 other.Owner.Destroy();
             }
         }
@@ -273,7 +273,7 @@ namespace MinorGame.components
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
-                Logger.Log("No Rigid body attached", DebugChannel.Warning);
+                Logger.Log("No Rigid body attached", DebugChannel.Warning, 10);
             }
 
             GameObject dbg = Owner.Scene.GetChildWithName("Console");
@@ -357,7 +357,7 @@ namespace MinorGame.components
         protected override void OnDestroy()
         {
             enemiesAlive--;
-            Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log);
+            Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log, 5);
             
             if (enemiesAlive == 0)
             {

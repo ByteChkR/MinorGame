@@ -76,11 +76,12 @@ namespace MinorGame.scenes
         private GameObject CreateGround(Bitmap mapLayout, Vector3 scale)
         {
             Texture tex = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
+            Texture texS = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
 
 
 
 
-            TextureGenerator.CreateGroundTexture(new Bitmap(512, 512), tex);
+            TextureGenerator.CreateGroundTexture(new Bitmap(512, 512), tex, texS);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
                 tex, TextureShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero);
             ret.Name = "Ground";
@@ -173,7 +174,7 @@ namespace MinorGame.scenes
 
             while (!preview.Success)
             {
-                Logger.Log("Generating map Try " + tries, DebugChannel.Log);
+                Logger.Log("Generating map Try " + tries, DebugChannel.Log|DebugChannel.Game, 8);
                 preview.Generate(1);
                 tries++;
             }
@@ -188,8 +189,8 @@ namespace MinorGame.scenes
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
+                {ShaderType.FragmentShader, "shader/lit/point.fs"},
+                {ShaderType.VertexShader, "shader/lit/point.vs"}
             }, out TextureShader);
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {

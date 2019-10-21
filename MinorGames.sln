@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HorrorOfBindings", "HorrorOfBindings\HorrorOfBindings.csproj", "{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Minor\MinorEngine\Common\Common.csproj", "{EE53E951-79AE-49F0-BF5F-14920A346FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.Common", "Minor\MinorEngine\Engine.Common\Engine.Common.csproj", "{EE53E951-79AE-49F0-BF5F-14920A346FAE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\MinorEngine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
 EndProject

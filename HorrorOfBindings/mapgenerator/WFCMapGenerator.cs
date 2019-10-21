@@ -199,7 +199,7 @@ namespace MinorGame.mapgenerator
             obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
             if (attachDebugRenderer)
             {
-                obj.AddComponent(new MeshRendererComponent(shader, mesh,
+                obj.AddComponent(new MeshRendererComponent(shader, true, mesh,
                     TextureLoader.FileToTexture("textures/TEST.png"), 1));
             }
 
@@ -253,10 +253,10 @@ namespace MinorGame.mapgenerator
                 return;
             }
 
-            renderer.Texture?.Dispose();
+            renderer.DiffuseTexture?.Dispose();
 
 
-            renderer.Texture = texture;
+            renderer.DiffuseTexture = texture;
         }
 
         public bool Generate(int sampleID)

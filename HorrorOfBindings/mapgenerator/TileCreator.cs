@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Resources;
 using System.Runtime.ExceptionServices;
 using Engine.Core;
@@ -28,7 +29,8 @@ namespace MinorGame.mapgenerator
         {
             if (input < 128)
             {
-                return CreateCube(pos, scale, Quaternion.Identity, TextureGenerator.GetTexture(rnd.Next(0, 2)), program);
+                int r = rnd.Next(0, 2);
+                return CreateCube(pos, scale, Quaternion.Identity, TextureGenerator.GetTexture(r), program, TextureGenerator.GetSTexture(r));
             }
 
             return null;
@@ -77,7 +79,7 @@ namespace MinorGame.mapgenerator
                     obj.AddComponent(c);
                     obj.Scale = new Vector3(width / 2f, 8, 1);
                 }
-                obj.AddComponent(new MeshRendererComponent(program, MeshLoader.Prefabs.Cube, boundsTex, 1));
+                obj.AddComponent(new MeshRendererComponent(program, true, Prefabs.Cube, boundsTex, 1));
 
                 ret[i] = obj;
             }
@@ -127,19 +129,20 @@ namespace MinorGame.mapgenerator
         }
 
         public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
-            ShaderProgram program, int mass = -1)
+            ShaderProgram program, Texture tesS, int mass = -1)
         {
-            return CreateCube(position, scale, rotation, texture, program, Vector2.One, Vector2.Zero, mass);
+            return CreateCube(position, scale, rotation, texture, program, Vector2.One, Vector2.Zero, tesS, mass);
         }
 
         public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
-            ShaderProgram program, Vector2 tiling, Vector2 offset, int mass = -1)
+            ShaderProgram program, Vector2 tiling, Vector2 offset, Texture tesS = null, int mass = -1)
         {
             GameObject box = new GameObject(position, "Box");
             box.Scale = scale;
             box.Rotation = rotation;
-            Mesh cube = MeshLoader.Prefabs.Cube;
-            MeshRendererComponent mr = new MeshRendererComponent(program, cube, texture, 1, false);
+            Mesh cube = Prefabs.Cube;
+            MeshRendererComponent mr = new MeshRendererComponent(program, true, cube, texture, 1, false);
+            if (tesS != null) mr.SpecularTexture = tesS;
             mr.Tiling = tiling;
             mr.Offset = offset;
             box.AddComponent(mr);

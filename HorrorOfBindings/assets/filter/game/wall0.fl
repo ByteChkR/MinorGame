@@ -1,6 +1,7 @@
 --define texture random: urnd
 --define texture mask: wfcf "WFCTiles/brick.png" 3 32 32 false true 1 0 0 
 --define texture inverseMask: empty #Temporary Texture that is used to store a result
+--define texture specularOut: empty
 
 Perlin: #Creates perlin noise
   setactive 0 1 2
@@ -22,6 +23,12 @@ Main:
   mixt Perlin in #Creating ridges by mixing the mask with perlin
   adjustlevelrescale 0.5 0.6 #increase the Difference between high and low
   invert #invert to have the bricks be black and the cement be white
+  
+  #Store the Specular(bricks white cement black)
+  setactive specularOut 0 1 2
+  set in
+  mulv 1 #Less Shininess
+
   setactive inverseMask 0 1 2 #storing the inverse mask
   set in
   mulv 0.1
