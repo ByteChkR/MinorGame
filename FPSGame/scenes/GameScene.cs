@@ -68,7 +68,7 @@ namespace EndlessRunner.scenes
             box.Scale = scale;
             box.Rotation = rotation;
             Mesh cube = Prefabs.Cube;
-            box.AddComponent(new MeshRendererComponent(program, true, cube, texture, 1, false));
+            box.AddComponent(new LitMeshRendererComponent(program, cube, texture, 1, false));
             Vector3 bounds = scale * 2;
             Collider coll;
             if (mass == -1)

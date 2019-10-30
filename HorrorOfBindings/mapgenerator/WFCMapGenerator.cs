@@ -188,19 +188,19 @@ namespace MinorGame.mapgenerator
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
+                {ShaderType.FragmentShader, "assets/shader/texture.fs"},
+                {ShaderType.VertexShader, "assets/shader/texture.vs"}
             }, out ShaderProgram shader);
 
             //Ground
-            Mesh mesh = MeshLoader.FileToMesh("models/cube_flat.obj");
+            Mesh mesh = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
             GameObject obj = new GameObject(position, "WFCPreview");
 
             obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
             if (attachDebugRenderer)
             {
-                obj.AddComponent(new MeshRendererComponent(shader, true, mesh,
-                    TextureLoader.FileToTexture("textures/TEST.png"), 1));
+                obj.AddComponent(new LitMeshRendererComponent(shader, mesh,
+                    TextureLoader.FileToTexture("assets/textures/TEST.png"), 1));
             }
 
             obj.Scale = new Vector3(5, 5, 5);
@@ -213,14 +213,14 @@ namespace MinorGame.mapgenerator
 
         public WFCMapGenerator(string folderName, OutputCallback callback = null)
         {
-            if (!Directory.Exists(folderName))
+            if (!IOManager.FolderExists(folderName))
             {
                 Logger.Crash(new InvalidFolderPathException(folderName), true);
                 Logger.Log("Creating Directory: " + folderName, DebugChannel.Warning, 10);
             }
 
             _folderName = folderName;
-            sampleTextures = Directory.GetFiles(folderName, "*.png").ToList();
+            sampleTextures = IOManager.GetFiles(folderName, "*.png").ToList();
             _callback = callback;
         }
 
@@ -253,10 +253,10 @@ namespace MinorGame.mapgenerator
                 return;
             }
 
-            renderer.DiffuseTexture?.Dispose();
+            renderer.Textures[0]?.Dispose();
 
 
-            renderer.DiffuseTexture = texture;
+            renderer.Textures[0] = texture;
         }
 
         public bool Generate(int sampleID)

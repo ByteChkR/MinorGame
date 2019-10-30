@@ -65,22 +65,22 @@ namespace MinorGame.components
         {
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
+                {ShaderType.FragmentShader, "assets/shader/texture.fs"},
+                {ShaderType.VertexShader, "assets/shader/texture.vs"}
             }, out ShaderProgram shader);
 
 
-            Mesh mouseTargetModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
+            Mesh mouseTargetModel = MeshLoader.FileToMesh("assets/models/sphere_smooth.obj");
 
 
             GameObject mouseTarget = new GameObject(Vector3.UnitY * -3, "BG");
             mouseTarget.Scale = new Vector3(1, 1, 1);
-            mouseTarget.AddComponent(new MeshRendererComponent(shader, true, mouseTargetModel,
-                TextureLoader.FileToTexture("textures/TEST.png"), 1));
+            mouseTarget.AddComponent(new LitMeshRendererComponent(shader, mouseTargetModel,
+                Prefabs.White, 1));
 
-            Mesh playerModel = MeshLoader.FileToMesh("models/sphere_smooth.obj");
-            Mesh headModel = MeshLoader.FileToMesh("models/cube_flat.obj");
-            Mesh bullet = MeshLoader.FileToMesh("models/cube_flat.obj");
+            Mesh playerModel = MeshLoader.FileToMesh("assets/models/sphere_smooth.obj");
+            Mesh headModel = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
+            Mesh bullet = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
 
 
             GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
@@ -103,8 +103,8 @@ namespace MinorGame.components
             connection.Attach(player, Vector3.UnitY * 1);
             playerH.AddComponent(connection);
             playerH.Scale = new Vector3(0.6f);
-            playerH.AddComponent(new MeshRendererComponent(shader, true, headModel,
-                TextureLoader.FileToTexture("textures/playerHead.png"), 1));
+            playerH.AddComponent(new LitMeshRendererComponent(shader, headModel,
+                TextureLoader.FileToTexture("assets/textures/playerHead.png"), 1));
 
 
             //Player Setup
@@ -116,13 +116,13 @@ namespace MinorGame.components
 
 
 
-            player.AddComponent(new MeshRendererComponent(shader, true, playerModel, TextureGenerator.GetPlayerTexture(), 1));
+            player.AddComponent(new LitMeshRendererComponent(shader, playerModel, TextureGenerator.GetPlayerTexture(), 1));
 
             AudioSourceComponent source = new AudioSourceComponent();
-            AudioLoader.TryLoad("audio/ShootSound.wav", out ShootSound);
-            AudioLoader.TryLoad("audio/ShootSound2.wav", out ShootSound2);
-            AudioLoader.TryLoad("audio/SpawnSound.wav", out SpawnSound);
-            AudioLoader.TryLoad("audio/JumpSound.wav", out JumpSound);
+            AudioLoader.TryLoad("assets/audio/ShootSound.wav", out ShootSound);
+            AudioLoader.TryLoad("assets/audio/ShootSound2.wav", out ShootSound2);
+            AudioLoader.TryLoad("assets/audio/SpawnSound.wav", out SpawnSound);
+            AudioLoader.TryLoad("assets/audio/JumpSound.wav", out JumpSound);
             source.Clip = SpawnSound;
             source.Play();
             source.UpdatePosition = false;
@@ -130,7 +130,7 @@ namespace MinorGame.components
             player.AddComponent(source);
 
             player.AddComponent(new PlayerController(playerH, bullet,
-                TextureLoader.FileToTexture("textures/bulletTexture.png"), shader, 650, false, source));
+                TextureLoader.FileToTexture("assets/textures/bulletTexture.png"), shader, 650, false, source));
             player.LocalPosition = position;
 
 
@@ -167,7 +167,7 @@ namespace MinorGame.components
 
             GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
-            obj.AddComponent(new MeshRendererComponent(bulletShader,true, bulletModel, bulletTexture, 1, false));
+            obj.AddComponent(new LitMeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
             obj.Scale = new Vector3(0.3f, 0.3f, 1);
 

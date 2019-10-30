@@ -1,5 +1,5 @@
---define texture tex: "textures/dirt1.png"
---define texture result: "textures/dirt2.png"
+--define texture tex: "assets/textures/dirt1.png"
+--define texture result: "assets/textures/dirt2.png"
 --define texture helper: empty
 
 Perlin:

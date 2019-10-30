@@ -63,7 +63,7 @@ namespace MinorGame.mapgenerator
             MemoryBuffer buf = CLAPI.CreateEmpty<byte>(512 * 512 * 4, MemoryFlag.ReadWrite);
 
             intP?.ReleaseResources();
-            intP = new Interpreter("filter/game/perlin.fl", DataTypes.UCHAR1, buf, 512, 512, 1, 4, "kernel");
+            intP = new Interpreter("assets/filter/game/perlin.fl", DataTypes.UCHAR1, buf, 512, 512, 1, 4, "assets/kernel");
 
 
             do
@@ -91,7 +91,7 @@ namespace MinorGame.mapgenerator
         {
             if (!_initPerlin) InitPerlin();
             intP?.ReleaseResources();
-            intP = new Interpreter("filter/game/cobble_grass.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), (int)destTexture.Width, (int)destTexture.Height, 1, 4, "kernel");
+            intP = new Interpreter("assets/filter/game/cobble_grass.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), (int)destTexture.Width, (int)destTexture.Height, 1, 4, "assets/kernel");
 
 
             do
@@ -114,7 +114,7 @@ namespace MinorGame.mapgenerator
         {
             if (!_initPerlin) InitPerlin();
             intP?.ReleaseResources();
-            intP = new Interpreter($"filter/game/wall{i}.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), width, height, 1, 4, "kernel");
+            intP = new Interpreter($"assets/filter/game/wall{i}.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), width, height, 1, 4, "assets/kernel");
 
             do
             {
@@ -136,7 +136,7 @@ namespace MinorGame.mapgenerator
         {
             if (!_initPerlin) InitPerlin();
             intP?.ReleaseResources();
-            intP = new Interpreter($"filter/game/tennisball.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), 512, 512, 1, 4, "kernel");
+            intP = new Interpreter($"assets/filter/game/tennisball.fl", DataTypes.UCHAR1, TextureLoader.TextureToMemoryBuffer(destTexture), 512, 512, 1, 4, "assets/kernel");
 
             do
             {

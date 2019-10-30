@@ -35,7 +35,7 @@ namespace EndlessRunner.components
             c.AddComponent(off);
 
             GameObject playerObject = new GameObject(position, "Player");
-            MeshRendererComponent playerRenderer = new MeshRendererComponent(GameScene.TextureShader, true, _playerMesh, _playerTexture, 1);
+            LitMeshRendererComponent playerRenderer = new LitMeshRendererComponent(GameScene.TextureShader, _playerMesh, _playerTexture, 1);
             Collider collider = new Collider(new Box(Vector3.Zero, 0.6f, 1f, 0.4f, 1f), _physicsLayer);
             PlayerController controller = new PlayerController(10, collider);
             playerObject.AddComponent(playerRenderer);

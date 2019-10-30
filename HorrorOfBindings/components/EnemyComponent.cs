@@ -62,9 +62,9 @@ namespace MinorGame.components
             }
         }
 
-        private static Mesh enemyhead_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
-        private static Mesh enemy_prefab = MeshLoader.FileToMesh("models/sphere_smooth.obj");
-        private static Mesh bullet_prefab = MeshLoader.FileToMesh("models/cube_flat.obj");
+        private static Mesh enemyhead_prefab = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
+        private static Mesh enemy_prefab = MeshLoader.FileToMesh("assets/models/sphere_smooth.obj");
+        private static Mesh bullet_prefab = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
         private static Texture headTex, bulletTex;
         private static bool init;
 
@@ -73,8 +73,8 @@ namespace MinorGame.components
             if (!init)
             {
                 init = true;
-                headTex = TextureLoader.FileToTexture("textures/enemyHead.jpg");
-                bulletTex = TextureLoader.FileToTexture("textures/bulletTexture.png");
+                headTex = TextureLoader.FileToTexture("assets/textures/enemyHead.jpg");
+                bulletTex = TextureLoader.FileToTexture("assets/textures/bulletTexture.png");
             }
 
             Mesh enemyHeadModel = enemyhead_prefab.Copy();
@@ -83,8 +83,8 @@ namespace MinorGame.components
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
+                {ShaderType.FragmentShader, "assets/shader/texture.fs"},
+                {ShaderType.VertexShader, "assets/shader/texture.vs"}
             }, out ShaderProgram shader);
 
 
@@ -108,8 +108,8 @@ namespace MinorGame.components
             enemyHead.Scale = new Vector3(0.6f);
 
 
-            enemyHead.AddComponent(new MeshRendererComponent(shader, true, enemyHeadModel, headTex, 1));
-            enemy.AddComponent(new MeshRendererComponent(shader, true, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
+            enemyHead.AddComponent(new LitMeshRendererComponent(shader, enemyHeadModel, headTex, 1));
+            enemy.AddComponent(new LitMeshRendererComponent(shader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
 
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
 
@@ -138,7 +138,7 @@ namespace MinorGame.components
             GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
 
-            obj.AddComponent(new MeshRendererComponent(bulletShader, true, bulletModel, bulletTex, 1,
+            obj.AddComponent(new LitMeshRendererComponent(bulletShader, bulletModel, bulletTex, 1,
                 false)); //<- Passing false enables using the same mesh for multiple classes
             //Otherwise it would dispose the data when one object is destroyed
             //Downside is that we need to store a reference somewhere and dispose them manually

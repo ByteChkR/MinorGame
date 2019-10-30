@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Engine.Core;
+using Engine.DataTypes;
 using Engine.Debug;
 using MinorGame.scenes;
 using OpenTK;
@@ -26,7 +27,6 @@ namespace MinorGame
         {
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
-            EngineConfig.LoadConfig("configs/engine.settings.xml", Assembly.GetAssembly(typeof(GameEngine)), "Engine");
 
 #if COLLECT_LOGS
             if (AskForDebugLogSending())
@@ -51,9 +51,14 @@ namespace MinorGame
 #endif
 
 
+            GameEngine engine = new GameEngine(EngineSettings.DefaultSettings);
 
-
-            GameEngine engine = new GameEngine(EngineSettings.Settings);
+            ManifestReader.RegisterAssembly(Assembly.GetExecutingAssembly());
+            //EngineConfig.CreateConfig(Assembly.GetAssembly(typeof(GameEngine)), "Engine.Core" , "configs/engine.settings.xml");
+            EngineConfig.LoadConfig("assets/configs/engine.settings.xml", Assembly.GetAssembly(typeof(GameEngine)),
+                "Engine.Core");
+            DebugSettings dbgSettings = EngineSettings.Settings.DebugSettings;
+            engine.SetSettings(EngineSettings.Settings);
             engine.Initialize();
             engine.InitializeScene<GameTestScene>();
             engine.Run();

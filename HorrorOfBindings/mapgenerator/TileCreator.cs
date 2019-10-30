@@ -20,7 +20,7 @@ namespace MinorGame.mapgenerator
 {
     public class TileCreator
     {
-        private static Texture boundsTex = TextureLoader.FileToTexture("textures/boundsTexture.png");
+        private static Texture boundsTex = TextureLoader.FileToTexture("assets/textures/boundsTexture.png");
         private static Random rnd = new Random();
 
         public delegate GameObject CreateObject(byte input, Vector3 pos, Vector3 scale, ShaderProgram program);
@@ -79,7 +79,7 @@ namespace MinorGame.mapgenerator
                     obj.AddComponent(c);
                     obj.Scale = new Vector3(width / 2f, 8, 1);
                 }
-                obj.AddComponent(new MeshRendererComponent(program, true, Prefabs.Cube, boundsTex, 1));
+                obj.AddComponent(new LitMeshRendererComponent(program, Prefabs.Cube, boundsTex, 1));
 
                 ret[i] = obj;
             }
@@ -141,8 +141,12 @@ namespace MinorGame.mapgenerator
             box.Scale = scale;
             box.Rotation = rotation;
             Mesh cube = Prefabs.Cube;
-            MeshRendererComponent mr = new MeshRendererComponent(program, true, cube, texture, 1, false);
-            if (tesS != null) mr.SpecularTexture = tesS;
+            LitMeshRendererComponent mr = new LitMeshRendererComponent(program, cube, texture, 1, false);
+            if (tesS != null)
+            {
+                tesS.TexType = TextureType.Specular;
+                mr.Textures = new[] {mr.Textures[0], tesS};
+            }
             mr.Tiling = tiling;
             mr.Offset = offset;
             box.AddComponent(mr);

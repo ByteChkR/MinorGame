@@ -1,6 +1,0 @@
-Main:
-	setactive 3
-	setv 1
-  setactive 0 1 2
-  rnd
-  perlin 0.7 8

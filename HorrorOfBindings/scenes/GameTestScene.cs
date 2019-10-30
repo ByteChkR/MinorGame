@@ -165,7 +165,7 @@ namespace MinorGame.scenes
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
 
             WFCMapGenerator preview = WFCMapGenerator
-                .CreateWFCPreview(Vector3.Zero, "WFCTiles", false, (input) => CreateMap(input, TextureShader))
+                .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false, (input) => CreateMap(input, TextureShader))
                 .GetComponent<WFCMapGenerator>();
 
             int tries = 1;
@@ -189,18 +189,18 @@ namespace MinorGame.scenes
 
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/lit/point.fs"},
-                {ShaderType.VertexShader, "shader/lit/point.vs"}
+                {ShaderType.FragmentShader, "assets/shader/lit/point.fs"},
+                {ShaderType.VertexShader, "assets/shader/lit/point.vs"}
             }, out TextureShader);
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/UITextRender.fs"},
-                {ShaderType.VertexShader, "shader/UITextRender.vs"}
+                {ShaderType.FragmentShader, "assets/shader/UITextRender.fs"},
+                {ShaderType.VertexShader, "assets/shader/UITextRender.vs"}
             }, out TextShader);
             ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
             {
-                {ShaderType.FragmentShader, "shader/UIRender.fs"},
-                {ShaderType.VertexShader, "shader/UIRender.vs"}
+                {ShaderType.FragmentShader, "assets/shader/UIRender.fs"},
+                {ShaderType.VertexShader, "assets/shader/UIRender.vs"}
             }, out UIImageShader);
 
             BasicCamera c = new BasicCamera(

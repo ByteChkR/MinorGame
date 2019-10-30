@@ -1,7 +1,7 @@
 --define texture random: urnd
---define texture mask: wfcf "WFCTiles/brick.png" 3 32 32 true true 1 0 0 
+--define texture mask: wfcf "assets/WFCTiles/brick.png" 3 32 32 true true 1 0 0 
 --define texture inverseMask: empty #Temporary Texture that is used to store a result
---define script grass: "filter/game/grass.fl"
+--define script grass: "assets/filter/game/grass.fl"
 --define texture specularOut: empty
 Perlin: #Creates perlin noise
   setactive 0 1 2
