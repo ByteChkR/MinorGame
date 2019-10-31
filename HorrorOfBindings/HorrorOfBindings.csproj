@@ -3,6 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <Configurations>Debug;Release;Release_CollectLogs;Release_TravisTest;Release_Trace;Debug_Trace</Configurations>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
@@ -20,11 +21,7 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AssimpNet" Version="4.1.0" />
-    <PackageReference Include="OpenTK.NetStandard" Version="1.0.4" />
-    <PackageReference Include="SharpFontCore" Version="0.1.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
+    <Folder Include="assets\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Minor\MinorEngine\Engine\Engine.csproj" />
