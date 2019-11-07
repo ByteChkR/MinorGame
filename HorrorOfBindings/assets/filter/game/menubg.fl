@@ -1,0 +1,4 @@
+--define texture bg: wfcf "assets/WFCTiles/menubg.png" 3 64 64 true true 8 0 0 
+
+Main:
+  set bg

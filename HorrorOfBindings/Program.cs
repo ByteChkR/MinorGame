@@ -61,7 +61,7 @@ namespace MinorGame
             DebugSettings dbgSettings = EngineSettings.Settings.DebugSettings;
             engine.SetSettings(EngineSettings.Settings);
             engine.Initialize();
-            engine.InitializeScene<GameTestScene>();
+            engine.InitializeScene<MenuScene>();
             engine.Run();
         }
     }
