@@ -5,13 +5,13 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HorrorOfBindings", "HorrorOfBindings\HorrorOfBindings.csproj", "{0DEEFC1E-B2EA-441C-A4AD-52EF8BBE5A1B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.Common", "Minor\MinorEngine\Engine.Common\Engine.Common.csproj", "{EE53E951-79AE-49F0-BF5F-14920A346FAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.Common", "Minor\Engine\Engine.Common\Engine.Common.csproj", "{EE53E951-79AE-49F0-BF5F-14920A346FAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\MinorEngine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine", "Minor\Engine\Engine\Engine.csproj", "{F7A8BC4E-84CB-4E67-AFEB-48035309F0AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EndlessRunner", "FPSGame\EndlessRunner.csproj", "{923A3374-A185-4FD4-A0FB-5CAEAEE02498}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.AssetPackaging", "Minor\MinorEngine\Engine.AssetPackaging\Engine.AssetPackaging.csproj", "{8040759D-00E7-4236-BC68-BF7C0EFD170B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine.AssetPackaging", "Minor\Engine\Engine.AssetPackaging\Engine.AssetPackaging.csproj", "{8040759D-00E7-4236-BC68-BF7C0EFD170B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
