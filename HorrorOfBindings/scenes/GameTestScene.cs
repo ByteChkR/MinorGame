@@ -81,14 +81,15 @@ namespace MinorGame.scenes
 
 
 
-            TextureGenerator.CreateGroundTexture(new Bitmap(512, 512), tex, texS);
+            TextureGenerator.CreateGroundTexture(tex, texS);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
-                tex, TextureShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero);
+                tex, TextureShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero, texS);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
             return ret;
         }
+        
 
         private string cmd_Move(string[] args)
         {
@@ -209,6 +210,7 @@ namespace MinorGame.scenes
 
             LoadTestScene(c);
             LoadGameScene(camera);
+            TextureGenerator.Process();
 
             GameEngine.Instance.CurrentScene.Add(c);
             GameEngine.Instance.CurrentScene.SetCamera(c);

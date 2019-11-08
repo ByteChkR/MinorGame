@@ -13,6 +13,7 @@ using Engine.Rendering;
 using Engine.UI;
 using Engine.UI.EventSystems;
 using MinorGame.components;
+using MinorGame.mapgenerator;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;
@@ -28,6 +29,8 @@ namespace MinorGame.scenes
         private static Texture buttonCTex;
         protected override void InitializeScene()
         {
+            TextureGenerator.Initialize(true);
+
             buttonITex = TextureLoader.ColorToTexture(Color.Blue);
             buttonHTex = TextureLoader.ColorToTexture(Color.FromArgb(0, 0, 128));
             buttonCTex = TextureLoader.ColorToTexture(Color.Black);
@@ -59,7 +62,7 @@ namespace MinorGame.scenes
 
             Texture menubg = GenerateMenuBackground();
             UIImageRendererComponent bg = new UIImageRendererComponent(menubg, false, 1, UIShader);
-            
+
             GameObject bgobj = new GameObject("BG");
             bgobj.AddComponent(new BackgroundMover());
             bgobj.AddComponent(bg);
@@ -87,7 +90,7 @@ namespace MinorGame.scenes
 
         private Texture GenerateMenuBackground()
         {
-            Interpreter i = new Interpreter("assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(64 * 64 * 4, MemoryFlag.ReadWrite), 64, 64, 1, 4, "assets/kernel/", true);
+            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread,  64 * 64 * 4, MemoryFlag.ReadWrite), 64, 64, 1, 4, "assets/kernel/", true);
 
             do
             {
