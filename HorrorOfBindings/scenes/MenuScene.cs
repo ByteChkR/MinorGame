@@ -11,6 +11,9 @@ using Engine.OpenFL;
 using Engine.Physics.BEPUphysics.BroadPhaseEntries;
 using Engine.Rendering;
 using Engine.UI;
+using Engine.UI.Animations;
+using Engine.UI.Animations.AnimationTypes;
+using Engine.UI.Animations.Interpolators;
 using Engine.UI.EventSystems;
 using MinorGame.components;
 using MinorGame.mapgenerator;
@@ -67,22 +70,41 @@ namespace MinorGame.scenes
             bgobj.AddComponent(new BackgroundMover());
             bgobj.AddComponent(bg);
             Add(bgobj);
-
-            CreateButton("Start Game", new Vector2(-0.5f, 0.5f), new Vector2(0.2f, 0.1f), btnStartGame);
-            CreateButton("Credits", new Vector2(-0.5f, 0.25f), new Vector2(0.2f, 0.1f));
-            CreateButton("Exit", new Vector2(-0.5f, 0.0f), new Vector2(0.2f, 0.1f), btnExit);
+            
+            CreateButton("assets/textures/btn/btnStart" ,"", new Vector2(-0.5f, 0.5f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.5f),0), btnStartGame);
+            CreateButton("assets/textures/btn/btnCredits","", new Vector2(-0.5f, 0.25f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
+            CreateButton("assets/textures/btn/btnExit", "", new Vector2(-0.5f, 0.0f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.0f), 0.4f), btnExit);
             DebugConsoleComponent c = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             Add(c.Owner);
 
         }
 
+        private List<Animation> CreateButtonAnimation(Vector2 endPos, float delay)
+        {
+            LinearAnimation loadAnim = new LinearAnimation();
+            loadAnim.Interpolator = new SmoothInterpolator();
+            loadAnim.StartPos = new Vector2(endPos.X-1, endPos.Y);
+            loadAnim.EndPos = endPos;
+            loadAnim.MaxAnimationTime = 1;
+            loadAnim.Trigger = AnimationTrigger.OnLoad;
+            loadAnim.AnimationDelay = delay;
 
-        private void btnStartGame()
+            LinearAnimation clickAnim = new LinearAnimation();
+            clickAnim.Interpolator = new Arc2Interpolator();
+            clickAnim.StartPos = endPos;
+            clickAnim.EndPos = endPos + Vector2.UnitY * 0.1f;
+            clickAnim.MaxAnimationTime = 0.5f;
+            clickAnim.Trigger = AnimationTrigger.OnEnter;
+            return new List<Animation> { loadAnim, clickAnim };
+        }
+
+
+        private void btnStartGame(Button target)
         {
             GameEngine.Instance.InitializeScene<GameTestScene>();
         }
 
-        private void btnExit()
+        private void btnExit(Button target)
         {
             GameEngine.Instance.Exit();
         }
@@ -90,7 +112,7 @@ namespace MinorGame.scenes
 
         private Texture GenerateMenuBackground()
         {
-            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread,  64 * 64 * 4, MemoryFlag.ReadWrite), 64, 64, 1, 4, "assets/kernel/", true);
+            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread, 64 * 64 * 4, MemoryFlag.ReadWrite), 64, 64, 1, 4, "assets/kernel/", true);
 
             do
             {
@@ -103,16 +125,19 @@ namespace MinorGame.scenes
         }
 
 
-        private GameObject CreateButton(string Text, Vector2 Position, Vector2 Scale, Action onClick = null)
+        private GameObject CreateButton(string buttonString, string Text, Vector2 Position, Vector2 Scale, List<Animation> animations, Action<Button> onClick = null, Action<Button> onEnter = null, Action<Button> onLeave = null, Action<Button> onHover = null)
         {
             GameObject container = new GameObject("BtnContainer");
             GameObject obj = new GameObject("Button");
             GameObject tObj = new GameObject("Text");
-            Texture btnIdle = TextureLoader.ColorToTexture(Color.Green);
-            Texture btnHover = TextureLoader.ColorToTexture(Color.Red);
-            Texture btnClick = TextureLoader.ColorToTexture(Color.Blue);
-            Button btn = new Button(btnIdle, UIShader, 1, btnClick, btnHover, onClick);
+            Texture btnIdle = TextureLoader.FileToTexture(buttonString +".png");
+            Texture btnHover = TextureLoader.FileToTexture(buttonString + "H.png");
+            Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
+            Button btn = new Button(btnIdle, UIShader, 1, btnClick, btnHover, onClick, onEnter, onHover, onLeave);
 
+            Animator anim = new Animator(btn, animations);
+            obj.AddComponent(anim);
+            
             UITextRendererComponent tr = new UITextRendererComponent("Arial", false, 1, TextShader);
             obj.AddComponent(btn);
             tObj.AddComponent(tr);
