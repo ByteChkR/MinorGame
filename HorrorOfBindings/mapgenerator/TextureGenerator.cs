@@ -10,6 +10,7 @@ using Engine.OpenCL.DotNetCore.Memory;
 using Engine.OpenCL.Runner;
 using Engine.OpenCL.TypeEnums;
 using Engine.OpenFL;
+using OpenTK.Graphics.OpenGL;
 
 namespace MinorGame.mapgenerator
 {
@@ -35,7 +36,7 @@ namespace MinorGame.mapgenerator
             }
             else
             {
-                runner = new FLRunner(CLAPI.MainThread, null);
+                runner = new FLRunner(CLAPI.MainThread);
             }
             InitPerlin();
         }
@@ -84,10 +85,10 @@ namespace MinorGame.mapgenerator
         {
             _initPerlin = true;
 
-            Texture tex = TextureLoader.ParameterToTexture(512, 512);
+            //Texture tex = TextureLoader.ParameterToTexture(512, 512);
 
-            FLExecutionContext exec =new FLExecutionContext("assets/filter/game/perlin.fl", tex, new Dictionary<string, Texture>(), null);
-            runner.Enqueue(exec);
+            //FLExecutionContext exec =new FLExecutionContext("assets/filter/game/perlin.fl", tex, new Dictionary<string, Texture>(), null);
+            //runner.Enqueue(exec);
 
             playerSphereTexture = TextureLoader.ParameterToTexture(512, 512);
             playerSphereSpecTexture = TextureLoader.ParameterToTexture(512, 512);
@@ -99,31 +100,32 @@ namespace MinorGame.mapgenerator
             {
                 wallTextures[i] = TextureLoader.ParameterToTexture(512, 512);
                 wallSpecTextures[i] = TextureLoader.ParameterToTexture(512, 512);
-                CreateWallTexture(wallTextures[i], wallSpecTextures[i],  i);
+                CreateWallTexture(wallTextures[i], wallSpecTextures[i], i);
             }
         }
-        
+
         public static void CreateGroundTexture(Texture destTexture, Texture specTexture)
         {
             runner.Enqueue(GetExecutionContext("assets/filter/game/cobble_grass.fl", destTexture, specTexture, null));
         }
 
-        public static void CreateWallTexture(Texture destTexture, Texture specTexture,  int i)
+        public static void CreateWallTexture(Texture destTexture, Texture specTexture, int i)
         {
-            runner.Enqueue(GetExecutionContext($"assets/filter/game/wall{i}.fl", destTexture, specTexture,  null));
+            runner.Enqueue(GetExecutionContext($"assets/filter/game/wall{i}.fl", destTexture, specTexture, null));
         }
         public static void CreatePlayerTexture(Texture destTexture, Texture specTexture)
         {
-            runner.Enqueue(GetExecutionContext($"assets/filter/game/tennisball.fl", destTexture, specTexture,  null));
+            runner.Enqueue(GetExecutionContext($"assets/filter/game/tennisball.fl", destTexture, specTexture, null));
         }
 
-        private static FLExecutionContext GetExecutionContext(string file, Texture dest, Texture specular, Action onFinishCallback)
+        private static FLExecutionContext GetExecutionContext(string file, Texture dest, Texture specular, Action<Dictionary<Texture, byte[]>> onFinishCallback)
         {
-            Dictionary<string, Texture> otherTex = new Dictionary<string, Texture>() { { "specularOut", specular } };
+
+            Dictionary<string, Texture> otherTex = new Dictionary<string, Texture>() { { "result", dest }, { "specularOut", specular } };
             return new FLExecutionContext(file, dest, otherTex, onFinishCallback);
         }
 
-        
+
 
 
     }
