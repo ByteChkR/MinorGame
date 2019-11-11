@@ -81,12 +81,6 @@ namespace MinorGame.components
             Mesh enemyModel = enemy_prefab.Copy();
             Mesh bullet = bullet_prefab.Copy();
 
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/texture.fs"},
-                {ShaderType.VertexShader, "assets/shader/texture.vs"}
-            }, out ShaderProgram shader);
-
 
             GameObject enemyHead = new GameObject(new Vector3(0, 0.5f, 0), "Nozzle");
             GameObject enemy = new GameObject(position, "Enemy");
@@ -108,10 +102,10 @@ namespace MinorGame.components
             enemyHead.Scale = new Vector3(0.6f);
 
 
-            enemyHead.AddComponent(new LitMeshRendererComponent(shader, enemyHeadModel, headTex, 1));
-            enemy.AddComponent(new LitMeshRendererComponent(shader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
+            enemyHead.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyHeadModel, headTex, 1));
+            enemy.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
 
-            enemy.AddComponent(new EnemyComponent(enemyHead, bullet, shader, 50, false));
+            enemy.AddComponent(new EnemyComponent(enemyHead, bullet, DefaultFilepaths.DefaultLitShader, 50, false));
 
 
             return new[] { enemy, enemyHead };

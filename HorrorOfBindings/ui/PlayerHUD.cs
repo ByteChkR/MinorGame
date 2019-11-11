@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using Engine.Core;
+using Engine.DataTypes;
 using Engine.IO;
 using Engine.UI;
 using MinorGame.components;
@@ -29,7 +30,7 @@ namespace MinorGame.ui
 
 
             GameObject enemiesLeftObj = new GameObject("EnemiesLeft");
-            EnemiesLeftText = new UITextRendererComponent("Arial", false, 1, GameTestScene.TextShader);
+            EnemiesLeftText = new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultLitShader);
             enemiesLeftObj.AddComponent(EnemiesLeftText);
             EnemiesLeftText.Position = new Vector2(0.2f, -0.45f);
             EnemiesLeftText.Scale = new Vector2(2f);
@@ -43,7 +44,7 @@ namespace MinorGame.ui
             GameObject playerHPBarBGObj = new GameObject("PlayerHPBar");
             bmp.SetPixel(0, 0, Color.Black);
 
-            PlayerHPBarBGObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1, GameTestScene.UIImageShader);
+            PlayerHPBarBGObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1, DefaultFilepaths.DefaultUIImageShader);
             playerHPBarBGObj.AddComponent(PlayerHPBarBGObj);
             PlayerHPBarBGObj.Position = new Vector2(0.0f, 0.9f);
             PlayerHPBarBGObj.Scale = new Vector2(0.31f, 0.05f * GameEngine.Instance.AspectRatio * 1.2f);
@@ -53,7 +54,7 @@ namespace MinorGame.ui
 
             bmp.SetPixel(0, 0, Color.Red);
 
-            PlayerHPBarObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1, GameTestScene.UIImageShader);
+            PlayerHPBarObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1, DefaultFilepaths.DefaultUIImageShader);
             playerHPBarObj.AddComponent(PlayerHPBarObj);
             PlayerHPBarObj.Position = new Vector2(0.0f, 0.9f);
             PlayerHPBarObj.Scale = new Vector2(0.3f, 0.05f * GameEngine.Instance.AspectRatio);

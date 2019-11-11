@@ -22,9 +22,6 @@ namespace MinorGame.scenes
     {
         private BasicCamera camera;
         private GameObject groundObj;
-        public static ShaderProgram TextureShader;
-        public static ShaderProgram TextShader;
-        public static ShaderProgram UIImageShader;
 
         private void LoadGameScene(BasicCamera c)
         {
@@ -83,7 +80,7 @@ namespace MinorGame.scenes
 
             TextureGenerator.CreateGroundTexture(tex, texS);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
-                tex, TextureShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero, texS);
+                tex, DefaultFilepaths.DefaultLitShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero, texS);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
@@ -166,7 +163,7 @@ namespace MinorGame.scenes
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
 
             WFCMapGenerator preview = WFCMapGenerator
-                .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false, (input) => CreateMap(input, TextureShader))
+                .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false, (input) => CreateMap(input, DefaultFilepaths.DefaultLitShader))
                 .GetComponent<WFCMapGenerator>();
 
             int tries = 1;
@@ -188,21 +185,6 @@ namespace MinorGame.scenes
             int hybridLayer = LayerManager.RegisterLayer("hybrid", new Layer(1, 1 | 2));
             LayerManager.RegisterLayer("physics", new Layer(1, 1));
 
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/lit/point.fs"},
-                {ShaderType.VertexShader, "assets/shader/lit/point.vs"}
-            }, out TextureShader);
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/UITextRender.fs"},
-                {ShaderType.VertexShader, "assets/shader/UITextRender.vs"}
-            }, out TextShader);
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/UIRender.fs"},
-                {ShaderType.VertexShader, "assets/shader/UIRender.vs"}
-            }, out UIImageShader);
 
             BasicCamera c = new BasicCamera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),

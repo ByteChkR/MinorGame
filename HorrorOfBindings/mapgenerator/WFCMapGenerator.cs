@@ -186,11 +186,6 @@ namespace MinorGame.mapgenerator
         public static GameObject CreateWFCPreview(Vector3 position, string folderName, bool attachDebugRenderer = true,
             OutputCallback outputCallback = null)
         {
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/texture.fs"},
-                {ShaderType.VertexShader, "assets/shader/texture.vs"}
-            }, out ShaderProgram shader);
 
             //Ground
             Mesh mesh = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
@@ -199,7 +194,7 @@ namespace MinorGame.mapgenerator
             obj.AddComponent(new WFCMapGenerator(folderName, outputCallback));
             if (attachDebugRenderer)
             {
-                obj.AddComponent(new LitMeshRendererComponent(shader, mesh,
+                obj.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, mesh,
                     TextureLoader.FileToTexture("assets/textures/TEST.png"), 1));
             }
 

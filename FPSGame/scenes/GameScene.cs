@@ -21,11 +21,7 @@ namespace EndlessRunner.scenes
         public static GameObject Container;
         protected override void InitializeScene()
         {
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "shader/texture.fs"},
-                {ShaderType.VertexShader, "shader/texture.vs"}
-            }, out TextureShader);
+ 
 
             DebugConsoleComponent console = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             console.AddCommand("map", cmdGenerateMap);

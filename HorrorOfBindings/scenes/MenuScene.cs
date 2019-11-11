@@ -26,8 +26,6 @@ namespace MinorGame.scenes
 {
     public class MenuScene : AbstractScene
     {
-        private static ShaderProgram UIShader;
-        private static ShaderProgram TextShader;
         private static Texture buttonITex;
         private static Texture buttonHTex;
         private static Texture buttonCTex;
@@ -38,19 +36,6 @@ namespace MinorGame.scenes
             buttonITex = TextureLoader.ColorToTexture(Color.Blue);
             buttonHTex = TextureLoader.ColorToTexture(Color.FromArgb(0, 0, 128));
             buttonCTex = TextureLoader.ColorToTexture(Color.Black);
-
-
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/UIRender.fs"},
-                {ShaderType.VertexShader, "assets/shader/UIRender.vs"}
-            }, out UIShader);
-            ShaderProgram.TryCreate(new Dictionary<ShaderType, string>
-            {
-                {ShaderType.FragmentShader, "assets/shader/UITextRender.fs"},
-                {ShaderType.VertexShader, "assets/shader/UITextRender.vs"}
-            }, out TextShader);
-
 
 
             BasicCamera mainCamera =
@@ -65,7 +50,7 @@ namespace MinorGame.scenes
             SetCamera(mainCamera);
 
             Texture menubg = GenerateMenuBackground();
-            UIImageRendererComponent bg = new UIImageRendererComponent(menubg, false, 1, UIShader);
+            UIImageRendererComponent bg = new UIImageRendererComponent(menubg, false, 1, DefaultFilepaths.DefaultUIImageShader);
 
             GameObject bgobj = new GameObject("BG");
             bgobj.AddComponent(new BackgroundMover());
@@ -140,11 +125,11 @@ namespace MinorGame.scenes
             Texture btnIdle = TextureLoader.FileToTexture(buttonString +".png");
             Texture btnHover = TextureLoader.FileToTexture(buttonString + "H.png");
             Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
-            Button btn = new Button(btnIdle, UIShader, 1, btnClick, btnHover, onClick, onEnter, onHover, onLeave);
+            Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUIImageShader, 1, btnClick, btnHover, onClick, onEnter, onHover, onLeave);
 
             
             
-            UITextRendererComponent tr = new UITextRendererComponent("Arial", false, 1, TextShader);
+            UITextRendererComponent tr = new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUITextShader);
             obj.AddComponent(btn);
             tObj.AddComponent(tr);
             container.Add(obj);
