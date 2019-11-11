@@ -1,4 +1,10 @@
---define texture bg: wfcf "assets/WFCTiles/menubg.png" 3 64 64 true true 8 0 0 
+--define texture bg: wfcf "assets/WFCTiles/menubg.png" 3 128 128 true true 8 0 0 
 
 Main:
-  set bg
+  setactive 3
+  setv 1
+  setactive 2
+  urnd
+  perlin 0.8 8
+  setactive 0 1 2
+  mixv bg 0.5

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Engine.Core;
 using Engine.DataTypes;
 using Engine.Debug;
@@ -70,10 +71,10 @@ namespace MinorGame.scenes
             bgobj.AddComponent(new BackgroundMover());
             bgobj.AddComponent(bg);
             Add(bgobj);
-            
-            CreateButton("assets/textures/btn/btnStart" ,"", new Vector2(-0.5f, 0.5f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.5f),0), btnStartGame);
-            CreateButton("assets/textures/btn/btnCredits","", new Vector2(-0.5f, 0.25f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
-            CreateButton("assets/textures/btn/btnExit", "", new Vector2(-0.5f, 0.0f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.0f), 0.4f), btnExit);
+            //Positions are wrong(0.5 => 5) out of the screen because the correct positions are defined in CreateButtonAnimation.
+            CreateButton("assets/textures/btn/btn" ,"Start Game", new Vector2(-5f, 0.5f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.5f),0), btnStartGame);
+            CreateButton("assets/textures/btn/btn","Credits", new Vector2(-5f, 0.25f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
+            CreateButton("assets/textures/btn/btn", "Exit", new Vector2(-5f, 0.0f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.0f), 0.4f), btnExit);
             DebugConsoleComponent c = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             Add(c.Owner);
 
@@ -112,15 +113,21 @@ namespace MinorGame.scenes
 
         private Texture GenerateMenuBackground()
         {
-            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread, 64 * 64 * 4, MemoryFlag.ReadWrite), 64, 64, 1, 4, "assets/kernel/", true);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            int texWidth = 128;
+            int texHeight = 128;
+            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth, texHeight, 1, 4, "assets/kernel/", true);
 
             do
             {
                 i.Step();
             } while (!i.Terminated);
 
-            Texture tex = TextureLoader.ParameterToTexture(64, 64);
+            Texture tex = TextureLoader.ParameterToTexture(texWidth, texHeight);
             TextureLoader.Update(tex, i.GetResult<byte>(), (int)tex.Width, (int)tex.Height);
+            Logger.Log("Time for Menu Background(ms): " + sw.ElapsedMilliseconds,DebugChannel.Log, 10);
+            sw.Stop();
             return tex;
         }
 
@@ -135,8 +142,7 @@ namespace MinorGame.scenes
             Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
             Button btn = new Button(btnIdle, UIShader, 1, btnClick, btnHover, onClick, onEnter, onHover, onLeave);
 
-            Animator anim = new Animator(btn, animations);
-            obj.AddComponent(anim);
+            
             
             UITextRendererComponent tr = new UITextRendererComponent("Arial", false, 1, TextShader);
             obj.AddComponent(btn);
@@ -147,9 +153,14 @@ namespace MinorGame.scenes
             btn.Position = Position;
             btn.Scale = Scale;
             Vector2 textpos = Position;
+            tr.Scale=Vector2.One*2;
             tr.Center = true;
             tr.Position = textpos;
             tr.Text = Text;
+
+            Animator anim = new Animator(animations, btn, tr);
+            obj.AddComponent(anim);
+
             return obj;
         }
     }
