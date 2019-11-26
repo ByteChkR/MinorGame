@@ -8,11 +8,13 @@ namespace MinorGame.components
         private float _fireTime;
         private float _time;
         private Action _action;
+        private bool _loop;
 
-        public GeneralTimer(float fireTime, Action action)
+        public GeneralTimer(float fireTime, Action action, bool loop = false)
         {
             _action = action;
             _fireTime = fireTime;
+            _loop = loop;
         }
 
 
@@ -22,7 +24,10 @@ namespace MinorGame.components
             if (_time >= _fireTime)
             {
                 _action?.Invoke();
-                Destroy();
+                if (_loop)
+                    _time = 0;
+                else
+                    Destroy();
             }
         }
     }

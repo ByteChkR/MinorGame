@@ -279,14 +279,9 @@ namespace MinorGame.components
             return "Player Reset";
         }
 
-        private void ActivateEnemies()
-        {
-            EnemyComponent.active = true;
-        }
-
+        
         protected override void Awake()
         {
-            GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, ActivateEnemies));
 
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)

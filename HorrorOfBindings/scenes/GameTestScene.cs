@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Engine.Audio;
 using Engine.Core;
@@ -9,6 +10,10 @@ using Engine.OpenCL.DotNetCore.Memory;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
+using Engine.UI;
+using Engine.UI.Animations;
+using Engine.UI.Animations.AnimationTypes;
+using Engine.UI.Animations.Interpolators;
 using Engine.WFC;
 using MinorGame.components;
 using MinorGame.mapgenerator;
@@ -80,13 +85,13 @@ namespace MinorGame.scenes
 
             TextureGenerator.CreateGroundTexture(tex, texS);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
-                tex, DefaultFilepaths.DefaultLitShader, new Vector2(scale.X/4, scale.Z/4), Vector2.Zero, texS);
+                tex, DefaultFilepaths.DefaultLitShader, new Vector2(scale.X / 4, scale.Z / 4), Vector2.Zero, texS);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
             return ret;
         }
-        
+
 
         private string cmd_Move(string[] args)
         {
@@ -155,7 +160,7 @@ namespace MinorGame.scenes
         private void LoadTestScene(BasicCamera c)
         {
             camera = c;
-            
+
             DebugConsoleComponent dbg = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             dbg.AddCommand("reload", cmd_ReLoadScene);
             dbg.AddCommand("mov", cmd_Move);
@@ -172,7 +177,7 @@ namespace MinorGame.scenes
 
             while (!preview.Success)
             {
-                Logger.Log("Generating map Try " + tries, DebugChannel.Log|DebugChannel.Game, 8);
+                Logger.Log("Generating map Try " + tries, DebugChannel.Log | DebugChannel.Game, 8);
                 preview.Generate(1);
                 tries++;
             }
@@ -192,10 +197,72 @@ namespace MinorGame.scenes
 
             LoadTestScene(c);
             LoadGameScene(camera);
-            TextureGenerator.Process();
+            LoadLoadingScreen();
+            TextureGenerator.Process(LoadingFinished);
 
             GameEngine.Instance.CurrentScene.Add(c);
             GameEngine.Instance.CurrentScene.SetCamera(c);
+        }
+
+        private static Texture BlackBG = TextureLoader.ColorToTexture(Color.Black);
+        private static Texture LoadingSymbol = TextureLoader.ColorToTexture(Color.Red);
+        private static GameObject bg;
+        private static GameObject loading;
+        private void LoadLoadingScreen()
+        {
+            bg = new GameObject("Background");
+            BlackBG.Dispose();
+            BlackBG = MenuScene.menubg;
+            UIImageRendererComponent bgImage = new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            bgImage.RenderQueue = -1;
+            bg.AddComponent(bgImage);
+             bg.AddComponent(new BackgroundMover());
+            Add(bg);
+
+            loading = new GameObject("Loading");
+            UIImageRendererComponent loadingImage = new UIImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            loadingImage.RenderQueue = -1;
+            loading.AddComponent(loadingImage);
+            Add(loading);
+            float size = 0.05f;
+            loadingImage.Position = new Vector2(0.7f, -0.7f);
+            loadingImage.Scale = new Vector2(size, GameEngine.Instance.AspectRatio * size);
+            LinearAnimation loadAnim = new LinearAnimation();
+            Interpolator intP = new Arc2Interpolator();
+
+            loadAnim.Interpolator = intP;
+            loadAnim.StartPos = loadingImage.Position;
+            loadAnim.EndPos = loadingImage.Position + Vector2.UnitY * 0.1f;
+            loadAnim.MaxAnimationTime = 0.5f;
+            loadAnim.Trigger = AnimationTrigger.None;
+            loadAnim.AnimationDelay = 0f;
+            Animator anim = new Animator(new List<Animation> { loadAnim }, loadingImage);
+            loading.AddComponent(anim);
+            LoopTimer(anim, loadAnim);
+            GameObject obj = new GameObject("Timer");
+            GeneralTimer timer = new GeneralTimer(0.5f, () => LoopTimer(anim, loadAnim), true);
+            obj.AddComponent(timer);
+            Add(obj);
+        }
+        
+        private void LoopTimer(Animator anim, LinearAnimation animation)
+        {
+            Vector2 v = animation.EndPos - animation.StartPos;
+            v = new Vector2(-v.Y, v.X);
+            animation.EndPos = animation.StartPos + v;
+            anim.TriggerEvent(AnimationTrigger.None);
+        }
+
+        private void ActivateEnemies()
+        {
+            EnemyComponent.active = true;
+        }
+
+        private void LoadingFinished()
+        {
+            bg.Destroy();
+            loading.Destroy();
+            GameEngine.Instance.CurrentScene.AddComponent(new GeneralTimer(5, ActivateEnemies));
         }
 
         public override void OnDestroy()

@@ -26,6 +26,7 @@ namespace MinorGame.scenes
 {
     public class MenuScene : AbstractScene
     {
+        internal static Texture menubg;
         private static Texture buttonITex;
         private static Texture buttonHTex;
         private static Texture buttonCTex;
@@ -48,17 +49,16 @@ namespace MinorGame.scenes
             //EngineConfig.LoadConfig("assets/configs/camera_menu.xml", ref mc);
             Add(mainCamera);
             SetCamera(mainCamera);
-
-            Texture menubg = GenerateMenuBackground();
-            UIImageRendererComponent bg = new UIImageRendererComponent(menubg, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            menubg = GenerateMenuBackground();
+            UIImageRendererComponent bg = new UIImageRendererComponent(menubg.Copy(), false, 1, DefaultFilepaths.DefaultUIImageShader);
 
             GameObject bgobj = new GameObject("BG");
             bgobj.AddComponent(new BackgroundMover());
             bgobj.AddComponent(bg);
             Add(bgobj);
             //Positions are wrong(0.5 => 5) out of the screen because the correct positions are defined in CreateButtonAnimation.
-            CreateButton("assets/textures/btn/btn" ,"Start Game", new Vector2(-5f, 0.5f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.5f),0), btnStartGame);
-            CreateButton("assets/textures/btn/btn","Credits", new Vector2(-5f, 0.25f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
+            CreateButton("assets/textures/btn/btn", "Start Game", new Vector2(-5f, 0.5f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.5f), 0), btnStartGame);
+            CreateButton("assets/textures/btn/btn", "Credits", new Vector2(-5f, 0.25f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
             CreateButton("assets/textures/btn/btn", "Exit", new Vector2(-5f, 0.0f), new Vector2(0.2f, 0.1f), CreateButtonAnimation(new Vector2(-0.5f, 0.0f), 0.4f), btnExit);
             DebugConsoleComponent c = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             Add(c.Owner);
@@ -69,7 +69,7 @@ namespace MinorGame.scenes
         {
             LinearAnimation loadAnim = new LinearAnimation();
             loadAnim.Interpolator = new SmoothInterpolator();
-            loadAnim.StartPos = new Vector2(endPos.X-1, endPos.Y);
+            loadAnim.StartPos = new Vector2(endPos.X - 1, endPos.Y);
             loadAnim.EndPos = endPos;
             loadAnim.MaxAnimationTime = 1;
             loadAnim.Trigger = AnimationTrigger.OnLoad;
@@ -111,7 +111,7 @@ namespace MinorGame.scenes
 
             Texture tex = TextureLoader.ParameterToTexture(texWidth, texHeight);
             TextureLoader.Update(tex, i.GetResult<byte>(), (int)tex.Width, (int)tex.Height);
-            Logger.Log("Time for Menu Background(ms): " + sw.ElapsedMilliseconds,DebugChannel.Log, 10);
+            Logger.Log("Time for Menu Background(ms): " + sw.ElapsedMilliseconds, DebugChannel.Log, 10);
             sw.Stop();
             return tex;
         }
@@ -122,13 +122,13 @@ namespace MinorGame.scenes
             GameObject container = new GameObject("BtnContainer");
             GameObject obj = new GameObject("Button");
             GameObject tObj = new GameObject("Text");
-            Texture btnIdle = TextureLoader.FileToTexture(buttonString +".png");
+            Texture btnIdle = TextureLoader.FileToTexture(buttonString + ".png");
             Texture btnHover = TextureLoader.FileToTexture(buttonString + "H.png");
             Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
             Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUIImageShader, 1, btnClick, btnHover, onClick, onEnter, onHover, onLeave);
 
-            
-            
+
+
             UITextRendererComponent tr = new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUITextShader);
             obj.AddComponent(btn);
             tObj.AddComponent(tr);
@@ -138,7 +138,7 @@ namespace MinorGame.scenes
             btn.Position = Position;
             btn.Scale = Scale;
             Vector2 textpos = Position;
-            tr.Scale=Vector2.One*2;
+            tr.Scale = Vector2.One * 2;
             tr.Center = true;
             tr.Position = textpos;
             tr.Text = Text;

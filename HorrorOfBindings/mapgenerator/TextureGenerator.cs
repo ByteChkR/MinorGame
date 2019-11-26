@@ -54,9 +54,9 @@ namespace MinorGame.mapgenerator
 
         }
 
-        public static void Process()
+        public static void Process(Action onFinish = null)
         {
-            runner.Process();
+            runner.Process(onFinish);
         }
 
         public static void Reset()

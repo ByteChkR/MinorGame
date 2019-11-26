@@ -24,9 +24,6 @@
     <Folder Include="assets\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="OpenTK.NetStandard" Version="1.0.4" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Minor\Engine\Engine\Engine.csproj" />
   </ItemGroup>
 </Project>
