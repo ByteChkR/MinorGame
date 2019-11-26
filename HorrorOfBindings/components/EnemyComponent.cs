@@ -46,6 +46,31 @@ namespace MinorGame.components
 
         private static Random rnd = new Random();
 
+        public static void CreateEnemies(Vector2 bounds, bool[,] map, int count)
+        {
+            int enemyCount = count;
+            Vector2 hbounds = bounds / 2;
+            for (int h = 0; h < map.GetLength(1); h++)
+            {
+                for (int w = 0; w < map.GetLength(0); w++)
+                {
+                    if (enemyCount == 0) break;
+                    if (map[w, h]) continue;
+
+                    enemyCount--;
+                    Vector2 pos = new Vector2(w, h);
+                    pos -= hbounds;
+                    Vector3 tilepos = new Vector3(pos.X, 5, pos.Y);
+                    GameObject[] objs = CreateEnemy(tilepos);
+                    for (int i = 0; i < objs.Length; i++)
+                    {
+                        GameEngine.Instance.CurrentScene.Add(objs[i]);
+                    }
+                }
+            }
+
+        }
+
         public static void CreateEnemies(Vector2 bounds, int count)
         {
             Vector2 hbounds = bounds / 2;
@@ -352,7 +377,7 @@ namespace MinorGame.components
         {
             enemiesAlive--;
             Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log, 5);
-            
+
             if (enemiesAlive == 0)
             {
                 active = false;

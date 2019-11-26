@@ -27,6 +27,7 @@ namespace MinorGame.scenes
     {
         private BasicCamera camera;
         private GameObject groundObj;
+        private bool[,] map;
 
         private void LoadGameScene(BasicCamera c)
         {
@@ -40,8 +41,7 @@ namespace MinorGame.scenes
             {
                 GameEngine.Instance.CurrentScene.Add(objs[i]);
             }
-
-            EnemyComponent.CreateEnemies(new Vector2(50, 50), 5);
+            EnemyComponent.CreateEnemies(new Vector2(30, 500), map, 5);
         }
 
 
@@ -50,10 +50,12 @@ namespace MinorGame.scenes
         private void CreateMap(System.Drawing.Bitmap input, ShaderProgram prog)
         {
             byte[] data = new byte[input.Height * input.Width];
+            map = new bool[input.Width, input.Height];
             for (int w = 0; w < input.Width; w++)
             {
                 for (int h = 0; h < input.Height; h++)
                 {
+                    map[w, h] = input.GetPixel(w, h).R >= 128;
                     data[w * input.Height + h] = input.GetPixel(w, h).R;
                 }
             }
@@ -71,11 +73,11 @@ namespace MinorGame.scenes
             }
 
             groundObj?.Destroy();
-            groundObj = CreateGround(input, new Vector3(input.Width * 4, 2, input.Height * 4) / 2);
+            groundObj = CreateGround(input, new Vector3(input.Width * 4, 2, input.Height * 4) / 2, new Size(input.Width, input.Height));
             Add(groundObj);
         }
 
-        private GameObject CreateGround(Bitmap mapLayout, Vector3 scale)
+        private GameObject CreateGround(Bitmap mapLayout, Vector3 scale, Size size)
         {
             Texture tex = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
             Texture texS = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
@@ -85,7 +87,7 @@ namespace MinorGame.scenes
 
             TextureGenerator.CreateGroundTexture(tex, texS);
             GameObject ret = TileCreator.CreateCube(Vector3.Zero, scale, Quaternion.Identity,
-                tex, DefaultFilepaths.DefaultLitShader, new Vector2(scale.X / 4, scale.Z / 4), Vector2.Zero, texS);
+                tex, DefaultFilepaths.DefaultLitShader, new Vector2(size.Height, size.Width), Vector2.Zero, texS);
             ret.Name = "Ground";
             Collider groundColl = ret.GetComponent<Collider>();
             groundColl.PhysicsCollider.Material = new Material(10, 10, 0);
@@ -170,6 +172,8 @@ namespace MinorGame.scenes
             WFCMapGenerator preview = WFCMapGenerator
                 .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false, (input) => CreateMap(input, DefaultFilepaths.DefaultLitShader))
                 .GetComponent<WFCMapGenerator>();
+            preview.Height = 256;
+            preview.Width = 32;
 
             int tries = 1;
             Add(preview.Owner);
@@ -205,7 +209,7 @@ namespace MinorGame.scenes
         }
 
         private static Texture BlackBG = TextureLoader.ColorToTexture(Color.Black);
-        private static Texture LoadingSymbol = TextureLoader.ColorToTexture(Color.Red);
+        private static Texture LoadingSymbol = TextureLoader.FileToTexture("assets/textures/LoadingSymbol.jpg");
         private static GameObject bg;
         private static GameObject loading;
         private void LoadLoadingScreen()
@@ -216,9 +220,19 @@ namespace MinorGame.scenes
             UIImageRendererComponent bgImage = new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
             bgImage.RenderQueue = -1;
             bg.AddComponent(bgImage);
-             bg.AddComponent(new BackgroundMover());
+            bg.AddComponent(new BackgroundMover());
             Add(bg);
 
+            GameObject text = new GameObject("text");
+            GameFont f = FontLibrary.LoadFontDirect("assets/fonts/default_font.ttf", 64);
+            UITextRendererComponent tr = new UITextRendererComponent(f, false, 1, DefaultFilepaths.DefaultUITextShader);
+            text.AddComponent(tr);
+            bg.Add(text);
+            tr.Text = "Loading...";
+            tr.SystemColor = Color.Black;
+            tr.Scale = Vector2.One*3;
+            tr.RenderQueue = -1;
+            tr.Position = new Vector2(-0.7f, -0.7f);
             loading = new GameObject("Loading");
             UIImageRendererComponent loadingImage = new UIImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUIImageShader);
             loadingImage.RenderQueue = -1;
@@ -244,7 +258,7 @@ namespace MinorGame.scenes
             obj.AddComponent(timer);
             Add(obj);
         }
-        
+
         private void LoopTimer(Animator anim, LinearAnimation animation)
         {
             Vector2 v = animation.EndPos - animation.StartPos;

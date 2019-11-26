@@ -59,7 +59,7 @@ namespace MinorGame.components
         public delegate void onHpChange(float ratio);
         public static onHpChange OnHPChange;
 
-        
+
 
         public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
@@ -80,10 +80,15 @@ namespace MinorGame.components
 
             GameObject player = new GameObject(new Vector3(0, 10, 0), "Player");
             GameObject playerH = new GameObject(new Vector3(0, 10, 0), "PlayerHead");
+            GameObject lightS = new GameObject(Vector3.UnitY * 2f, "Light");
+            playerH.Add(lightS);
+            lightS.AddComponent(new LightComponent(){AmbientContribution = 0f});
+            lightS.LocalPosition = Vector3.UnitY * 4f;
+
 
             //Movement for camera
-            OffsetConstraint cameraController = new OffsetConstraint();
-            cameraController.Attach(player, new Vector3(0, 20, 7));
+            OffsetConstraint cameraController = new OffsetConstraint { Damping = 0, MoveSpeed = 2 };
+            cameraController.Attach(player, new Vector3(0, 15, 5));
             cam.AddComponent(cameraController);
 
             //Rotation for Player Head depending on mouse position
@@ -153,7 +158,7 @@ namespace MinorGame.components
                 Grounded = false;
             }
         }
-        
+
         private void SpawnProjectile()
         {
             Engine.Physics.BEPUutilities.Vector3 vel =
@@ -191,7 +196,7 @@ namespace MinorGame.components
                 EnemyComponent.enemyCount = 5;
                 GameEngine.Instance.InitializeScene<GameTestScene>();
             }
-            
+
         }
 
         public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader,
@@ -279,7 +284,7 @@ namespace MinorGame.components
             return "Player Reset";
         }
 
-        
+
         protected override void Awake()
         {
 
@@ -374,11 +379,25 @@ namespace MinorGame.components
 
 
 
-                vec.Y -= CurrentGravity;
+                //vec.Y -= CurrentGravity;
 
                 Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
+                
             }
+            if (Grounded)
+            {
+                CurrentGravity = 0;
+            }
+            else
+            {
+                CurrentGravity += GravityIncUngrounded * deltaTime;
+            }
+            
+
+            
+            Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
+            Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 
             if (jump && Grounded)
             {
@@ -388,17 +407,6 @@ namespace MinorGame.components
                 AudioSource.Clip = JumpSound;
                 AudioSource.Play();
             }
-
-            if (Grounded)
-            {
-                CurrentGravity = 0;
-            }
-            else
-            {
-                CurrentGravity += GravityIncUngrounded * deltaTime;
-            }
-            Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
-            Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 
             if (Mouse.GetCursorState().LeftButton == ButtonState.Pressed)
             {
