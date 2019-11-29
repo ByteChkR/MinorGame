@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Resources;
 using Engine.Core;
 using Engine.DataTypes;
@@ -46,11 +47,11 @@ namespace MinorGame.components
 
         private static Random rnd = new Random();
 
-        public static void CreateEnemies(Vector2 bounds, bool[,] map, int count)
+        public static void CreateEnemies(Vector2 bounds, bool[,] map, int count , int startLine)
         {
             int enemyCount = count;
             Vector2 hbounds = bounds / 2;
-            for (int h = 0; h < map.GetLength(1); h++)
+            for (int h = startLine; h < map.GetLength(1); h++)
             {
                 for (int w = 0; w < map.GetLength(0); w++)
                 {
@@ -99,7 +100,7 @@ namespace MinorGame.components
             {
                 init = true;
                 headTex = TextureLoader.FileToTexture("assets/textures/enemyHead.jpg");
-                bulletTex = TextureLoader.FileToTexture("assets/textures/bulletTexture.png");
+                bulletTex = TextureLoader.ColorToTexture(Color.Red);
             }
 
             Mesh enemyHeadModel = enemyhead_prefab.Copy();
@@ -377,7 +378,7 @@ namespace MinorGame.components
         {
             enemiesAlive--;
             Logger.Log("Enemies Alive: " + enemiesAlive, DebugChannel.Log, 5);
-
+            return;
             if (enemiesAlive == 0)
             {
                 active = false;

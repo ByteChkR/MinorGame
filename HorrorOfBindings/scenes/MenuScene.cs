@@ -27,16 +27,10 @@ namespace MinorGame.scenes
     public class MenuScene : AbstractScene
     {
         internal static Texture menubg;
-        private static Texture buttonITex;
-        private static Texture buttonHTex;
-        private static Texture buttonCTex;
         protected override void InitializeScene()
         {
             TextureGenerator.Initialize(true);
-
-            buttonITex = TextureLoader.ColorToTexture(Color.Blue);
-            buttonHTex = TextureLoader.ColorToTexture(Color.FromArgb(0, 0, 128));
-            buttonCTex = TextureLoader.ColorToTexture(Color.Black);
+            
 
 
             BasicCamera mainCamera =

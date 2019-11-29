@@ -13,6 +13,15 @@ namespace MinorGame.components
         private GameObject sphereTargetMarker;
         private GameObject looker;
 
+        public static bool ObjectUnderMouse(Vector3 cameraPosition, out KeyValuePair<Collider, RayHit> hit)
+        {
+            Ray r = ConstructRayFromMousePosition(cameraPosition);
+            bool ret = PhysicsEngine.RayCastFirst(r, 1000, LayerManager.NameToLayer("raycast"),
+                out hit);
+
+            return ret;
+        }
+
         public CameraRaycaster(GameObject targetmarker, GameObject looker)
         {
             cast = LayerManager.NameToLayer("raycast");
@@ -22,7 +31,7 @@ namespace MinorGame.components
 
         protected override void Update(float deltaTime)
         {
-            Ray r = ConstructRayFromMousePosition();
+            Ray r = ConstructRayFromMousePosition(Owner.GetLocalPosition());
             bool ret = PhysicsEngine.RayCastFirst(r, 1000, cast,
                 out KeyValuePair<Collider, RayHit> arr);
             if (ret)
@@ -35,11 +44,11 @@ namespace MinorGame.components
         }
 
 
-        private Ray ConstructRayFromMousePosition()
+        private static Ray ConstructRayFromMousePosition(Vector3 localPosition)
         {
             Vector2 mpos = GameEngine.Instance.MousePosition;
             Vector3 mousepos = GameEngine.Instance.ConvertScreenToWorldCoords((int) mpos.X, (int) mpos.Y);
-            return new Ray(Owner.GetLocalPosition(), (mousepos - Owner.GetLocalPosition()).Normalized());
+            return new Ray(localPosition, (mousepos - localPosition).Normalized());
         }
     }
 }

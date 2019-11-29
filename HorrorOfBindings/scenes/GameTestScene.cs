@@ -27,7 +27,7 @@ namespace MinorGame.scenes
     {
         private BasicCamera camera;
         private GameObject groundObj;
-        private bool[,] map;
+        public static bool[,] map;
 
         private void LoadGameScene(BasicCamera c)
         {
@@ -35,28 +35,60 @@ namespace MinorGame.scenes
             c.Translate(new Vector3(0, 75, 15));
 
 
-            GameObject[] objs = PlayerController.CreatePlayer(Vector3.UnitY * 2, c);
+
+            Add(CreateGoal(FindGoalSpawn(-(map.GetLength(1)+6))));
+
+            GameObject[] objs = PlayerController.CreatePlayer(FindPlayerSpawn(map), c);
 
             for (int i = 0; i < objs.Length; i++)
             {
                 GameEngine.Instance.CurrentScene.Add(objs[i]);
             }
-            EnemyComponent.CreateEnemies(new Vector2(30, 500), map, 5);
+            //EnemyComponent.CreateEnemies(new Vector2(30, 500), map, 5,0);
         }
 
+
+        private static GameObject CreateGoal(Vector3 position)
+        {
+            GameObject ret = TileCreator.CreateCube(position, Vector3.One, Quaternion.Identity, TextureLoader.ColorToTexture(Color.Red), DefaultFilepaths.DefaultLitShader, TextureLoader.ColorToTexture(Color.White));
+
+            ret.AddComponent(new MapEndTrigger());
+            return ret;
+
+        }
+
+        private static Vector3 FindGoalSpawn(int mapHeight)
+        {
+            Vector3 offset = new Vector3(0, 0, mapHeight / 2f);
+            Vector3 scale = new Vector3(4, 1, 4);
+            return (new Vector3(0, 5, mapHeight) - offset) * scale;
+        }
+
+        private static Vector3 FindPlayerSpawn(bool[,] map)
+        {
+            Vector3 offset = new Vector3(map.GetLength(0) / 2f, 0, map.GetLength(1) / 2f);
+            Vector3 scale = new Vector3(4, 1, 4);
+
+            for (int i = map.GetLength(1) - 1; i >= 0; i--)
+            {
+                if (map[map.GetLength(0) / 2, i]) return (new Vector3(map.GetLength(0) / 2f, 5, i) - offset) * scale;
+            }
+
+            return (new Vector3(map.GetLength(0) / 2f, 5, map.GetLength(1)) - offset) * scale;
+        }
 
         private static GameObject[] objects = new GameObject[0];
 
         private void CreateMap(System.Drawing.Bitmap input, ShaderProgram prog)
         {
-            byte[] data = new byte[input.Height * input.Width];
+            Color[] data = new Color[input.Height * input.Width];
             map = new bool[input.Width, input.Height];
             for (int w = 0; w < input.Width; w++)
             {
                 for (int h = 0; h < input.Height; h++)
                 {
                     map[w, h] = input.GetPixel(w, h).R >= 128;
-                    data[w * input.Height + h] = input.GetPixel(w, h).R;
+                    data[w * input.Height + h] = input.GetPixel(w, h);
                 }
             }
 
@@ -73,7 +105,10 @@ namespace MinorGame.scenes
             }
 
             groundObj?.Destroy();
-            groundObj = CreateGround(input, new Vector3(input.Width * 4, 2, input.Height * 4) / 2, new Size(input.Width, input.Height));
+
+            Vector3 scale = new Vector3(input.Width * 4, 2, input.Height * 4 + 50) / 2;
+            Size size = new Size(input.Width, input.Height);
+            groundObj = CreateGround(input, scale, size);
             Add(groundObj);
         }
 
@@ -201,7 +236,12 @@ namespace MinorGame.scenes
 
             LoadTestScene(c);
             LoadGameScene(camera);
-            LoadLoadingScreen();
+            Texture bg = null;
+            if (!ComesFromMenu)
+            {
+                bg = TextureLoader.ColorToTexture(Color.Black);
+            }
+            LoadLoadingScreen(bg);
             TextureGenerator.Process(LoadingFinished);
 
             GameEngine.Instance.CurrentScene.Add(c);
@@ -210,13 +250,17 @@ namespace MinorGame.scenes
 
         private static Texture BlackBG = TextureLoader.ColorToTexture(Color.Black);
         private static Texture LoadingSymbol = TextureLoader.FileToTexture("assets/textures/LoadingSymbol.jpg");
+
+        internal static bool ComesFromMenu = true;
         private static GameObject bg;
         private static GameObject loading;
-        private void LoadLoadingScreen()
+        public void LoadLoadingScreen(Texture background = null)
         {
+            LoadingSymbol = TextureLoader.FileToTexture("assets/textures/LoadingSymbol.jpg");
             bg = new GameObject("Background");
-            BlackBG.Dispose();
-            BlackBG = MenuScene.menubg;
+            if (background == null)
+                BlackBG = MenuScene.menubg;
+            else BlackBG = background;
             UIImageRendererComponent bgImage = new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
             bgImage.RenderQueue = -1;
             bg.AddComponent(bgImage);
@@ -230,7 +274,7 @@ namespace MinorGame.scenes
             bg.Add(text);
             tr.Text = "Loading...";
             tr.SystemColor = Color.Black;
-            tr.Scale = Vector2.One*3;
+            tr.Scale = Vector2.One * 3;
             tr.RenderQueue = -1;
             tr.Position = new Vector2(-0.7f, -0.7f);
             loading = new GameObject("Loading");
@@ -281,6 +325,7 @@ namespace MinorGame.scenes
 
         public override void OnDestroy()
         {
+            TextureGenerator.Reset();
         }
     }
 }

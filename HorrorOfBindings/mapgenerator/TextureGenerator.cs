@@ -94,6 +94,7 @@ namespace MinorGame.mapgenerator
             playerSphereSpecTexture = TextureLoader.ParameterToTexture(512, 512);
             CreatePlayerTexture(playerSphereTexture, playerSphereSpecTexture);
 
+
             wallTextures = new Texture[2];
             wallSpecTextures = new Texture[2];
             for (int i = 0; i < 2; i++)
@@ -116,6 +117,10 @@ namespace MinorGame.mapgenerator
         public static void CreatePlayerTexture(Texture destTexture, Texture specTexture)
         {
             runner.Enqueue(GetExecutionContext($"assets/filter/game/tennisball.fl", destTexture, specTexture, null));
+        }
+        public static void CreateBoundsTexture(Texture destTexture, Texture specTexture)
+        {
+            runner.Enqueue(GetExecutionContext($"assets/filter/game/concrete.fl", destTexture, specTexture, null));
         }
 
         private static FLExecutionContext GetExecutionContext(string file, Texture dest, Texture specular, Action<Dictionary<Texture, byte[]>> onFinishCallback)

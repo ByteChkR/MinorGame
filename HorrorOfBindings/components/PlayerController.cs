@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
+using Assimp;
 using Engine.Audio;
 using Engine.Core;
 using Engine.DataTypes;
@@ -8,9 +11,9 @@ using Engine.IO;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.CollisionTests;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
-using Engine.Physics.BEPUphysics.Materials;
 using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Physics.BEPUphysics.PositionUpdating;
+using Engine.Physics.BEPUutilities;
 using Engine.Rendering;
 using MinorGame.mapgenerator;
 using MinorGame.scenes;
@@ -18,6 +21,10 @@ using MinorGame.ui;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using ArbTextureNonPowerOfTwo = OpenTK.Graphics.OpenGL.ArbTextureNonPowerOfTwo;
+using Material = Engine.Physics.BEPUphysics.Materials.Material;
+using Mesh = Engine.DataTypes.Mesh;
+using Vector2 = OpenTK.Vector2;
 using Vector3 = OpenTK.Vector3;
 using Vector4 = OpenTK.Vector4;
 
@@ -30,7 +37,7 @@ namespace MinorGame.components
         private int raycastLayer;
         private int bulletLayer;
         private float MoveSpeed = 10;
-        private float JumpForce = 400;
+        private float JumpForce = 200;
         private Key Forward = Key.W;
         private Key Left = Key.A;
         private Key Back = Key.S;
@@ -82,7 +89,7 @@ namespace MinorGame.components
             GameObject playerH = new GameObject(new Vector3(0, 10, 0), "PlayerHead");
             GameObject lightS = new GameObject(Vector3.UnitY * 2f, "Light");
             playerH.Add(lightS);
-            lightS.AddComponent(new LightComponent(){AmbientContribution = 0f});
+            lightS.AddComponent(new LightComponent() { AmbientContribution = 0f });
             lightS.LocalPosition = Vector3.UnitY * 4f;
 
 
@@ -109,6 +116,7 @@ namespace MinorGame.components
 
             //Player Setup
             Collider collider = new Collider(new Sphere(Vector3.Zero, 1, 10), LayerManager.NameToLayer("physics"));
+            collider.PhysicsCollider.PositionUpdateMode = PositionUpdateMode.Continuous;
             collider.PhysicsCollider.Material = new Material(1.5f, 1.5f, 0);
             collider.PhysicsCollider.LinearDamping = 0.99f;
 
@@ -130,7 +138,7 @@ namespace MinorGame.components
             player.AddComponent(source);
 
             player.AddComponent(new PlayerController(playerH, bullet,
-                TextureLoader.FileToTexture("assets/textures/bulletTexture.png"), DefaultFilepaths.DefaultLitShader, 650, false, source));
+                TextureLoader.ColorToTexture(Color.Red), DefaultFilepaths.DefaultLitShader, 650, false, source));
             player.LocalPosition = position;
 
 
@@ -161,11 +169,26 @@ namespace MinorGame.components
 
         private void SpawnProjectile()
         {
-            Engine.Physics.BEPUutilities.Vector3 vel =
-                new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
-            Vector3 v = vel;
 
-            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletPlayer");
+            Engine.Physics.BEPUutilities.Vector3 v = Vector3.Zero;
+            if (Grounded || (!CameraRaycaster.ObjectUnderMouse(GameEngine.Instance.CurrentScene.Camera.LocalPosition, out var hit)))
+            {
+                Engine.Physics.BEPUutilities.Vector3 vel =
+                    new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
+                v = vel;
+            }
+            else
+            {
+                Vector3 pos = hit.Value.Location;
+                //pos.Y = looker.LocalPosition.Y;
+                nozzle.LookAt(pos);
+                Engine.Physics.BEPUutilities.Vector3 vel =
+                    new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
+                v = vel;
+            }
+
+            Vector3 v1 = v;
+            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v1.Normalized(), "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
             obj.AddComponent(new LitMeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
@@ -179,7 +202,7 @@ namespace MinorGame.components
             }
 
             obj.AddComponent(coll);
-            coll.PhysicsCollider.ApplyLinearImpulse(ref vel);
+            coll.PhysicsCollider.ApplyLinearImpulse(ref v);
             Owner.Scene.Add(obj);
             //AudioSource.Clip = ShootSound;
             //AudioSource.Play();
@@ -187,7 +210,8 @@ namespace MinorGame.components
             AudioSource.Play();
         }
 
-
+        private int lastEnemySpawn = 0;
+        private Random rnd = new Random();
         private void GameLogic()
         {
             if (hp <= 0)
@@ -195,6 +219,26 @@ namespace MinorGame.components
                 wavesSurvived = 1;
                 EnemyComponent.enemyCount = 5;
                 GameEngine.Instance.InitializeScene<GameTestScene>();
+            }
+
+            int pos = (int)Owner.LocalPosition.Z;
+            if (pos < lastEnemySpawn - 10)
+            {
+                lastEnemySpawn = pos;
+                if (rnd.Next(0, 2) == 0)
+                {
+                    Logger.Log("Spawning Enemies..", DebugChannel.Log, 10);
+                    for (int i = 0; i < 6; i++)
+                    {
+                        GameObject[] objs = EnemyComponent.CreateEnemy(new Vector3(i*4, 5, pos - 50));
+                        for (int j = 0; j < objs.Length; j++)
+                        {
+                            GameEngine.Instance.CurrentScene.Add(objs[j]);
+                        }
+
+
+                    }
+                }
             }
 
         }
@@ -309,6 +353,8 @@ namespace MinorGame.components
                     console.AddCommand("pcbphys", cmdToggleBulletPhysics);
                 }
             }
+
+            lastEnemySpawn = (int)Owner.LocalPosition.Z;
         }
 
 
@@ -383,7 +429,7 @@ namespace MinorGame.components
 
                 Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
-                
+
             }
             if (Grounded)
             {
@@ -393,9 +439,9 @@ namespace MinorGame.components
             {
                 CurrentGravity += GravityIncUngrounded * deltaTime;
             }
-            
 
-            
+
+
             Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
             Collider.PhysicsCollider.ApplyLinearImpulse(ref grav);
 

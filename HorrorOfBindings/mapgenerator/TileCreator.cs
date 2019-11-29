@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net.Mime;
 using System.Resources;
@@ -12,6 +13,7 @@ using Engine.Physics;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
+using MinorGame.components;
 using MinorGame.exceptions;
 using OpenTK;
 using Vector2 = OpenTK.Vector2;
@@ -20,66 +22,92 @@ namespace MinorGame.mapgenerator
 {
     public class TileCreator
     {
-        private static Texture boundsTex = TextureLoader.FileToTexture("assets/textures/boundsTexture.png");
         private static Random rnd = new Random();
 
-        public delegate GameObject CreateObject(byte input, Vector3 pos, Vector3 scale, ShaderProgram program);
+        public delegate GameObject CreateObject(Color input, Vector3 pos, Vector3 scale, ShaderProgram program);
 
-        public static GameObject CreateObject_Box(byte input, Vector3 pos, Vector3 scale, ShaderProgram program)
+        public static GameObject CreateObject_Box(Color input, Vector3 pos, Vector3 scale, ShaderProgram program)
         {
-            if (input < 128)
+            if (input.R < 128 && input.G < 128 && input.B < 128)
             {
                 int r = rnd.Next(0, 2);
+                scale.Y += Math.Clamp((float)(rnd.NextDouble() * 2 - 1) * 10, -1, 10);
                 return CreateCube(pos, scale, Quaternion.Identity, TextureGenerator.GetTexture(r), program, TextureGenerator.GetSTexture(r));
+            }
+            else if (input.R == 255 && input.G == 0 && input.B == 0)
+            {
+                return CreateBouncePad(pos - (Vector3.UnitY * 2.5f), scale, TextureLoader.ColorToTexture(Color.Red), program,
+                    TextureLoader.ColorToTexture(Color.White));
             }
 
             return null;
         }
 
+        private static GameObject CreateBouncePad(Vector3 position, Vector3 scale, Texture tex,
+            ShaderProgram program, Texture specularTexture)
+        {
+            GameObject cube = CreateCube(position, scale, Quaternion.Identity, tex, program, specularTexture);
+            cube.AddComponent(new BouncePad());
+            return cube;
+        }
+
         private static GameObject[] CreateBounds(int width, int height, ShaderProgram program)
         {
+            Texture boundsTex = TextureLoader.ParameterToTexture(512, 512);
+            Texture boundsSpec = TextureLoader.ParameterToTexture(512, 512);
+
+            TextureGenerator.CreateBoundsTexture(boundsTex, boundsSpec);
+            boundsSpec.TexType = TextureType.Specular;
 
             GameObject[] ret = new GameObject[4];
             GameObject obj;
             for (int i = 0; i < 4; i++)
             {
+                LitMeshRendererComponent lmr = new LitMeshRendererComponent(program, Prefabs.Cube, boundsTex, 1);
+                lmr.Textures = new[] { boundsSpec, boundsTex };
                 if (i == 0)
                 {
                     obj = new GameObject("BoundsLeft");
                     obj.LocalPosition = new Vector3(-width / 2f, 1, 0);
-                    Collider c = new Collider(new Box(Vector3.Zero, 1, 16, height), "physics");
+                    Collider c = new Collider(new Box(Vector3.Zero, 1, 1024, height), "physics");
                     c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
                     obj.AddComponent(c);
-                    obj.Scale = new Vector3(1, 8, height / 2f);
+                    obj.Scale = new Vector3(1, 512, height / 2f);
+                    lmr.Tiling = new Vector2(width, 512);
                 }
                 else if (i == 1)
                 {
                     obj = new GameObject("BoundsRight");
                     obj.LocalPosition = new Vector3(width / 2f, 1, 0);
-                    Collider c = new Collider(new Box(Vector3.Zero, 1, 16, height), "physics");
+                    Collider c = new Collider(new Box(Vector3.Zero, 1, 1024, height), "physics");
                     c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
                     obj.AddComponent(c);
-                    obj.Scale = new Vector3(1, 8, height / 2f);
+                    obj.Scale = new Vector3(1, 512, height / 2f);
+                    lmr.Tiling = new Vector2(width, 512);
                 }
                 else if (i == 2)
                 {
                     obj = new GameObject("BoundsTop");
                     obj.LocalPosition = new Vector3(0, 1, -height / 2f);
-                    Collider c = new Collider(new Box(Vector3.Zero, width, 16, 1), "physics");
+                    Collider c = new Collider(new Box(Vector3.Zero, width, 1024, 1), "physics");
                     c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
                     obj.AddComponent(c);
-                    obj.Scale = new Vector3(width / 2f, 8, 1);
+                    obj.Scale = new Vector3(width / 2f, 512, 1);
+                    lmr.Tiling = new Vector2(width, 512);
                 }
                 else
                 {
                     obj = new GameObject("BoundsBottom");
                     obj.LocalPosition = new Vector3(0, 1, height / 2f);
-                    Collider c = new Collider(new Box(Vector3.Zero, width, 16, 1), "physics");
+                    Collider c = new Collider(new Box(Vector3.Zero, width, 1024, 1), "physics");
                     c.PhysicsCollider.Material = new Material(0.1f, 0.1f, 0.1f);
                     obj.AddComponent(c);
-                    obj.Scale = new Vector3(width / 2f, 8, 1);
+                    obj.Scale = new Vector3(width / 2f, 512, 1);
+                    lmr.Tiling = new Vector2(width, 512);
                 }
-                obj.AddComponent(new LitMeshRendererComponent(program, Prefabs.Cube, boundsTex, 1));
+
+                obj.AddComponent(lmr);
+
 
                 ret[i] = obj;
             }
@@ -87,10 +115,10 @@ namespace MinorGame.mapgenerator
             return ret;
         }
 
-        public static GameObject[] CreateTileMap(CreateObject creator, byte[] data, int width, int height,
+        public static GameObject[] CreateTileMap(CreateObject creator, Color[] data, int width, int height,
             float tileYOffset, float tileHeight, Vector2 fieldSize, ShaderProgram program)
         {
-            List<GameObject> ret = CreateBounds((int)fieldSize.X, (int)fieldSize.Y, program).ToList();
+            List<GameObject> ret = CreateBounds((int)fieldSize.X, (int)fieldSize.Y + 50, program).ToList();
             if (width * height != data.Length)
             {
                 Logger.Crash(new GameException("Tilemap has the wrong format"), false);
@@ -131,7 +159,7 @@ namespace MinorGame.mapgenerator
         public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
             ShaderProgram program, Texture tesS, int mass = -1)
         {
-            return CreateCube(position, scale, rotation, texture, program, Vector2.One, Vector2.Zero, tesS, mass);
+            return CreateCube(position, scale, rotation, texture, program, new Vector2(1, scale.Y), Vector2.Zero, tesS, mass);
         }
 
         public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
@@ -145,7 +173,7 @@ namespace MinorGame.mapgenerator
             if (tesS != null)
             {
                 tesS.TexType = TextureType.Specular;
-                mr.Textures = new[] {mr.Textures[0], tesS};
+                mr.Textures = new[] { mr.Textures[0], tesS };
             }
             mr.Tiling = tiling;
             mr.Offset = offset;
