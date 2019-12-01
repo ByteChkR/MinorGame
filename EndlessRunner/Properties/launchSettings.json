@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "FPSGame": {
+    "EndlessRunner": {
       "commandName": "Project",
-      "workingDirectory": "."
+      "workingDirectory": "assets"
     }
   }
 }
