@@ -33,7 +33,6 @@ namespace EndlessRunner.mapgenerator
 
             return TileCreator.CreateTileMap(TileCreator.CreateObject_Box, map, width, length, 3, 1,
                 new Vector2(width, length)).ToList();
-
         }
     }
 }

@@ -23,7 +23,11 @@ namespace MinorGame.components.Weapons
 
         public virtual void Reload()
         {
-            if(!CanReload)return;
+            if (!CanReload)
+            {
+                return;
+            }
+
             _isReloading = true;
             _reloadTimer = ReloadTime;
         }
@@ -45,7 +49,11 @@ namespace MinorGame.components.Weapons
         {
             if (!EmptyMagazine)
             {
-                if (_isShooting) return;
+                if (_isShooting)
+                {
+                    return;
+                }
+
                 GameObject bullet = BulletPrefab.CreateBullet(WeaponNozzle);
                 Owner.Scene.Add(bullet);
                 _fireRateTimer = FireRate;
@@ -62,7 +70,6 @@ namespace MinorGame.components.Weapons
 
         protected override void Update(float deltaTime)
         {
-            
             if (_isShooting)
             {
                 _fireRateTimer -= deltaTime;

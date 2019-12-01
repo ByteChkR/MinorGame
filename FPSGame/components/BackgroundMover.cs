@@ -12,19 +12,20 @@ namespace FPSGame.components
         private float _timer;
         private float xYDelta;
         private float TimeScale = 0.15f;
+
         protected override void Awake()
         {
             base.Awake();
 
             image = Owner.GetComponent<UIImageRendererComponent>();
             Random rnd = new Random();
-            xYDelta = (float)rnd.NextDouble();
+            xYDelta = (float) rnd.NextDouble();
         }
 
         protected override void Update(float deltaTime)
         {
             _timer += deltaTime;
-            image.Offset += (GetMoveDir(_timer) * MoveSpeed * deltaTime);
+            image.Offset += GetMoveDir(_timer) * MoveSpeed * deltaTime;
         }
 
         private Vector2 GetMoveDir(float time)

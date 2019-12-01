@@ -47,7 +47,7 @@ namespace MinorGame.components
 
         private static Random rnd = new Random();
 
-        public static void CreateEnemies(Vector2 bounds, bool[,] map, int count , int startLine)
+        public static void CreateEnemies(Vector2 bounds, bool[,] map, int count, int startLine)
         {
             int enemyCount = count;
             Vector2 hbounds = bounds / 2;
@@ -55,8 +55,15 @@ namespace MinorGame.components
             {
                 for (int w = 0; w < map.GetLength(0); w++)
                 {
-                    if (enemyCount == 0) break;
-                    if (map[w, h]) continue;
+                    if (enemyCount == 0)
+                    {
+                        break;
+                    }
+
+                    if (map[w, h])
+                    {
+                        continue;
+                    }
 
                     enemyCount--;
                     Vector2 pos = new Vector2(w, h);
@@ -69,7 +76,6 @@ namespace MinorGame.components
                     }
                 }
             }
-
         }
 
         public static void CreateEnemies(Vector2 bounds, int count)
@@ -77,7 +83,7 @@ namespace MinorGame.components
             Vector2 hbounds = bounds / 2;
             for (int j = 0; j < count; j++)
             {
-                Vector2 pos = new Vector2((float)rnd.NextDouble() * bounds.X, (float)rnd.NextDouble() * bounds.Y);
+                Vector2 pos = new Vector2((float) rnd.NextDouble() * bounds.X, (float) rnd.NextDouble() * bounds.Y);
                 pos -= hbounds;
                 Vector3 tilepos = new Vector3(pos.X, 5, pos.Y);
                 GameObject[] objs = CreateEnemy(tilepos);
@@ -128,13 +134,15 @@ namespace MinorGame.components
             enemyHead.Scale = new Vector3(0.6f);
 
 
-            enemyHead.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyHeadModel, headTex, 1));
-            enemy.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyModel, TextureGenerator.GetPlayerTexture(), 1));
+            enemyHead.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyHeadModel,
+                headTex, 1));
+            enemy.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, enemyModel,
+                TextureGenerator.GetPlayerTexture(), 1));
 
             enemy.AddComponent(new EnemyComponent(enemyHead, bullet, DefaultFilepaths.DefaultLitShader, 50, false));
 
 
-            return new[] { enemy, enemyHead };
+            return new[] {enemy, enemyHead};
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
@@ -155,7 +163,9 @@ namespace MinorGame.components
                 new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
-            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletEnemy");
+            GameObject obj =
+                new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3) v.Normalized(),
+                    "BulletEnemy");
             obj.Rotation = nozzle.Rotation;
 
             obj.AddComponent(new LitMeshRendererComponent(bulletShader, bulletModel, bulletTex, 1,
@@ -354,7 +364,7 @@ namespace MinorGame.components
 
         private void ApplyRotation()
         {
-            nozzle.LookAt((OpenTK.Vector3)nozzle.LocalPosition + GetWalkDirection());
+            nozzle.LookAt((Vector3) nozzle.LocalPosition + GetWalkDirection());
         }
 
         private bool WantsToShoot()
@@ -365,7 +375,7 @@ namespace MinorGame.components
 
         private Vector3 GetWalkDirection()
         {
-            Vector3 ret = (target.LocalPosition - Owner.LocalPosition);
+            Vector3 ret = target.LocalPosition - Owner.LocalPosition;
             return ret.Normalized();
         }
 

@@ -1,5 +1,4 @@
-﻿
-using Engine.Core;
+﻿using Engine.Core;
 using Engine.DataTypes;
 using Engine.IO;
 using Engine.Physics;
@@ -20,6 +19,7 @@ namespace EndlessRunner.components
         private static int _physicsLayer, _raycastLayer;
         private static Mesh _playerMesh;
         private static Texture _playerTexture;
+
         public static GameObject CreatePlayer(Vector3 position, BasicCamera c)
         {
             if (!_init)
@@ -35,7 +35,8 @@ namespace EndlessRunner.components
             c.AddComponent(off);
 
             GameObject playerObject = new GameObject(position, "Player");
-            LitMeshRendererComponent playerRenderer = new LitMeshRendererComponent(GameScene.TextureShader, _playerMesh, _playerTexture, 1);
+            LitMeshRendererComponent playerRenderer =
+                new LitMeshRendererComponent(GameScene.TextureShader, _playerMesh, _playerTexture, 1);
             Collider collider = new Collider(new Box(Vector3.Zero, 0.6f, 1f, 0.4f, 1f), _physicsLayer);
             PlayerController controller = new PlayerController(10, collider);
             playerObject.AddComponent(playerRenderer);
@@ -90,11 +91,10 @@ namespace EndlessRunner.components
             if (_switchTimer < _switchTime)
             {
                 float t = _switchTimer / _switchTime;
-                Vector3 delta = (_initSwitchPosition + _switchDir * _laneDistance) - _initSwitchPosition;
+                Vector3 delta = _initSwitchPosition + _switchDir * _laneDistance - _initSwitchPosition;
                 Vector2 positionAdd = new Vector2(delta.X, delta.Z);
                 Vector3 v = Vector3.Lerp(_initSwitchPosition, _initSwitchPosition + _switchDir * _laneDistance, t);
                 _collider.PhysicsCollider.Position = new Vector3(v.X, _collider.PhysicsCollider.Position.Y, v.Z);
-
             }
             else
             {
@@ -141,7 +141,6 @@ namespace EndlessRunner.components
 
         protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
         {
-
             if (other.Owner.Name == "Ground")
             {
                 _isJumping = false;

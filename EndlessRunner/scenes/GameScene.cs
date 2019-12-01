@@ -16,13 +16,11 @@ namespace EndlessRunner.scenes
 {
     public class GameScene : AbstractScene
     {
-
         public static ShaderProgram TextureShader;
         public static GameObject Container;
+
         protected override void InitializeScene()
         {
- 
-
             DebugConsoleComponent console = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
             console.AddCommand("map", cmdGenerateMap);
             Add(console.Owner);
@@ -38,15 +36,14 @@ namespace EndlessRunner.scenes
             Container = new GameObject("MapContainer");
             Container.AddComponent(new Zmover());
             Add(Container);
-
         }
 
         private static string cmdGenerateMap(string[] args)
         {
             List<GameObject> objects =
                 MapGenerator.Generate(args[0], 8, 128);
-            
-            Container.LocalPosition=Engine.Physics.BEPUutilities.Vector3.Zero;
+
+            Container.LocalPosition = Engine.Physics.BEPUutilities.Vector3.Zero;
             Container.DestroyAllChildren();
 
             foreach (GameObject gameObject in objects)

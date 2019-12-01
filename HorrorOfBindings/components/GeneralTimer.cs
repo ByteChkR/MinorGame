@@ -25,9 +25,13 @@ namespace MinorGame.components
             {
                 _action?.Invoke();
                 if (_loop)
+                {
                     _time = 0;
+                }
                 else
+                {
                     Destroy();
+                }
             }
         }
     }

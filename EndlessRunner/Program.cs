@@ -26,7 +26,7 @@ namespace EndlessRunner
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
             EngineConfig.LoadConfig("configs/engine.settings.xml", Assembly.GetAssembly(typeof(GameEngine)), "Engine");
-            
+
 
 #if COLLECT_LOGS
             if (AskForDebugLogSending())
@@ -48,8 +48,6 @@ namespace EndlessRunner
                 streams.Add(network);
             }
 #endif
-
-
 
 
             GameEngine engine = new GameEngine(EngineSettings.Settings);

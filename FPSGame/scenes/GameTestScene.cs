@@ -26,7 +26,9 @@ namespace FPSGame.scenes
             sw.Start();
             int texWidth = 128;
             int texHeight = 128;
-            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/grass.fl", DataTypes.UCHAR1, CLAPI.CreateEmpty<byte>(CLAPI.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth, texHeight, 1, 4, "assets/kernel/", true);
+            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/grass.fl", DataTypes.UCHAR1,
+                CLAPI.CreateEmpty<byte>(CLAPI.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
+                texHeight, 1, 4, "assets/kernel/", true);
 
             do
             {
@@ -34,7 +36,7 @@ namespace FPSGame.scenes
             } while (!i.Terminated);
 
             Texture tex = TextureLoader.ParameterToTexture(texWidth, texHeight);
-            TextureLoader.Update(tex, i.GetResult<byte>(), (int)tex.Width, (int)tex.Height);
+            TextureLoader.Update(tex, i.GetResult<byte>(), (int) tex.Width, (int) tex.Height);
             Logger.Log("Time for Menu Background(ms): " + sw.ElapsedMilliseconds, DebugChannel.Log, 10);
             sw.Stop();
             return tex;
@@ -47,7 +49,7 @@ namespace FPSGame.scenes
             BasicCamera mainCamera =
                 new BasicCamera(
                     Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
-                        GameEngine.Instance.Width / (float)GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
+                        GameEngine.Instance.Width / (float) GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
 
             object mc = mainCamera;
 
@@ -55,17 +57,20 @@ namespace FPSGame.scenes
             Add(mainCamera);
             mainCamera.AddComponent(new FPSController());
             mainCamera.LocalPosition = new Engine.Physics.BEPUutilities.Vector3(0, 3, 0);
-            Collider playerColl = new Collider(new Sphere(new Engine.Physics.BEPUutilities.Vector3(0, 3, 0), 1f, 1f), "physics");
+            Collider playerColl = new Collider(new Sphere(new Engine.Physics.BEPUutilities.Vector3(0, 3, 0), 1f, 1f),
+                "physics");
             mainCamera.AddComponent(playerColl);
             playerColl.UpdateRotation = false;
-            playerColl.ColliderConstraints = new ColliderConstraints { RotationConstraints = FreezeConstraints.ALL };
+            playerColl.ColliderConstraints = new ColliderConstraints {RotationConstraints = FreezeConstraints.ALL};
             playerColl.PhysicsCollider.Material = new Material(1.5f, 1.5f, 0);
             playerColl.PhysicsCollider.LinearDamping = 0.5f;
             for (int i = 0; i < 50; i++)
             {
                 GameObject obj = new GameObject(new Vector3(i * 2 - 50, 3, -10), "Cube" + i);
-                LitMeshRendererComponent lmr = new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, Prefabs.Cube, TextureLoader.ColorToTexture(Color.Red), 1);
-                Collider bcoll = new Collider(new Box(Engine.Physics.BEPUutilities.Vector3.Zero, 1, 1, 1, 1f), "physics");
+                LitMeshRendererComponent lmr = new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader,
+                    Prefabs.Cube, TextureLoader.ColorToTexture(Color.Red), 1);
+                Collider bcoll = new Collider(new Box(Engine.Physics.BEPUutilities.Vector3.Zero, 1, 1, 1, 1f),
+                    "physics");
                 bcoll.PhysicsCollider.Material = new Material(10, 10, 0);
 
                 obj.AddComponent(lmr);
@@ -74,7 +79,8 @@ namespace FPSGame.scenes
             }
 
             GameObject ground = new GameObject("Ground");
-            LitMeshRendererComponent groundRenderer = new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, Prefabs.Cube, GenerateMenuBackground(), 1);
+            LitMeshRendererComponent groundRenderer = new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader,
+                Prefabs.Cube, GenerateMenuBackground(), 1);
             ground.AddComponent(groundRenderer);
             Collider coll = new Collider(new Box(Engine.Physics.BEPUutilities.Vector3.Zero, 100, 100, 100), "physics");
             coll.PhysicsCollider.Material = new Material(10, 10, 0);
@@ -82,9 +88,6 @@ namespace FPSGame.scenes
             Add(ground);
             ground.Scale = new Engine.Physics.BEPUutilities.Vector3(50, 50, 50);
             ground.LocalPosition = new Engine.Physics.BEPUutilities.Vector3(0, -50, 0);
-
-
-
         }
     }
 }

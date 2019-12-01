@@ -12,6 +12,7 @@ namespace MinorGame.components
     {
         private float time = 0;
         private float y;
+
         protected override void Awake()
         {
             y = Owner.LocalPosition.Y;
@@ -20,8 +21,9 @@ namespace MinorGame.components
         protected override void Update(float deltaTime)
         {
             Owner.Rotate(new Vector3(1, 0.5f, 1), deltaTime * 4);
-            Owner.Scale = Vector3.One * (1.5f + MathF.Sin((time += deltaTime)*4) * 0.01f);
-            Owner.SetLocalPosition(new Vector3(Owner.LocalPosition.X, y + MathF.Abs(MathF.Sin(deltaTime * 4)), Owner.LocalPosition.Z));
+            Owner.Scale = Vector3.One * (1.5f + MathF.Sin((time += deltaTime) * 4) * 0.01f);
+            Owner.SetLocalPosition(new Vector3(Owner.LocalPosition.X, y + MathF.Abs(MathF.Sin(deltaTime * 4)),
+                Owner.LocalPosition.Z));
         }
 
         protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)

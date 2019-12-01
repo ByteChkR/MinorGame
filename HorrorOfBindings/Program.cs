@@ -28,7 +28,7 @@ namespace MinorGame
             GraphicsMode gm = new GraphicsMode(ColorFormat.Empty, 8, 0, 16);
 
             GameEngine engine = new GameEngine(EngineSettings.DefaultSettings);
-            
+
             ManifestReader.RegisterAssembly(Assembly.GetExecutingAssembly());
             ManifestReader.PrepareManifestFiles(true);
             //EngineConfig.CreateConfig(Assembly.GetAssembly(typeof(GameEngine)), "Engine.Core" , "configs/engine.settings.xml");

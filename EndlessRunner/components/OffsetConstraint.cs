@@ -4,7 +4,6 @@ using OpenTK;
 
 namespace EndlessRunner.components
 {
-
     public class OffsetConstraint : AbstractComponent
     {
         private GameObject _attachedObject;

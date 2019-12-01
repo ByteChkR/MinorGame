@@ -11,7 +11,7 @@ namespace FPSGame.components
     public class FPSController : AbstractComponent
     {
         private Collider c;
-        private OpenTK.Vector2 wpos = GameEngine.Instance.WindowPosition;
+        private Vector2 wpos = GameEngine.Instance.WindowPosition;
         private float pitch;
         private float sensitivity = 0.1f;
         private float yaw;
@@ -30,14 +30,17 @@ namespace FPSGame.components
             }
             else
             {
-                OpenTK.Vector2 windowCenter = wpos + GameEngine.Instance.WindowSize / 2f;
-                OpenTK.Vector2 screenMousePos = GameEngine.Instance.MousePosition + GameEngine.Instance.WindowPosition;
+                Vector2 windowCenter = wpos + GameEngine.Instance.WindowSize / 2f;
+                Vector2 screenMousePos = GameEngine.Instance.MousePosition + GameEngine.Instance.WindowPosition;
 
                 if (GameEngine.Instance.HasFocus)
                 {
-                    OpenTK.Input.Mouse.SetPosition(windowCenter.X + 8, windowCenter.Y + 31); //Magic Numbers because windows thinks that window borders and frames are not counting towards the window size :^)
+                    OpenTK.Input.Mouse.SetPosition(windowCenter.X + 8,
+                        windowCenter.Y +
+                        31); //Magic Numbers because windows thinks that window borders and frames are not counting towards the window size :^)
                 }
-                OpenTK.Vector2 delta = screenMousePos - windowCenter;
+
+                Vector2 delta = screenMousePos - windowCenter;
                 Logger.Log("Delta: " + delta, DebugChannel.Log, 10);
 
                 yaw += delta.X * sensitivity;
@@ -56,9 +59,11 @@ namespace FPSGame.components
             }
 
             Vector3 front;
-            front.X = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
-            front.Y = (float)Math.Sin(MathHelper.DegreesToRadians(pitch));
-            front.Z = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(yaw));
+            front.X = (float) Math.Cos(MathHelper.DegreesToRadians(pitch)) *
+                      (float) Math.Cos(MathHelper.DegreesToRadians(yaw));
+            front.Y = (float) Math.Sin(MathHelper.DegreesToRadians(pitch));
+            front.Z = (float) Math.Cos(MathHelper.DegreesToRadians(pitch)) *
+                      (float) Math.Sin(MathHelper.DegreesToRadians(yaw));
             front = Vector3.Normalize(front);
             front += Owner.LocalPosition;
             Owner.LookAt(front);
@@ -71,7 +76,7 @@ namespace FPSGame.components
             {
                 v = (-Vector4.UnitZ * Owner.GetWorldTransform()).Xyz;
             }
-            else if(e.KeyChar == 'a')
+            else if (e.KeyChar == 'a')
             {
                 v = (-Vector4.UnitX * Owner.GetWorldTransform()).Xyz;
             }
@@ -79,7 +84,7 @@ namespace FPSGame.components
             {
                 v = (Vector4.UnitZ * Owner.GetWorldTransform()).Xyz;
             }
-            else if(e.KeyChar == 'd')
+            else if (e.KeyChar == 'd')
             {
                 v = (Vector4.UnitX * Owner.GetWorldTransform()).Xyz;
             }

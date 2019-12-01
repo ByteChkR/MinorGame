@@ -64,14 +64,12 @@ namespace MinorGame.components
         private static AudioFile JumpSound, SpawnSound, ShootSound, ShootSound2;
 
         public delegate void onHpChange(float ratio);
-        public static onHpChange OnHPChange;
 
+        public static onHpChange OnHPChange;
 
 
         public static GameObject[] CreatePlayer(Vector3 position, BasicCamera cam)
         {
-
-
             Mesh mouseTargetModel = MeshLoader.FileToMesh("assets/models/sphere_smooth.obj");
 
 
@@ -89,12 +87,12 @@ namespace MinorGame.components
             GameObject playerH = new GameObject(new Vector3(0, 10, 0), "PlayerHead");
             GameObject lightS = new GameObject(Vector3.UnitY * 2f, "Light");
             playerH.Add(lightS);
-            lightS.AddComponent(new LightComponent() { AmbientContribution = 0f });
+            lightS.AddComponent(new LightComponent() {AmbientContribution = 0f});
             lightS.LocalPosition = Vector3.UnitY * 4f;
 
 
             //Movement for camera
-            OffsetConstraint cameraController = new OffsetConstraint { Damping = 0, MoveSpeed = 2 };
+            OffsetConstraint cameraController = new OffsetConstraint {Damping = 0, MoveSpeed = 2};
             cameraController.Attach(player, new Vector3(0, 15, 5));
             cam.AddComponent(cameraController);
 
@@ -123,8 +121,8 @@ namespace MinorGame.components
             player.AddComponent(collider);
 
 
-
-            player.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, playerModel, TextureGenerator.GetPlayerTexture(), 1));
+            player.AddComponent(new LitMeshRendererComponent(DefaultFilepaths.DefaultLitShader, playerModel,
+                TextureGenerator.GetPlayerTexture(), 1));
 
             AudioSourceComponent source = new AudioSourceComponent();
             AudioLoader.TryLoad("assets/audio/ShootSound.wav", out ShootSound);
@@ -146,9 +144,7 @@ namespace MinorGame.components
             playerUI.AddComponent(new PlayerHUD());
 
 
-
-
-            return new[] { player, playerH, playerUI };
+            return new[] {player, playerH, playerUI};
         }
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
@@ -169,9 +165,9 @@ namespace MinorGame.components
 
         private void SpawnProjectile()
         {
-
             Engine.Physics.BEPUutilities.Vector3 v = Vector3.Zero;
-            if (Grounded || (!CameraRaycaster.ObjectUnderMouse(GameEngine.Instance.CurrentScene.Camera.LocalPosition, out var hit)))
+            if (Grounded || !CameraRaycaster.ObjectUnderMouse(GameEngine.Instance.CurrentScene.Camera.LocalPosition,
+                    out KeyValuePair<Collider, RayHit> hit))
             {
                 Engine.Physics.BEPUutilities.Vector3 vel =
                     new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
@@ -188,7 +184,9 @@ namespace MinorGame.components
             }
 
             Vector3 v1 = v;
-            GameObject obj = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v1.Normalized(), "BulletPlayer");
+            GameObject obj =
+                new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3) v1.Normalized(),
+                    "BulletPlayer");
             obj.Rotation = nozzle.Rotation;
             obj.AddComponent(new LitMeshRendererComponent(bulletShader, bulletModel, bulletTexture, 1, false));
             obj.AddComponent(new DestroyTimer(5));
@@ -212,6 +210,7 @@ namespace MinorGame.components
 
         private int lastEnemySpawn = 0;
         private Random rnd = new Random();
+
         private void GameLogic()
         {
             if (hp <= 0)
@@ -221,7 +220,7 @@ namespace MinorGame.components
                 GameEngine.Instance.InitializeScene<GameTestScene>();
             }
 
-            int pos = (int)Owner.LocalPosition.Z;
+            int pos = (int) Owner.LocalPosition.Z;
             if (pos < lastEnemySpawn - 10)
             {
                 lastEnemySpawn = pos;
@@ -230,17 +229,14 @@ namespace MinorGame.components
                     Logger.Log("Spawning Enemies..", DebugChannel.Log, 10);
                     for (int i = 0; i < 6; i++)
                     {
-                        GameObject[] objs = EnemyComponent.CreateEnemy(new Vector3(i*4, 5, pos - 50));
+                        GameObject[] objs = EnemyComponent.CreateEnemy(new Vector3(i * 4, 5, pos - 50));
                         for (int j = 0; j < objs.Length; j++)
                         {
                             GameEngine.Instance.CurrentScene.Add(objs[j]);
                         }
-
-
                     }
                 }
             }
-
         }
 
         public PlayerController(GameObject nozzle, Mesh bulletModel, Texture bulletTexture, ShaderProgram bulletShader,
@@ -331,7 +327,6 @@ namespace MinorGame.components
 
         protected override void Awake()
         {
-
             Collider = Owner.GetComponent<Collider>();
             if (Collider == null)
             {
@@ -354,7 +349,7 @@ namespace MinorGame.components
                 }
             }
 
-            lastEnemySpawn = (int)Owner.LocalPosition.Z;
+            lastEnemySpawn = (int) Owner.LocalPosition.Z;
         }
 
 
@@ -363,7 +358,7 @@ namespace MinorGame.components
             if (other.Owner.Name == "BulletEnemy")
             {
                 hp--;
-                OnHPChange?.Invoke(hp / (float)maxHP);
+                OnHPChange?.Invoke(hp / (float) maxHP);
                 Logger.Log("Current Player HP: " + hp, DebugChannel.Log, 5);
                 other.Owner.Destroy();
             }
@@ -405,6 +400,7 @@ namespace MinorGame.components
                 jump = false;
                 return Vector3.UnitY * JumpForce;
             }
+
             return Vector3.Zero;
         }
 
@@ -415,22 +411,25 @@ namespace MinorGame.components
             if (vel != Vector3.Zero)
             {
                 if (vel != Vector3.Zero)
+                {
                     vel.Normalize();
+                }
+
                 if (UseGlobalForward)
                 {
                     vel = new Vector3(new Vector4(vel, 0) * Owner.GetWorldTransform());
                 }
 
-                Vector3 vec = new Vector3(vel.X * deltaTime * MoveSpeed, vel.Y * deltaTime * JumpForce, vel.Z * deltaTime * MoveSpeed);
-
+                Vector3 vec = new Vector3(vel.X * deltaTime * MoveSpeed, vel.Y * deltaTime * JumpForce,
+                    vel.Z * deltaTime * MoveSpeed);
 
 
                 //vec.Y -= CurrentGravity;
 
                 Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
-
             }
+
             if (Grounded)
             {
                 CurrentGravity = 0;
@@ -439,7 +438,6 @@ namespace MinorGame.components
             {
                 CurrentGravity += GravityIncUngrounded * deltaTime;
             }
-
 
 
             Engine.Physics.BEPUutilities.Vector3 grav = new Vector3(0, -CurrentGravity, 0);
@@ -473,7 +471,6 @@ namespace MinorGame.components
 
         protected override void OnKeyPress(object sender, KeyPressEventArgs e)
         {
-
         }
 
         protected override void OnKeyDown(object sender, KeyboardKeyEventArgs e)

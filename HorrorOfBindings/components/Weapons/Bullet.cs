@@ -22,12 +22,15 @@ namespace MinorGame.components.Weapons
                 new Vector3(-Vector4.UnitZ * nozzle.GetWorldTransform()) * BulletLaunchForce;
             Vector3 v = vel;
 
-            GameObject bullet = new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3)v.Normalized(), "BulletEnemy");
+            GameObject bullet =
+                new GameObject(nozzle.LocalPosition + (Engine.Physics.BEPUutilities.Vector3) v.Normalized(),
+                    "BulletEnemy");
             bullet.Rotation = nozzle.Rotation;
             bullet.AddComponent(new LitMeshRendererComponent(BulletShader, BulletModel, BulletTexture, 1, false));
             bullet.AddComponent(new DestroyTimer(5));
             bullet.Scale = new Vector3(0.3f, 0.3f, 1);
-            Collider coll = new Collider(new Box(Vector3.Zero, 0.3f, 0.3f, 1, BulletMass), LayerManager.NameToLayer("physics"));
+            Collider coll = new Collider(new Box(Vector3.Zero, 0.3f, 0.3f, 1, BulletMass),
+                LayerManager.NameToLayer("physics"));
             if (!PhysicalBullets)
             {
                 coll.IsTrigger = true;

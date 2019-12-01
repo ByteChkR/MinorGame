@@ -27,6 +27,7 @@ namespace MinorGame.mapgenerator
             {
                 return CreateCube(pos, scale, Quaternion.Identity, tex2);
             }
+
             if (r <= g)
             {
                 return CreateSphere(pos, scale, Quaternion.Identity, tex1);
@@ -73,7 +74,8 @@ namespace MinorGame.mapgenerator
                     int index = i * height + j;
                     Vector3 tilePos = new Vector3(i * xDelta, tileYOffset, j * yDelta) -
                                       new Vector3(fieldHalfSize.X, 1, fieldHalfSize.Y);
-                    GameObject obj = creator(data[index], data[index + 1], data[index + 2], data[index + 3], tilePos, new Vector3(xScale, yScale, zScale));
+                    GameObject obj = creator(data[index], data[index + 1], data[index + 2], data[index + 3], tilePos,
+                        new Vector3(xScale, yScale, zScale));
                     if (obj != null)
                     {
                         ret.Add(obj);
@@ -84,7 +86,8 @@ namespace MinorGame.mapgenerator
             return ret.ToArray();
         }
 
-        public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture, int mass = -1)
+        public static GameObject CreateCube(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
+            int mass = -1)
         {
             GameObject box = new GameObject(position, "Box");
             box.Scale = scale;
@@ -106,7 +109,8 @@ namespace MinorGame.mapgenerator
             return box;
         }
 
-        public static GameObject CreateSphere(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture, int mass = -1)
+        public static GameObject CreateSphere(Vector3 position, Vector3 scale, Quaternion rotation, Texture texture,
+            int mass = -1)
         {
             GameObject box = new GameObject(position, "Sphere");
             box.Scale = scale;

@@ -7,10 +7,7 @@ namespace EndlessRunner.components
     {
         protected override void Update(float deltaTime)
         {
-
-
             Owner.LocalPosition += Vector3.UnitZ * deltaTime;
-
         }
     }
 }

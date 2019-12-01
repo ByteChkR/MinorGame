@@ -186,7 +186,6 @@ namespace MinorGame.mapgenerator
         public static GameObject CreateWFCPreview(Vector3 position, string folderName, bool attachDebugRenderer = true,
             OutputCallback outputCallback = null)
         {
-
             //Ground
             Mesh mesh = MeshLoader.FileToMesh("assets/models/cube_flat.obj");
             GameObject obj = new GameObject(position, "WFCPreview");
@@ -270,7 +269,10 @@ namespace MinorGame.mapgenerator
 
             Bitmap bmp = wfc.Graphics();
 
-            if (wfc.Success) _callback?.Invoke(bmp);
+            if (wfc.Success)
+            {
+                _callback?.Invoke(bmp);
+            }
 
 
             if (renderer != null)

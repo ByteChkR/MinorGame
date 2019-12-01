@@ -8,7 +8,7 @@ using OpenTK.Graphics;
 
 namespace FPSGame
 {
-    class Program
+    internal class Program
     {
         private static void Main(string[] args)
         {

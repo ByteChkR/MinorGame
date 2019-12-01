@@ -35,8 +35,7 @@ namespace MinorGame.scenes
             c.Translate(new Vector3(0, 75, 15));
 
 
-
-            Add(CreateGoal(FindGoalSpawn(-(map.GetLength(1)+6))));
+            Add(CreateGoal(FindGoalSpawn(-(map.GetLength(1) + 6))));
 
             GameObject[] objs = PlayerController.CreatePlayer(FindPlayerSpawn(map), c);
 
@@ -44,17 +43,19 @@ namespace MinorGame.scenes
             {
                 GameEngine.Instance.CurrentScene.Add(objs[i]);
             }
+
             //EnemyComponent.CreateEnemies(new Vector2(30, 500), map, 5,0);
         }
 
 
         private static GameObject CreateGoal(Vector3 position)
         {
-            GameObject ret = TileCreator.CreateCube(position, Vector3.One, Quaternion.Identity, TextureLoader.ColorToTexture(Color.Red), DefaultFilepaths.DefaultLitShader, TextureLoader.ColorToTexture(Color.White));
+            GameObject ret = TileCreator.CreateCube(position, Vector3.One, Quaternion.Identity,
+                TextureLoader.ColorToTexture(Color.Red), DefaultFilepaths.DefaultLitShader,
+                TextureLoader.ColorToTexture(Color.White));
 
             ret.AddComponent(new MapEndTrigger());
             return ret;
-
         }
 
         private static Vector3 FindGoalSpawn(int mapHeight)
@@ -71,7 +72,10 @@ namespace MinorGame.scenes
 
             for (int i = map.GetLength(1) - 1; i >= 0; i--)
             {
-                if (map[map.GetLength(0) / 2, i]) return (new Vector3(map.GetLength(0) / 2f, 5, i) - offset) * scale;
+                if (map[map.GetLength(0) / 2, i])
+                {
+                    return (new Vector3(map.GetLength(0) / 2f, 5, i) - offset) * scale;
+                }
             }
 
             return (new Vector3(map.GetLength(0) / 2f, 5, map.GetLength(1)) - offset) * scale;
@@ -79,7 +83,7 @@ namespace MinorGame.scenes
 
         private static GameObject[] objects = new GameObject[0];
 
-        private void CreateMap(System.Drawing.Bitmap input, ShaderProgram prog)
+        private void CreateMap(Bitmap input, ShaderProgram prog)
         {
             Color[] data = new Color[input.Height * input.Width];
             map = new bool[input.Width, input.Height];
@@ -116,8 +120,6 @@ namespace MinorGame.scenes
         {
             Texture tex = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
             Texture texS = TextureLoader.BitmapToTexture(new Bitmap(mapLayout, 512, 512));
-
-
 
 
             TextureGenerator.CreateGroundTexture(tex, texS);
@@ -188,12 +190,14 @@ namespace MinorGame.scenes
 
             return "Done";
         }
+
         private string cmd_ReLoadScene(string[] args)
         {
             GameEngine.Instance.InitializeScene<GameTestScene>();
             TextureGenerator.Reset();
             return "Reloaded";
         }
+
         private void LoadTestScene(BasicCamera c)
         {
             camera = c;
@@ -205,7 +209,8 @@ namespace MinorGame.scenes
             GameEngine.Instance.CurrentScene.Add(dbg.Owner);
 
             WFCMapGenerator preview = WFCMapGenerator
-                .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false, (input) => CreateMap(input, DefaultFilepaths.DefaultLitShader))
+                .CreateWFCPreview(Vector3.Zero, "assets/WFCTiles", false,
+                    (input) => CreateMap(input, DefaultFilepaths.DefaultLitShader))
                 .GetComponent<WFCMapGenerator>();
             preview.Height = 256;
             preview.Width = 32;
@@ -220,7 +225,6 @@ namespace MinorGame.scenes
                 preview.Generate(1);
                 tries++;
             }
-
         }
 
         protected override void InitializeScene()
@@ -232,7 +236,7 @@ namespace MinorGame.scenes
 
             BasicCamera c = new BasicCamera(
                 Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
-                    GameEngine.Instance.Width / (float)GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
+                    GameEngine.Instance.Width / (float) GameEngine.Instance.Height, 0.01f, 1000f), Vector3.Zero);
 
             LoadTestScene(c);
             LoadGameScene(camera);
@@ -241,6 +245,7 @@ namespace MinorGame.scenes
             {
                 bg = TextureLoader.ColorToTexture(Color.Black);
             }
+
             LoadLoadingScreen(bg);
             TextureGenerator.Process(LoadingFinished);
 
@@ -254,14 +259,22 @@ namespace MinorGame.scenes
         internal static bool ComesFromMenu = true;
         private static GameObject bg;
         private static GameObject loading;
+
         public void LoadLoadingScreen(Texture background = null)
         {
             LoadingSymbol = TextureLoader.FileToTexture("assets/textures/LoadingSymbol.jpg");
             bg = new GameObject("Background");
             if (background == null)
+            {
                 BlackBG = MenuScene.menubg;
-            else BlackBG = background;
-            UIImageRendererComponent bgImage = new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            }
+            else
+            {
+                BlackBG = background;
+            }
+
+            UIImageRendererComponent bgImage =
+                new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
             bgImage.RenderQueue = -1;
             bg.AddComponent(bgImage);
             bg.AddComponent(new BackgroundMover());
@@ -278,7 +291,8 @@ namespace MinorGame.scenes
             tr.RenderQueue = -1;
             tr.Position = new Vector2(-0.7f, -0.7f);
             loading = new GameObject("Loading");
-            UIImageRendererComponent loadingImage = new UIImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            UIImageRendererComponent loadingImage =
+                new UIImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUIImageShader);
             loadingImage.RenderQueue = -1;
             loading.AddComponent(loadingImage);
             Add(loading);
@@ -294,7 +308,7 @@ namespace MinorGame.scenes
             loadAnim.MaxAnimationTime = 0.5f;
             loadAnim.Trigger = AnimationTrigger.None;
             loadAnim.AnimationDelay = 0f;
-            Animator anim = new Animator(new List<Animation> { loadAnim }, loadingImage);
+            Animator anim = new Animator(new List<Animation> {loadAnim}, loadingImage);
             loading.AddComponent(anim);
             LoopTimer(anim, loadAnim);
             GameObject obj = new GameObject("Timer");

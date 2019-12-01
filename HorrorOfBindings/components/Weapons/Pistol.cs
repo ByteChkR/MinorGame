@@ -6,7 +6,6 @@ namespace MinorGame.components.Weapons
     {
         protected override void Update(float deltaTime)
         {
-            
             base.Update(deltaTime);
         }
     }
