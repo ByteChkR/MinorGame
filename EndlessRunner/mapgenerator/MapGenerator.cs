@@ -16,11 +16,11 @@ namespace EndlessRunner.mapgenerator
 {
     public class MapGenerator
     {
-        private static WFCOverlayMode _wfc;
+        private static WfcOverlayMode _wfc;
 
         public static List<GameObject> Generate(string filename, int width, int length)
         {
-            _wfc = new WFCOverlayMode(filename, 3, width, length, false, true, 8, 0);
+            _wfc = new WfcOverlayMode(filename, 3, width, length, false, true, 8, 0);
 
 
             do

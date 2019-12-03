@@ -23,7 +23,7 @@ namespace MinorGame.mapgenerator
         private static Texture[] wallSpecTextures;
         private static Texture playerSphereTexture;
         private static Texture playerSphereSpecTexture;
-        private static FLRunner runner;
+        private static FlRunner runner;
         private static bool runnerInit;
 
         public static void Initialize(bool multiThread)
@@ -36,11 +36,11 @@ namespace MinorGame.mapgenerator
             runnerInit = true;
             if (multiThread)
             {
-                runner = new FLMultiThreadRunner(null);
+                runner = new FlMultiThreadRunner(null);
             }
             else
             {
-                runner = new FLRunner(CLAPI.MainThread);
+                runner = new FlRunner(Clapi.MainThread);
             }
 
             InitPerlin();
@@ -103,7 +103,7 @@ namespace MinorGame.mapgenerator
 
             //Texture tex = TextureLoader.ParameterToTexture(512, 512);
 
-            //FLExecutionContext exec =new FLExecutionContext("assets/filter/game/perlin.fl", tex, new Dictionary<string, Texture>(), null);
+            //FlExecutionContext exec =new FlExecutionContext("assets/filter/game/perlin.fl", tex, new Dictionary<string, Texture>(), null);
             //runner.Enqueue(exec);
 
             playerSphereTexture = TextureLoader.ParameterToTexture(512, 512);
@@ -141,12 +141,12 @@ namespace MinorGame.mapgenerator
             runner.Enqueue(GetExecutionContext($"assets/filter/game/concrete.fl", destTexture, specTexture, null));
         }
 
-        private static FLExecutionContext GetExecutionContext(string file, Texture dest, Texture specular,
+        private static FlExecutionContext GetExecutionContext(string file, Texture dest, Texture specular,
             Action<Dictionary<Texture, byte[]>> onFinishCallback)
         {
             Dictionary<string, Texture> otherTex = new Dictionary<string, Texture>()
                 {{"result", dest}, {"specularOut", specular}};
-            return new FLExecutionContext(file, dest, otherTex, onFinishCallback);
+            return new FlExecutionContext(file, dest, otherTex, onFinishCallback);
         }
     }
 }

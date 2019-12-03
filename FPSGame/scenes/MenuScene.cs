@@ -38,8 +38,8 @@ namespace FPSGame.scenes
             Add(mainCamera);
             SetCamera(mainCamera);
             menubg = GenerateMenuBackground();
-            UIImageRendererComponent bg =
-                new UIImageRendererComponent(menubg.Copy(), false, 1, DefaultFilepaths.DefaultUIImageShader);
+            UiImageRendererComponent bg =
+                new UiImageRendererComponent(menubg.Copy(), false, 1, DefaultFilepaths.DefaultUiImageShader);
 
             GameObject bgobj = new GameObject("BG");
             bgobj.AddComponent(new BackgroundMover());
@@ -111,12 +111,12 @@ namespace FPSGame.scenes
             Texture btnIdle = TextureLoader.FileToTexture(buttonString + ".png");
             Texture btnHover = TextureLoader.FileToTexture(buttonString + "H.png");
             Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
-            Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUIImageShader, 1, btnClick, btnHover, onClick,
+            Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUiImageShader, 1, btnClick, btnHover, onClick,
                 onEnter, onHover, onLeave);
 
 
-            UITextRendererComponent tr =
-                new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUITextShader);
+            UiTextRendererComponent tr =
+                new UiTextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUiTextShader);
             obj.AddComponent(btn);
             tObj.AddComponent(tr);
             container.Add(obj);

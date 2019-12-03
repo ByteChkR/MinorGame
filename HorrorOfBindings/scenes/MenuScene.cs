@@ -44,8 +44,8 @@ namespace MinorGame.scenes
             Add(mainCamera);
             SetCamera(mainCamera);
             menubg = GenerateMenuBackground();
-            UIImageRendererComponent bg =
-                new UIImageRendererComponent(menubg.Copy(), false, 1, DefaultFilepaths.DefaultUIImageShader);
+            UiImageRendererComponent bg =
+                new UiImageRendererComponent(menubg.Copy(), false, 1, DefaultFilepaths.DefaultUiImageShader);
 
             GameObject bgobj = new GameObject("BG");
             bgobj.AddComponent(new BackgroundMover());
@@ -99,8 +99,8 @@ namespace MinorGame.scenes
             sw.Start();
             int texWidth = 128;
             int texHeight = 128;
-            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/menubg.fl", DataTypes.UCHAR1,
-                CLAPI.CreateEmpty<byte>(CLAPI.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
+            Interpreter i = new Interpreter(Clapi.MainThread, "assets/filter/game/menubg.fl", DataTypes.Uchar1,
+                Clapi.CreateEmpty<byte>(Clapi.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
                 texHeight, 1, 4, "assets/kernel/", true);
 
             do
@@ -126,12 +126,12 @@ namespace MinorGame.scenes
             Texture btnIdle = TextureLoader.FileToTexture(buttonString + ".png");
             Texture btnHover = TextureLoader.FileToTexture(buttonString + "H.png");
             Texture btnClick = TextureLoader.FileToTexture(buttonString + "C.png");
-            Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUIImageShader, 1, btnClick, btnHover, onClick,
+            Button btn = new Button(btnIdle, DefaultFilepaths.DefaultUiImageShader, 1, btnClick, btnHover, onClick,
                 onEnter, onHover, onLeave);
 
 
-            UITextRendererComponent tr =
-                new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUITextShader);
+            UiTextRendererComponent tr =
+                new UiTextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultUiTextShader);
             obj.AddComponent(btn);
             tObj.AddComponent(tr);
             container.Add(obj);

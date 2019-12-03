@@ -26,8 +26,8 @@ namespace FPSGame.scenes
             sw.Start();
             int texWidth = 128;
             int texHeight = 128;
-            Interpreter i = new Interpreter(CLAPI.MainThread, "assets/filter/game/grass.fl", DataTypes.UCHAR1,
-                CLAPI.CreateEmpty<byte>(CLAPI.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
+            Interpreter i = new Interpreter(Clapi.MainThread, "assets/filter/game/grass.fl", DataTypes.Uchar1,
+                Clapi.CreateEmpty<byte>(Clapi.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
                 texHeight, 1, 4, "assets/kernel/", true);
 
             do

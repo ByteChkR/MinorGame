@@ -19,7 +19,7 @@ namespace MinorGame.mapgenerator
     public class WFCMapGenerator : AbstractComponent
     {
         private List<string> sampleTextures = new List<string>();
-        private WFCOverlayMode wfc;
+        private WfcOverlayMode wfc;
         private int current = 0;
         private MeshRendererComponent renderer;
 
@@ -255,7 +255,7 @@ namespace MinorGame.mapgenerator
 
         public bool Generate(int sampleID)
         {
-            wfc = new WFCOverlayMode(sampleTextures[sampleID], N, Width, Height, PeriodicInput, PeriodicOutput,
+            wfc = new WfcOverlayMode(sampleTextures[sampleID], N, Width, Height, PeriodicInput, PeriodicOutput,
                 Symmetry, Ground);
             bool ret = false;
             if (UseSeed)

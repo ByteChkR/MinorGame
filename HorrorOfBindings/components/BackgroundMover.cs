@@ -7,7 +7,7 @@ namespace MinorGame.components
 {
     public class BackgroundMover : AbstractComponent
     {
-        private UIImageRendererComponent image;
+        private UiImageRendererComponent image;
         private float MoveSpeed = 0.15f;
         private float _timer;
         private float xYDelta;
@@ -17,7 +17,7 @@ namespace MinorGame.components
         {
             base.Awake();
 
-            image = Owner.GetComponent<UIImageRendererComponent>();
+            image = Owner.GetComponent<UiImageRendererComponent>();
             Random rnd = new Random();
             xYDelta = (float) rnd.NextDouble();
         }

@@ -273,8 +273,8 @@ namespace MinorGame.scenes
                 BlackBG = background;
             }
 
-            UIImageRendererComponent bgImage =
-                new UIImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            UiImageRendererComponent bgImage =
+                new UiImageRendererComponent(BlackBG, false, 1, DefaultFilepaths.DefaultUiImageShader);
             bgImage.RenderQueue = -1;
             bg.AddComponent(bgImage);
             bg.AddComponent(new BackgroundMover());
@@ -282,7 +282,7 @@ namespace MinorGame.scenes
 
             GameObject text = new GameObject("text");
             GameFont f = FontLibrary.LoadFontDirect("assets/fonts/default_font.ttf", 64);
-            UITextRendererComponent tr = new UITextRendererComponent(f, false, 1, DefaultFilepaths.DefaultUITextShader);
+            UiTextRendererComponent tr = new UiTextRendererComponent(f, false, 1, DefaultFilepaths.DefaultUiTextShader);
             text.AddComponent(tr);
             bg.Add(text);
             tr.Text = "Loading...";
@@ -291,8 +291,8 @@ namespace MinorGame.scenes
             tr.RenderQueue = -1;
             tr.Position = new Vector2(-0.7f, -0.7f);
             loading = new GameObject("Loading");
-            UIImageRendererComponent loadingImage =
-                new UIImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUIImageShader);
+            UiImageRendererComponent loadingImage =
+                new UiImageRendererComponent(LoadingSymbol, false, 1, DefaultFilepaths.DefaultUiImageShader);
             loadingImage.RenderQueue = -1;
             loading.AddComponent(loadingImage);
             Add(loading);

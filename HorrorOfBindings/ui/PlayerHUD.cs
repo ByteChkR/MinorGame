@@ -14,9 +14,9 @@ namespace MinorGame.ui
     public class PlayerHUD : AbstractComponent
     {
         public static PlayerHUD Instance;
-        private UITextRendererComponent EnemiesLeftText;
-        private UIImageRendererComponent PlayerHPBarBGObj;
-        private UIImageRendererComponent PlayerHPBarObj;
+        private UiTextRendererComponent EnemiesLeftText;
+        private UiImageRendererComponent PlayerHPBarBGObj;
+        private UiImageRendererComponent PlayerHPBarObj;
 
         public PlayerHUD()
         {
@@ -30,7 +30,7 @@ namespace MinorGame.ui
 
 
             GameObject enemiesLeftObj = new GameObject("EnemiesLeft");
-            EnemiesLeftText = new UITextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultLitShader);
+            EnemiesLeftText = new UiTextRendererComponent("Arial", false, 1, DefaultFilepaths.DefaultLitShader);
             enemiesLeftObj.AddComponent(EnemiesLeftText);
             EnemiesLeftText.Position = new Vector2(0.2f, -0.45f);
             EnemiesLeftText.Scale = new Vector2(2f);
@@ -44,8 +44,8 @@ namespace MinorGame.ui
             GameObject playerHPBarBGObj = new GameObject("PlayerHPBar");
             bmp.SetPixel(0, 0, Color.Black);
 
-            PlayerHPBarBGObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1,
-                DefaultFilepaths.DefaultUIImageShader);
+            PlayerHPBarBGObj = new UiImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1,
+                DefaultFilepaths.DefaultUiImageShader);
             playerHPBarBGObj.AddComponent(PlayerHPBarBGObj);
             PlayerHPBarBGObj.Position = new Vector2(0.0f, 0.9f);
             PlayerHPBarBGObj.Scale = new Vector2(0.31f, 0.05f * GameEngine.Instance.AspectRatio * 1.2f);
@@ -55,8 +55,8 @@ namespace MinorGame.ui
 
             bmp.SetPixel(0, 0, Color.Red);
 
-            PlayerHPBarObj = new UIImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1,
-                DefaultFilepaths.DefaultUIImageShader);
+            PlayerHPBarObj = new UiImageRendererComponent(TextureLoader.BitmapToTexture(bmp), false, 1,
+                DefaultFilepaths.DefaultUiImageShader);
             playerHPBarObj.AddComponent(PlayerHPBarObj);
             PlayerHPBarObj.Position = new Vector2(0.0f, 0.9f);
             PlayerHPBarObj.Scale = new Vector2(0.3f, 0.05f * GameEngine.Instance.AspectRatio);
