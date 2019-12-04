@@ -11,10 +11,9 @@ using Engine.IO;
 using Engine.Rendering;
 using Engine.WFC;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using Bitmap = System.Drawing.Bitmap;
 
-namespace MinorGame.mapgenerator
+namespace HorrorOfBindings.mapgenerator
 {
     public class WFCMapGenerator : AbstractComponent
     {

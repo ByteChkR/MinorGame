@@ -8,7 +8,6 @@ using Engine.Physics;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Rendering;
 using Engine.WFC;
-using MinorGame.mapgenerator;
 using OpenTK;
 using Vector3 = Engine.Physics.BEPUutilities.Vector3;
 

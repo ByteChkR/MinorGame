@@ -3,10 +3,10 @@ using Engine.Core;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.CollisionTests;
 using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
-using MinorGame.scenes;
+using HorrorOfBindings.scenes;
 using OpenTK;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class MapEndTrigger : AbstractComponent
     {

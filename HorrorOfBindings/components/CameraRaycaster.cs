@@ -5,7 +5,7 @@ using Engine.Physics.BEPUutilities;
 using OpenTK.Input;
 using Vector3 = OpenTK.Vector3;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class CameraRaycaster : AbstractComponent
     {

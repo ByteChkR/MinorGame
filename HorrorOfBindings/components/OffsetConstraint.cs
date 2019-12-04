@@ -2,7 +2,7 @@
 using Engine.Core;
 using OpenTK;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class OffsetConstraint : AbstractComponent
     {

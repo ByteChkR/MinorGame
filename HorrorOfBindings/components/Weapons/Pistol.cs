@@ -1,6 +1,6 @@
 ﻿using OpenTK.Input;
 
-namespace MinorGame.components.Weapons
+namespace HorrorOfBindings.components.Weapons
 {
     public class Pistol : AbstractWeapon
     {

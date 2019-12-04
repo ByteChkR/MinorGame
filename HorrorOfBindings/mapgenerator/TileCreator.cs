@@ -13,12 +13,12 @@ using Engine.Physics;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Rendering;
-using MinorGame.components;
-using MinorGame.exceptions;
+using HorrorOfBindings.components;
+using HorrorOfBindings.exceptions;
 using OpenTK;
 using Vector2 = OpenTK.Vector2;
 
-namespace MinorGame.mapgenerator
+namespace HorrorOfBindings.mapgenerator
 {
     public class TileCreator
     {

@@ -3,13 +3,13 @@ using Engine.Core;
 using Engine.DataTypes;
 using Engine.IO;
 using Engine.UI;
-using MinorGame.components;
-using MinorGame.scenes;
+using HorrorOfBindings.components;
+using HorrorOfBindings.scenes;
 using OpenTK;
 using Bitmap = System.Drawing.Bitmap;
 using Color = System.Drawing.Color;
 
-namespace MinorGame.ui
+namespace HorrorOfBindings.ui
 {
     public class PlayerHUD : AbstractComponent
     {

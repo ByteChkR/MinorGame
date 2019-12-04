@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Resources;
-using System.Runtime.ExceptionServices;
 using EndlessRunner.scenes;
 using Engine.Core;
 using Engine.DataTypes;
-using Engine.Debug;
 using Engine.IO;
 using Engine.Physics;
 using Engine.Physics.BEPUphysics.Entities.Prefabs;
@@ -12,7 +9,7 @@ using Engine.Rendering;
 using OpenTK;
 using Vector2 = OpenTK.Vector2;
 
-namespace MinorGame.mapgenerator
+namespace EndlessRunner.mapgenerator
 {
     public class TileCreator
     {

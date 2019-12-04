@@ -13,14 +13,14 @@ using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Physics.BEPUphysics.Materials;
 using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Rendering;
-using MinorGame.exceptions;
-using MinorGame.mapgenerator;
-using MinorGame.scenes;
+using HorrorOfBindings.exceptions;
+using HorrorOfBindings.mapgenerator;
+using HorrorOfBindings.scenes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class EnemyComponent : AbstractComponent
     {

@@ -15,9 +15,9 @@ using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using Engine.Physics.BEPUphysics.PositionUpdating;
 using Engine.Physics.BEPUutilities;
 using Engine.Rendering;
-using MinorGame.mapgenerator;
-using MinorGame.scenes;
-using MinorGame.ui;
+using HorrorOfBindings.mapgenerator;
+using HorrorOfBindings.scenes;
+using HorrorOfBindings.ui;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
@@ -28,7 +28,7 @@ using Vector2 = OpenTK.Vector2;
 using Vector3 = OpenTK.Vector3;
 using Vector4 = OpenTK.Vector4;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class PlayerController : AbstractComponent
     {

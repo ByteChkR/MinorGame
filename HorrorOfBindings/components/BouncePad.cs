@@ -5,7 +5,7 @@ using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using OpenTK;
 using Vector3 = Engine.Physics.BEPUutilities.Vector3;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class BouncePad : AbstractComponent
     {

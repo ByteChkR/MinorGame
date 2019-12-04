@@ -1,7 +1,7 @@
 ﻿using System;
 using Engine.Core;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class GeneralTimer : AbstractComponent
     {

@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Net.NetworkInformation;
-using Assimp;
 using Engine.DataTypes;
 using Engine.IO;
 using Engine.OpenCL;
-using Engine.OpenCL.DotNetCore.Memory;
-using Engine.OpenCL.Runner;
-using Engine.OpenCL.TypeEnums;
 using Engine.OpenFL;
-using OpenTK.Graphics.OpenGL;
+using Engine.OpenFL.Runner;
 
-namespace MinorGame.mapgenerator
+namespace HorrorOfBindings.mapgenerator
 {
     public static class TextureGenerator
     {

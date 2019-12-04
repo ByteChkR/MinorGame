@@ -2,7 +2,7 @@
 using Engine.Exceptions;
 
 
-namespace MinorGame.exceptions
+namespace HorrorOfBindings.exceptions
 {
     public class GameException : EngineException
     {

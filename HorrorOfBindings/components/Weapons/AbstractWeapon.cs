@@ -2,7 +2,7 @@
 using Engine.Core;
 using Engine.Rendering;
 
-namespace MinorGame.components.Weapons
+namespace HorrorOfBindings.components.Weapons
 {
     public abstract class AbstractWeapon : AbstractComponent
     {

@@ -3,7 +3,7 @@ using Engine.Core;
 using Engine.UI;
 using OpenTK;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class BackgroundMover : AbstractComponent
     {

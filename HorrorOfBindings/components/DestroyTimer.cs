@@ -1,6 +1,6 @@
 ﻿using Engine.Core;
 
-namespace MinorGame.components
+namespace HorrorOfBindings.components
 {
     public class DestroyTimer : AbstractComponent
     {

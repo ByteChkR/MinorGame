@@ -15,13 +15,13 @@ using Engine.UI.Animations;
 using Engine.UI.Animations.AnimationTypes;
 using Engine.UI.Animations.Interpolators;
 using Engine.WFC;
-using MinorGame.components;
-using MinorGame.mapgenerator;
+using HorrorOfBindings.components;
+using HorrorOfBindings.mapgenerator;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Bitmap = System.Drawing.Bitmap;
 
-namespace MinorGame.scenes
+namespace HorrorOfBindings.scenes
 {
     public class GameTestScene : AbstractScene
     {

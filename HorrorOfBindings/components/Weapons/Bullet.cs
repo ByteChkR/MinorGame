@@ -5,7 +5,7 @@ using Engine.Physics.BEPUphysics.Entities.Prefabs;
 using Engine.Rendering;
 using OpenTK;
 
-namespace MinorGame.components.Weapons
+namespace HorrorOfBindings.components.Weapons
 {
     public struct Bullet
     {
