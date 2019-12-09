@@ -11,12 +11,10 @@ namespace FPSGame.components
     public class FPSController : AbstractComponent
     {
         private Collider c;
-        private Vector2 wpos = GameEngine.Instance.WindowPosition;
         private float pitch;
         private float sensitivity = 0.1f;
         private float yaw;
         private bool firstUpdate = true;
-
         protected override void Awake()
         {
             c = Owner.GetComponent<Collider>();
@@ -30,18 +28,14 @@ namespace FPSGame.components
             }
             else
             {
-                Vector2 windowCenter = wpos + GameEngine.Instance.WindowSize / 2f;
-                Vector2 screenMousePos = GameEngine.Instance.MousePosition + GameEngine.Instance.WindowPosition;
-
                 if (GameEngine.Instance.HasFocus)
                 {
-                    OpenTK.Input.Mouse.SetPosition(windowCenter.X + 8,
-                        windowCenter.Y +
-                        31); //Magic Numbers because windows thinks that window borders and frames are not counting towards the window size :^)
+                    //Note: This is not the exact center of the screen, but its good enough
+                    OpenTK.Input.Mouse.SetPosition(
+                        GameEngine.Instance.WindowPosition.X + GameEngine.Instance.Width / 2f,
+                        GameEngine.Instance.WindowPosition.Y + GameEngine.Instance.Height / 2f);
                 }
-
-                Vector2 delta = screenMousePos - windowCenter;
-                Logger.Log("Delta: " + delta, DebugChannel.Log, 10);
+                Vector2 delta = GameEngine.Instance.MouseDelta;
 
                 yaw += delta.X * sensitivity;
                 if (pitch > 89.0f)
@@ -59,11 +53,11 @@ namespace FPSGame.components
             }
 
             Vector3 front;
-            front.X = (float) Math.Cos(MathHelper.DegreesToRadians(pitch)) *
-                      (float) Math.Cos(MathHelper.DegreesToRadians(yaw));
-            front.Y = (float) Math.Sin(MathHelper.DegreesToRadians(pitch));
-            front.Z = (float) Math.Cos(MathHelper.DegreesToRadians(pitch)) *
-                      (float) Math.Sin(MathHelper.DegreesToRadians(yaw));
+            front.X = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) *
+                      (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
+            front.Y = (float)Math.Sin(MathHelper.DegreesToRadians(pitch));
+            front.Z = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) *
+                      (float)Math.Sin(MathHelper.DegreesToRadians(yaw));
             front = Vector3.Normalize(front);
             front += Owner.LocalPosition;
             Owner.LookAt(front);
