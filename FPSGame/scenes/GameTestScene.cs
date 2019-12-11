@@ -57,13 +57,13 @@ namespace FPSGame.scenes
             Add(mainCamera);
             mainCamera.AddComponent(new FPSController());
             mainCamera.LocalPosition = new Engine.Physics.BEPUutilities.Vector3(0, 3, 0);
-            Collider playerColl = new Collider(new Sphere(new Engine.Physics.BEPUutilities.Vector3(0, 3, 0), 1f, 1f),
+            Collider playerColl = new Collider(new Sphere(new Engine.Physics.BEPUutilities.Vector3(0, 3, 0), 1f, 5f),
                 "physics");
             mainCamera.AddComponent(playerColl);
             playerColl.UpdateRotation = false;
             playerColl.ColliderConstraints = new ColliderConstraints {RotationConstraints = FreezeConstraints.ALL};
             playerColl.PhysicsCollider.Material = new Material(1.5f, 1.5f, 0);
-            playerColl.PhysicsCollider.LinearDamping = 0.5f;
+            playerColl.PhysicsCollider.LinearDamping = 0.99f;
             for (int i = 0; i < 50; i++)
             {
                 GameObject obj = new GameObject(new Vector3(i * 2 - 50, 3, -10), "Cube" + i);

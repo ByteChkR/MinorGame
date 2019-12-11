@@ -149,7 +149,7 @@ namespace HorrorOfBindings.components
 
         protected override void OnInitialCollisionDetected(Collider other, CollidablePairHandler handler)
         {
-            if (other.Owner.Name == "Ground")
+            if (other.Owner.Name == "Ground" || other.Owner.Name == "Box")
             {
                 Grounded = true;
             }
@@ -157,7 +157,7 @@ namespace HorrorOfBindings.components
 
         protected override void OnCollisionEnded(Collider other, CollidablePairHandler handler)
         {
-            if (other.Owner.Name == "Ground")
+            if (other.Owner.Name == "Ground" || other.Owner.Name == "Box")
             {
                 Grounded = false;
             }
@@ -423,9 +423,7 @@ namespace HorrorOfBindings.components
                 Vector3 vec = new Vector3(vel.X * deltaTime * MoveSpeed, vel.Y * deltaTime * JumpForce,
                     vel.Z * deltaTime * MoveSpeed);
 
-
-                //vec.Y -= CurrentGravity;
-
+                
                 Engine.Physics.BEPUutilities.Vector3 v = new Engine.Physics.BEPUutilities.Vector3(vec.X, vec.Y, vec.Z);
                 Collider.PhysicsCollider.ApplyLinearImpulse(ref v);
             }

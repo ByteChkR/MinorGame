@@ -2,7 +2,11 @@
 using Engine.Core;
 using Engine.Debug;
 using Engine.Physics;
+using Engine.Physics.BEPUphysics.CollisionTests;
+using Engine.Physics.BEPUphysics.NarrowPhaseSystems.Pairs;
 using OpenTK;
+using OpenTK.Graphics.Vulkan.Xcb;
+using OpenTK.Input;
 using MathHelper = OpenTK.MathHelper;
 using Vector3 = Engine.Physics.BEPUutilities.Vector3;
 
@@ -61,30 +65,66 @@ namespace FPSGame.components
             front = Vector3.Normalize(front);
             front += Owner.LocalPosition;
             Owner.LookAt(front);
+
+            Vector3 v = Vector3.Zero;
+            if (Input.GetKey(Key.W))
+            {
+                v += -Vector3.UnitZ;
+            }
+            if (Input.GetKey(Key.A))
+            {
+                v += -Vector3.UnitX;
+            }
+            if (Input.GetKey(Key.S))
+            {
+                v += Vector3.UnitZ;
+            }
+            if (Input.GetKey(Key.D))
+            {
+                v += Vector3.UnitX;
+            }
+
+            bool jump = Input.GetKey(Key.Space);
+
+            if (v == Vector3.Zero || !Grounded) return;
+            v = (new Vector4(v) * Owner.GetWorldTransform()).Xyz;
+            v.Y = 0;
+            v.Normalize();
+            v *= 1f;
+            v.Y = jump ? 5 : 0;
+
+            c.PhysicsCollider.ApplyLinearImpulse(ref v);
         }
 
-        protected override void OnKeyPress(object sender, KeyPressEventArgs e)
-        {
-            Vector3 v = new Vector3();
-            if (e.KeyChar == 'w')
-            {
-                v = (-Vector4.UnitZ * Owner.GetWorldTransform()).Xyz;
-            }
-            else if (e.KeyChar == 'a')
-            {
-                v = (-Vector4.UnitX * Owner.GetWorldTransform()).Xyz;
-            }
-            else if (e.KeyChar == 's')
-            {
-                v = (Vector4.UnitZ * Owner.GetWorldTransform()).Xyz;
-            }
-            else if (e.KeyChar == 'd')
-            {
-                v = (Vector4.UnitX * Owner.GetWorldTransform()).Xyz;
-            }
+        private bool Grounded = false;
 
-            v *= 10;
-            c.SetVelocityLinear(v);
+        protected override void OnContactCreated(Collider other, CollidablePairHandler handler, ContactData contact)
+        {
+            if (handler.Contacts.Count == 1 && other.Owner.Name == "Ground" && !Grounded &&
+                contact.Position.Y < c.PhysicsCollider.Position.Y)
+            {
+                Grounded = true;
+            }
+            base.OnContactCreated(other, handler, contact);
+        }
+
+
+        protected override void OnContactRemoved(Collider other, CollidablePairHandler handler, ContactData contact)
+        {
+            if (other.Owner.Name == "Ground")
+            {
+                bool isGrounded = false;
+                for (int i = 0; i < handler.Contacts.Count; i++)
+                {
+                    if (handler.Contacts[i].Contact.Position.Y < c.PhysicsCollider.Position.Y)
+                    {
+                        isGrounded = true;
+                    }
+                }
+
+                Grounded = isGrounded;
+            }
+            base.OnContactRemoved(other, handler, contact);
         }
     }
 }

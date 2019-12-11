@@ -21,7 +21,6 @@ namespace FPSGame
             //EngineConfig.CreateConfig(Assembly.GetAssembly(typeof(GameEngine)), "Engine.Core" , "configs/engine.settings.xml");
             EngineConfig.LoadConfig("assets/configs/engine_settings.xml", Assembly.GetAssembly(typeof(GameEngine)),
                 "Engine.Core");
-            DebugSettings dbgSettings = EngineSettings.Settings.DebugSettings;
             engine.SetSettings(EngineSettings.Settings);
             engine.Initialize();
 
