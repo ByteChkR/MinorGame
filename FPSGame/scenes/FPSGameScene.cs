@@ -18,7 +18,7 @@ using OpenTK;
 
 namespace FPSGame.scenes
 {
-    public class GameTestScene : AbstractScene
+    public class FPSGameScene : AbstractScene
     {
         private Texture GenerateMenuBackground()
         {

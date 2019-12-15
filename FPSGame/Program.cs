@@ -24,7 +24,7 @@ namespace FPSGame
             engine.SetSettings(EngineSettings.Settings);
             engine.Initialize();
 
-            engine.InitializeScene<MenuScene>();
+            engine.InitializeScene<FPSMenuScene>();
             engine.Run();
         }
     }

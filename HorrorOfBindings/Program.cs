@@ -37,7 +37,7 @@ namespace HorrorOfBindings
             DebugSettings dbgSettings = EngineSettings.Settings.DebugSettings;
             engine.SetSettings(EngineSettings.Settings);
             engine.Initialize();
-            engine.InitializeScene<MenuScene>();
+            engine.InitializeScene<HoBMenuScene>();
             engine.Run();
         }
     }

@@ -30,8 +30,8 @@ namespace HorrorOfBindings.components
         {
             if (other.Owner.Name == "Player")
             {
-                GameTestScene.ComesFromMenu = false;
-                GameEngine.Instance.InitializeScene<GameTestScene>();
+                HoBGameScene.ComesFromMenu = false;
+                GameEngine.Instance.InitializeScene<HoBGameScene>();
             }
         }
     }

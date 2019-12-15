@@ -23,7 +23,7 @@ using Bitmap = System.Drawing.Bitmap;
 
 namespace HorrorOfBindings.scenes
 {
-    public class GameTestScene : AbstractScene
+    public class HoBGameScene : AbstractScene
     {
         private BasicCamera camera;
         private GameObject groundObj;
@@ -193,7 +193,7 @@ namespace HorrorOfBindings.scenes
 
         private string cmd_ReLoadScene(string[] args)
         {
-            GameEngine.Instance.InitializeScene<GameTestScene>();
+            GameEngine.Instance.InitializeScene<HoBGameScene>();
             TextureGenerator.Reset();
             return "Reloaded";
         }
@@ -266,7 +266,7 @@ namespace HorrorOfBindings.scenes
             bg = new GameObject("Background");
             if (background == null)
             {
-                BlackBG = MenuScene.menubg;
+                BlackBG = HoBMenuScene.menubg;
             }
             else
             {

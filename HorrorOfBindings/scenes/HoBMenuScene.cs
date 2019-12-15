@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using Engine.Core;
 using Engine.DataTypes;
 using Engine.Debug;
@@ -10,23 +9,30 @@ using Engine.OpenCL;
 using Engine.OpenCL.DotNetCore.Memory;
 using Engine.OpenCL.TypeEnums;
 using Engine.OpenFL;
+using Engine.Physics.BEPUphysics.BroadPhaseEntries;
 using Engine.Rendering;
 using Engine.UI;
 using Engine.UI.Animations;
 using Engine.UI.Animations.AnimationTypes;
 using Engine.UI.Animations.Interpolators;
 using Engine.UI.EventSystems;
-using FPSGame.components;
+using HorrorOfBindings.components;
+using HorrorOfBindings.mapgenerator;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using Color = System.Drawing.Color;
 
-namespace FPSGame.scenes
+namespace HorrorOfBindings.scenes
 {
-    public class MenuScene : AbstractScene
+    public class HoBMenuScene : AbstractScene
     {
         internal static Texture menubg;
 
         protected override void InitializeScene()
         {
+            TextureGenerator.Initialize(true);
+
+
             BasicCamera mainCamera =
                 new BasicCamera(
                     Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(75f),
@@ -78,7 +84,7 @@ namespace FPSGame.scenes
 
         private void btnStartGame(Button target)
         {
-            GameEngine.Instance.InitializeScene<GameTestScene>();
+            GameEngine.Instance.InitializeScene<HoBGameScene>();
         }
 
         private void btnExit(Button target)
@@ -93,8 +99,17 @@ namespace FPSGame.scenes
             sw.Start();
             int texWidth = 128;
             int texHeight = 128;
+            Interpreter i = new Interpreter(Clapi.MainThread, "assets/filter/game/menubg.fl", DataTypes.Uchar1,
+                Clapi.CreateEmpty<byte>(Clapi.MainThread, texWidth * texHeight * 4, MemoryFlag.ReadWrite), texWidth,
+                texHeight, 1, 4, "assets/kernel/", true);
 
-            Texture tex = TextureLoader.ColorToTexture(Color.Red);
+            do
+            {
+                i.Step();
+            } while (!i.Terminated);
+
+            Texture tex = TextureLoader.ParameterToTexture(texWidth, texHeight);
+            TextureLoader.Update(tex, i.GetResult<byte>(), (int) tex.Width, (int) tex.Height);
             Logger.Log("Time for Menu Background(ms): " + sw.ElapsedMilliseconds, DebugChannel.Log, 10);
             sw.Stop();
             return tex;

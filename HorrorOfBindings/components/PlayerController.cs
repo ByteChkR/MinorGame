@@ -217,7 +217,7 @@ namespace HorrorOfBindings.components
             {
                 wavesSurvived = 1;
                 EnemyComponent.enemyCount = 5;
-                GameEngine.Instance.InitializeScene<GameTestScene>();
+                GameEngine.Instance.InitializeScene<HoBGameScene>();
             }
 
             int pos = (int) Owner.LocalPosition.Z;
