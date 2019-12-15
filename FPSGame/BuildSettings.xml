@@ -3,7 +3,7 @@
   <AssetFolder>assets</AssetFolder>
   <BuildFlags>Embed</BuildFlags>
   <CreateEnginePackage>false</CreateEnginePackage>
-  <CreateGamePackage>true</CreateGamePackage>
+  <CreateGamePackage>false</CreateGamePackage>
   <EngineProject>../Minor/Engine/Engine/Engine.csproj</EngineProject>
   <GamePackageFileList />
   <MemoryFiles>*.png+*.jpg+*.obj+*.wav+*.vs+*.fs+*.xml+*.ttf+*.cl+*.fl</MemoryFiles>
@@ -11,4 +11,5 @@
   <PackSize>1024</PackSize>
   <Project>FPSGame.csproj</Project>
   <UnpackFiles />
+  <PackagerVersion>v2</PackagerVersion>
 </BuildSettings>

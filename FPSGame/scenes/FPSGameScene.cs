@@ -88,6 +88,7 @@ namespace FPSGame.scenes
             Add(ground);
             ground.Scale = new Engine.Physics.BEPUutilities.Vector3(50, 50, 50);
             ground.LocalPosition = new Engine.Physics.BEPUutilities.Vector3(0, -50, 0);
+            Add(DebugConsoleComponent.CreateConsole());
         }
     }
 }

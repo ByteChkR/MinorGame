@@ -52,8 +52,7 @@ namespace FPSGame.scenes
                 CreateButtonAnimation(new Vector2(-0.5f, 0.25f), 0.2f));
             CreateButton("assets/textures/btn/btn", "Exit", new Vector2(-5f, 0.0f), new Vector2(0.2f, 0.1f),
                 CreateButtonAnimation(new Vector2(-0.5f, 0.0f), 0.4f), btnExit);
-            DebugConsoleComponent c = DebugConsoleComponent.CreateConsole().GetComponent<DebugConsoleComponent>();
-            Add(c.Owner);
+            Add(DebugConsoleComponent.CreateConsole());
         }
 
         private List<Animation> CreateButtonAnimation(Vector2 endPos, float delay)
