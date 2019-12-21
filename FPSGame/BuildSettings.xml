@@ -3,7 +3,7 @@
   <AssetFolder>assets</AssetFolder>
   <BuildFlags>Embed</BuildFlags>
   <CreateEnginePackage>false</CreateEnginePackage>
-  <CreateGamePackage>false</CreateGamePackage>
+  <CreateGamePackage>true</CreateGamePackage>
   <EngineProject>../Minor/Engine/Engine/Engine.csproj</EngineProject>
   <GamePackageFileList />
   <MemoryFiles>*.png+*.jpg+*.obj+*.wav+*.vs+*.fs+*.xml+*.ttf+*.cl+*.fl</MemoryFiles>
